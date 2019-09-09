@@ -1,0 +1,31 @@
+package ftd.block;
+
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import ftd.ScratchValue;
+
+public class control_wait_until extends ScratchBlock {
+
+	@JsonProperty(value = "inputs")
+	private Input inputs;
+
+	private static class Input {
+
+		@JsonProperty(value = "CONDITION")
+		public ScratchValue condition;
+	}
+
+	public String gen() {
+		String expression = this.inputs.condition.generateCode();
+		String code = "while(toBoolean(s_not((" + expression + ")))) {\n";
+		code += "}\n";
+		return code;
+	}
+
+	@Override
+	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
+		this.inputs.condition.updateRelations(blocks);
+	}
+}
