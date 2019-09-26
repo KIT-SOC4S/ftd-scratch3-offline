@@ -5,6 +5,8 @@ package ftd;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -19,24 +21,49 @@ public class Library {
 	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
-		// module.addDeserializer(ScratchInput.class, new ScratchInputDeserializer());
 		module.addDeserializer(ScratchField.class, new ScratchFieldDeserializer());
 		mapper.registerModule(module);
 		// mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
 		// simpleJsonTest(mapper);
-		biggerJsonTest(mapper);
+		// biggerJsonTest(mapper);
+		directScratchFileTest(mapper);
+	}
+
+	private static void directScratchFileTest(ObjectMapper mapper) throws IOException {
+		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+		InputStream is = classloader.getResourceAsStream("biggertest.sb3");
+		ZipInputStream zipStream = new ZipInputStream(is);
+		byte[] bytes = null;
+
+		ZipEntry entry;
+		while ((entry = zipStream.getNextEntry()) != null) {
+			if ("project.json".equals(entry.getName())) {
+				bytes = zipStream.readAllBytes();
+			} else {
+				continue;
+			}
+		}
+
+		ScratchSave scratchSave = mapper.readValue(bytes, ScratchSave.class);
+		ScratchBlocks scratchBigger = scratchSave.getBlocks();
+		scratchBigger.init();
+		System.out.println(scratchBigger);
+		System.out.println(scratchBigger.generateSetupCode());
+		System.out.println(scratchBigger.getTopLevelBlocks().get(0).generateCode());
+		System.out.println("------------");
+
 	}
 
 	private static void biggerJsonTest(ObjectMapper mapper)
 			throws IOException, JsonParseException, JsonMappingException {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		InputStream is = classloader.getResourceAsStream("biggertest.json");
-		ScratchBlocks sratchBigger = mapper.readValue(is, ScratchBlocks.class);
-		sratchBigger.init();
-		System.out.println(sratchBigger);
-		System.out.println(sratchBigger.generateSetupCode());
-		System.out.println(sratchBigger.getTopLevelBlocks().get(0).generateCode());
+		ScratchBlocks scratchBigger = mapper.readValue(is, ScratchBlocks.class);
+		scratchBigger.init();
+		System.out.println(scratchBigger);
+		System.out.println(scratchBigger.generateSetupCode());
+		System.out.println(scratchBigger.getTopLevelBlocks().get(0).generateCode());
 		System.out.println("------------");
 	}
 
@@ -44,11 +71,11 @@ public class Library {
 			throws IOException, JsonParseException, JsonMappingException {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		InputStream is = classloader.getResourceAsStream("scratch.json");
-		ScratchBlocks sratchSimple = mapper.readValue(is, ScratchBlocks.class);
-		sratchSimple.init();
-		System.out.println(sratchSimple);
-		System.out.println(sratchSimple.generateSetupCode());
-		System.out.println(sratchSimple.getTopLevelBlocks().get(0).generateCode());
+		ScratchBlocks scratchSimple = mapper.readValue(is, ScratchBlocks.class);
+		scratchSimple.init();
+		System.out.println(scratchSimple);
+		System.out.println(scratchSimple.generateSetupCode());
+		System.out.println(scratchSimple.getTopLevelBlocks().get(0).generateCode());
 		System.out.println("------------");
 	}
 }

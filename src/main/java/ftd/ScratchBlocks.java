@@ -1,16 +1,21 @@
 package ftd;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import ftd.block.ScratchBlock;
 
 public class ScratchBlocks {
-	@JsonProperty(value = "blocks")
-	private Map<String, ScratchBlock> blocks;
+	private Map<String, ScratchBlock> blocks = new HashMap<>();
+
+	@JsonAnySetter
+	void setBlock(String key, ScratchBlock value) {
+		blocks.put(key, value);
+	}
 
 	public void init() {
 		blocks.forEach((s, b) -> b.updateRelations(blocks));
@@ -29,5 +34,9 @@ public class ScratchBlocks {
 	public List<ScratchBlock> getTopLevelBlocks() {
 		return blocks.entrySet().stream().filter(e -> e.getValue().topLevel).map(m -> m.getValue())
 				.collect(Collectors.toList());
+	}
+
+	public class ScratchBlocksDeserializer {
+
 	}
 }
