@@ -17,8 +17,22 @@ public class ftduino_when_input extends ScratchBlock {
 	}
 
 	@Override
+	protected String beginGen() {
+		String loopCode = "void loop() {\n";
+		String ifCode = "if(toBoolean(scratch_ftduino_input(" + inputs.input.generateCode() + "))) {\n";
+		return loopCode + ifCode;
+	}
+
+	@Override
+	protected String afterGen() {
+		String ifBody = super.afterGen();
+		String ifConditionEnd = "while(1) { delay(100);\n}\n}\n";
+		String loopCodeEnd = "}\n";
+		return ifBody + ifConditionEnd + loopCodeEnd;
+	}
+
 	public String gen() {
-		throw new RuntimeException("HUH?");
+		return "";
 	}
 
 	@Override
