@@ -36,13 +36,13 @@ public class OnOffStateField extends ScratchField {
 
 	public static enum State {
 
-		On, Off;
-		private static Map<String, State> namesMap = new HashMap<String, State>(2);
+		ON, OFF;
+		private static Map<String, State> namesMap = new HashMap<String, State>(3);
 
 		static {
-			namesMap.put("On", On);
-			namesMap.put("1", On); // TODO correct?
-			namesMap.put("0", Off);
+			namesMap.put("On", ON);
+			namesMap.put("1", ON); // TODO correct?
+			namesMap.put("0", OFF);
 		}
 
 		@JsonCreator

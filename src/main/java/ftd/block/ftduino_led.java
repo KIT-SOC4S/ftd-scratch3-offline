@@ -19,15 +19,7 @@ public class ftduino_led extends ScratchBlock {
 	@Override
 	public String gen() {
 		if (this.inputs.value != null) {
-			// State state = ((OnOffStateField) valueInput.value.fields).state;
-			// if (state == State.Off) {
-			// return "digitalWrite(LED_BUILTIN, LOW);\n";
-			// } else if (state == State.On) {
-			// return "digitalWrite(LED_BUILTIN, HIGH);\n";
-			// } else {
-			return inputs.value.generateCode();
-			// throw new RuntimeException("HUH?");
-			// }
+			return "digitalWrite(LED_BUILTIN, (toBoolean(" + inputs.value.generateCode() + ")) ? HIGH : LOW);\n";
 		} else {
 			throw new RuntimeException("HUH?");
 		}

@@ -18,10 +18,10 @@ public class ftduino_menu_ONOFFSTATE extends ScratchBlock {
 	@Override
 	public String gen() {
 		State state = ((OnOffStateField) fields).state;
-		if (state == State.Off) {
-			return "digitalWrite(LED_BUILTIN, LOW);\n";
-		} else if (state == State.On) {
-			return "digitalWrite(LED_BUILTIN, HIGH);\n";
+		if (state == State.ON) {
+			return "scratchBoolean(true)";
+		} else if (state == State.OFF) {
+			return "scratchBoolean(false)";
 		} else {
 			throw new RuntimeException("HUH?");
 		}
