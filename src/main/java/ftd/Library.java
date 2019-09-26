@@ -23,12 +23,13 @@ public class Library {
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(ScratchField.class, new ScratchFieldDeserializer());
 		mapper.registerModule(module);
-		directScratchFileTest(mapper);
+		testRessourceFile(mapper, "biggertest.sb3");
+		testRessourceFile(mapper, "when_input_test.sb3");
 	}
 
-	private static void directScratchFileTest(ObjectMapper mapper) throws IOException {
+	private static void testRessourceFile(ObjectMapper mapper, String ressourceName) throws IOException {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classloader.getResourceAsStream("biggertest.sb3");
+		InputStream is = classloader.getResourceAsStream(ressourceName);
 		ZipInputStream zipStream = new ZipInputStream(is);
 		byte[] bytes = null;
 
