@@ -18,7 +18,7 @@ public class control_wait extends ScratchBlock {
 
 	public String gen() {
 		if (inputs.duration != null) {
-			return "delay(1000 * " + inputs.duration.generateCode() + ");\n";
+			return "delay(1000 * toNumber(" + inputs.duration.generateCode() + "));\n";
 		} else {
 			throw new RuntimeException("HUH?");
 		}
