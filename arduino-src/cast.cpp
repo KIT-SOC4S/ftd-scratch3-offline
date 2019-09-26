@@ -4,31 +4,29 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <float.h>
+#include <ctype.h>
 
 
-bool otherToBoolean(ScratchValue value) {
-  if (value.type == ScratchNumber) {
+__attribute__ ((const)) bool otherToBoolean(ScratchValue value) {
+  if (value.type == Type::ScratchNumber) {
     if (isnan(value.number) || value.number == 0 || value.number == -0) {
       return false;
     }
-  } else {
-    printf("Unknown type: %i", value.type);
-    return true;
   }
+  return true;
 }
 
 bool toBoolean (ScratchValue value) {
   // Already a boolean?
-  if (value.type == ScratchBool) {
+  if (value.type == Type::ScratchBool) {
     return value.boolValue;
   }
-  if (value.type == ScratchString) {
+  if (value.type == Type::ScratchString) {
     // These specific strings are treated as false in Scratch.
     if ((strcmp(value.string, "") == 0) ||
         (strcmp(value.string, "0") == 0) ||
-        (strcasecmp(value.string, 'false') == 0)) {
+        (strcasecmp(value.string, "false") == 0)) {
       return false;
     }
     // All other strings treated as true.
@@ -41,7 +39,7 @@ bool toBoolean (ScratchValue value) {
 float toNumber (ScratchValue value) {
   // If value is already a number we don't need to coerce it with
   // Number().
-  if (value.type == ScratchNumber) {
+  if (value.type == Type::ScratchNumber) {
     // Scratch treats NaN as 0, when needed as a number.
     // E.g., 0 + NaN -> 0.
     if (isnan(value.number)) {
@@ -59,38 +57,37 @@ float toNumber (ScratchValue value) {
   return n;
 }
 
-int is_empty(const char *s) {
+__attribute__ ((const)) bool is_empty(const char *s) {
   while (*s != '\0') {
     if (!isspace((unsigned char)*s))
-      return 0;
+      return false;
     s++;
   }
-  return 1;
+  return true;
 }
 
 int isWhiteSpace (ScratchValue val) {
-  return /*val == null ||*/ (val.type == ScratchString && is_empty(val.string) == 0);
+  return /*val == null ||*/ (val.type == Type::ScratchString && is_empty(val.string) == 0);
 }
 
-char* trueString = "true";
-char* falseString = "false";
+const char* trueString = "true";
+const char* falseString = "false";
 
-char* toString(ScratchValue val, int* free) {
-  if (val.type == ScratchString) {
-    *free = 0;
+const char* toString(ScratchValue val, bool* shouldFree) {
+  if (val.type == Type::ScratchString) {
+    *shouldFree = false;
     return val.string;
-  } else if (val.type == ScratchNumber) {
+  } else if (val.type == Type::ScratchNumber) {
     char buf[33];
     char* partResult = dtostrf(val.number, (__DECIMAL_DIG__ + 2), __DECIMAL_DIG__, buf);
     char* result = strdup(partResult);
-    *free = 1;
+    *shouldFree = true;
     return result;
-  } else if (val.type == ScratchBool) {
-    *free = 0;
+  } else if (val.type == Type::ScratchBool) {
+    *shouldFree = false;
     return val.boolValue ? trueString : falseString;
   } else {
-    printf("Unknown type: %i", val.type);
-    *free = 0;
+    *shouldFree = false;
     return "vf";
   }
 }
@@ -98,16 +95,16 @@ char* toString(ScratchValue val, int* free) {
 
 bool isInt (ScratchValue val) {
   // Values that are already numbers.
-  if (val.type == ScratchNumber) {
+  if (val.type == Type::ScratchNumber) {
     if (isnan(val.number)) { // NaN is considered an integer.
       return true;
     }
     // True if it's "round" (e.g., 2.0 and 2).
     return roundf(val.number) == val.number;
-  } else if (val.type == ScratchBool) {
+  } else if (val.type == Type::ScratchBool) {
     // `True` and `false` always represent integer after Scratch cast.
     return true;
-  } else if (val.type == ScratchString) {
+  } else if (val.type == Type::ScratchString) {
     // If it contains a decimal point, don't consider it an int.
     return strchr(val.string, '.') == NULL;
   }
@@ -125,7 +122,7 @@ float compare (ScratchValue v1, ScratchValue v2) {
   if (isnan(n1) || isnan(n2)) {
     // At least one argument can't be converted to a number.
     // Scratch compares strings as case insensitive.
-    int free1, free2;
+    bool free1, free2;
     char* s1 = toString(v1, &free1);
     char* s2 = toString(v2, &free2);
     int result = strcasecmp(s1, s2);

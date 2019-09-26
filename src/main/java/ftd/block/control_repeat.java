@@ -22,8 +22,7 @@ public class control_repeat extends ScratchBlock {
 	@Override
 	protected String beginGen() {
 		String expression = this.inputs.times.generateCode();
-		//return "for(uint32_t i = 0; lt(i, (" + expression + ")); i++) {\n";
-		return "for(uint32_t i = 0; i < 10; i++) {\n";
+		return "for(uint32_t i = 0; toBoolean(s_lt(scratchNumber(i), (" + expression + "))); i++) {\n";
 	}
 
 	@Override

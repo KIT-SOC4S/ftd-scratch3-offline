@@ -2,13 +2,7 @@
 #include "scratch.h"
 #include "operators.h"
 #include <stdlib.h>
-
-ScratchValue scratchBoolean(int number_) {
-  ScratchValue value;
-  value.type = ScratchBool;
-  value.boolValue = number_;
-  return value;
-}
+#include <math.h>
 
 ScratchValue s_add(ScratchValue num1, ScratchValue num2) {
   return scratchNumber(toNumber(num1) + toNumber(num2));
@@ -42,7 +36,7 @@ ScratchValue s_gt(ScratchValue op1, ScratchValue op2) {
 
 
 
-ScratchValue s_and(ScratchValue op1, ScratchValue op2) {  
+ScratchValue s_and(ScratchValue op1, ScratchValue op2) {
   return scratchBoolean(toBoolean(op1) && toBoolean(op2));
 }
 
@@ -66,7 +60,7 @@ ScratchValue s_random(ScratchValue from, ScratchValue to) {
   if (low == high) return scratchNumber(low);
   // If both arguments are ints, truncate the result to an int.
   if (isInt(from) && isInt(to)) {
-     return scratchNumber(low + floor(randomFloat() * ((high + 1) - low)));
+    return scratchNumber(low + floor(randomFloat() * ((high + 1) - low)));
   }
-  return scratchNumber((randomFloat() * (high - low)) + low);  
+  return scratchNumber((randomFloat() * (high - low)) + low);
 }

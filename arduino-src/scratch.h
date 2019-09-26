@@ -1,32 +1,27 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef SCRATCH_H
 #define SCRATCH_H
 
 #include <stdbool.h>
+#include <inttypes.h>
 
-typedef enum {
+enum class Type : int8_t {
   ScratchNumber, ScratchString, ScratchBool
-} Type;
+};
 
 typedef struct {
   Type type;
   union {
-   char* string;
-   float number;
-   bool boolValue;
+    char* string;
+    float number;
+    bool boolValue;
   };
 } ScratchValue;
 
 
-ScratchValue scratchNumber(float);
+ScratchValue scratchNumber(float) __attribute__ ((const));
 
-ScratchValue scratchString(char*);
+ScratchValue scratchString(const char*) __attribute__ ((const));
+
+ScratchValue scratchBoolean(int) __attribute__ ((const));
 
 #endif /* SCRATCH_H */
-
-#ifdef __cplusplus
-}
-#endif

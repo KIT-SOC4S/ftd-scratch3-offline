@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef CAST_H
 #define CAST_H
 
@@ -9,18 +5,14 @@ extern "C" {
 
 float toNumber (ScratchValue);
 
-bool toBoolean (ScratchValue);
+bool toBoolean (ScratchValue) __attribute__ ((const));
 
 float compare (ScratchValue, ScratchValue);
 
-int isWhiteSpace (ScratchValue);
+int isWhiteSpace (ScratchValue) __attribute__ ((const));
 
-char* toString(ScratchValue, int*);
+const char* toString(ScratchValue, bool*);
 
-bool isInt (ScratchValue);
+bool isInt (ScratchValue) __attribute__ ((const));
 
 #endif /* CAST_H */
-
-#ifdef __cplusplus
-}
-#endif
