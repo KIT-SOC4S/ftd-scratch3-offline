@@ -23,10 +23,6 @@ public class Library {
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(ScratchField.class, new ScratchFieldDeserializer());
 		mapper.registerModule(module);
-		// mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
-		// simpleJsonTest(mapper);
-		// biggerJsonTest(mapper);
 		directScratchFileTest(mapper);
 	}
 
@@ -51,31 +47,6 @@ public class Library {
 		System.out.println(scratchBigger);
 		System.out.println(scratchBigger.generateSetupCode());
 		System.out.println(scratchBigger.getTopLevelBlocks().get(0).generateCode());
-		System.out.println("------------");
-
-	}
-
-	private static void biggerJsonTest(ObjectMapper mapper)
-			throws IOException, JsonParseException, JsonMappingException {
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classloader.getResourceAsStream("biggertest.json");
-		ScratchBlocks scratchBigger = mapper.readValue(is, ScratchBlocks.class);
-		scratchBigger.init();
-		System.out.println(scratchBigger);
-		System.out.println(scratchBigger.generateSetupCode());
-		System.out.println(scratchBigger.getTopLevelBlocks().get(0).generateCode());
-		System.out.println("------------");
-	}
-
-	private static void simpleJsonTest(ObjectMapper mapper)
-			throws IOException, JsonParseException, JsonMappingException {
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classloader.getResourceAsStream("scratch.json");
-		ScratchBlocks scratchSimple = mapper.readValue(is, ScratchBlocks.class);
-		scratchSimple.init();
-		System.out.println(scratchSimple);
-		System.out.println(scratchSimple.generateSetupCode());
-		System.out.println(scratchSimple.getTopLevelBlocks().get(0).generateCode());
 		System.out.println("------------");
 	}
 }
