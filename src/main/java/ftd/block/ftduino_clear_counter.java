@@ -20,10 +20,6 @@ public class ftduino_clear_counter extends ScratchBlock {
 	public String gen() {
 		String code = "scratch_ftduino_clear_counter(" + inputs.input.generateCode() + ");\n";
 		return code;
-		/*
-		 * String clearCounterCode = "ftduino.counter_clear(toCounterSpecifier(" +
-		 * inputs.input.generateCode() + "));\n"; return clearCounterCode;
-		 */
 	}
 
 	@Override

@@ -28,11 +28,6 @@ public class ftduino_motor extends ScratchBlock {
 		String code = "scratch_ftduino_motor(" + inputs.motor.generateCode() + ", " + inputs.dir.generateCode() + ", "
 				+ inputs.value.generateCode() + ");\n";
 		return code;
-		/*
-		 * Code = "ftduino.motor_set(toMotorSpecifier(" + inputs.motor.generateCode() +
-		 * "), toMotorMode(" + inputs.dir.generateCode() + "), toNumber(" +
-		 * inputs.value.generateCode() + "));\n"; return motorCode;
-		 */
 	}
 
 	@Override

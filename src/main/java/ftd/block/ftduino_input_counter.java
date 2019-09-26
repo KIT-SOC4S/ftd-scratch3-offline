@@ -21,11 +21,6 @@ public class ftduino_input_counter extends ScratchBlock {
 	public String gen() {
 		String code = "scratch_ftduino_input_counter(" + inputs.input.generateCode() + ")";
 		return code;
-		/*
-		 * String counterGetCode =
-		 * "scratchNumber(ftduino.counter_get(toCounterInputSpecifier(" +
-		 * inputs.input.generateCode() + ")))"; return counterGetCode;
-		 */
 	}
 
 	@Override
