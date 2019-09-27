@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
-public class MenuInputD extends ScratchField {
+public class DigitalInputSpecifierField extends ScratchField {
 	private List<String> INPUT_D;
-	private InputSpecifier inputSpecifier;
+	private DigitalInputSpecifier inputSpecifier;
 
 	@JsonCreator()
-	private MenuInputD(@JsonProperty(value = "INPUT_D") List<String> inputD) {
+	private DigitalInputSpecifierField(@JsonProperty(value = "INPUT_D") List<String> inputD) {
 		if (inputD.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -24,16 +24,16 @@ public class MenuInputD extends ScratchField {
 		}
 		this.INPUT_D = inputD;
 		if (inputD.get(0) != null) {
-			inputSpecifier = InputSpecifier.forValue(inputD.get(0));
+			inputSpecifier = DigitalInputSpecifier.forValue(inputD.get(0));
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "MenuInputD [INPUT_D=" + INPUT_D + ", inputSpecifier=" + inputSpecifier + "]";
+		return "DigitalInputSpecifierField [INPUT_D=" + INPUT_D + ", inputSpecifier=" + inputSpecifier + "]";
 	}
 
-	public InputSpecifier getInputSpecifier() {
+	public DigitalInputSpecifier getInputSpecifier() {
 		return inputSpecifier;
 	}
 
@@ -41,10 +41,10 @@ public class MenuInputD extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
-	public static enum InputSpecifier {
+	public static enum DigitalInputSpecifier {
 
 		I1, I2, I3, I4, I5, I6, I7, I8, C1, C2, C3, C4;
-		private static Map<String, InputSpecifier> namesMap = new HashMap<String, InputSpecifier>(12);
+		private static Map<String, DigitalInputSpecifier> namesMap = new HashMap<String, DigitalInputSpecifier>(12);
 		static {
 			namesMap.put("I1", I1);
 			namesMap.put("I2", I2);
@@ -61,7 +61,7 @@ public class MenuInputD extends ScratchField {
 		}
 
 		@JsonCreator
-		public static InputSpecifier forValue(String value) {
+		public static DigitalInputSpecifier forValue(String value) {
 			String searchValue = value.toUpperCase(Locale.ROOT);
 			if (!namesMap.containsKey(searchValue)) {
 				throw new IllegalStateException("unknown value:" + value);

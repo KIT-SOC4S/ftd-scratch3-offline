@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ftd.field.MenuInput;
-import ftd.field.MenuInput.InputSpecifier;
+import ftd.field.AnalogInputSpecifierField;
+import ftd.field.AnalogInputSpecifierField.AnalogInputSpecifier;
 
 public class ftduino_menu_INPUT extends ScratchBlock {
 
@@ -17,7 +17,7 @@ public class ftduino_menu_INPUT extends ScratchBlock {
 
 	@Override
 	public String gen() {
-		InputSpecifier inputSpecifier = ((MenuInput) fields).getInputSpecifier();
+		AnalogInputSpecifier inputSpecifier = ((AnalogInputSpecifierField) fields).getInputSpecifier();
 		String code = "scratchString(\"" + inputSpecifier.name() + "\")";
 		return code;
 	}

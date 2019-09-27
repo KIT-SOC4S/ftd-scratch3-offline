@@ -5,7 +5,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.field.OnOffStateField;
-import ftd.field.OnOffStateField.State;
+import ftd.field.OnOffStateField.OnOffState;
 
 public class ftduino_menu_ONOFFSTATE extends ScratchBlock {
 
@@ -17,10 +17,10 @@ public class ftduino_menu_ONOFFSTATE extends ScratchBlock {
 
 	@Override
 	public String gen() {
-		State state = ((OnOffStateField) fields).state;
-		if (state == State.ON) {
+		OnOffState state = ((OnOffStateField) fields).state;
+		if (state == OnOffState.ON) {
 			return "scratchBoolean(true)";
-		} else if (state == State.OFF) {
+		} else if (state == OnOffState.OFF) {
 			return "scratchBoolean(false)";
 		} else {
 			throw new RuntimeException("HUH?");

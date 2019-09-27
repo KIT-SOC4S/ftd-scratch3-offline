@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ftd.field.InputMode;
-import ftd.field.InputMode.Mode;
+import ftd.field.InputModeField;
+import ftd.field.InputModeField.InputMode;
 
 public class ftduino_menu_MODE extends ScratchBlock {
 
@@ -17,7 +17,7 @@ public class ftduino_menu_MODE extends ScratchBlock {
 
 	@Override
 	public String gen() {
-		Mode inputMode = ((InputMode) fields).getInputMode();
+		InputMode inputMode = ((InputModeField) fields).getInputMode();
 		String code = "scratchString(\"" + inputMode.name() + "\")";
 		return code;
 	}

@@ -27,21 +27,21 @@ public class ScratchFieldDeserializer extends StdDeserializer<ScratchField> {
 		if (root.get("ONOFFSTATE") != null) {
 			inputClass = OnOffStateField.class;
 		} else if (root.get("INPUT_D") != null) {
-			inputClass = MenuInputD.class;
+			inputClass = DigitalInputSpecifierField.class;
 		} else if (root.get("INPUT") != null) {
-			inputClass = MenuInput.class;
+			inputClass = AnalogInputSpecifierField.class;
 		} else if (root.get("MODE") != null) {
-			inputClass = InputMode.class;
+			inputClass = InputModeField.class;
 		} else if (root.get("MOTOR") != null) {
-			inputClass = MenuMotor.class;
+			inputClass = MotorSpecifierField.class;
 		} else if (root.get("DIR") != null) {
-			inputClass = MenuMotorDir.class;
+			inputClass = MotorDirectionField.class;
 		} else if (root.get("COUNTER") != null) {
-			inputClass = MenuCounter.class;
+			inputClass = CounterSpecifierField.class;
 		} else if (root.get("STOPMODE") != null) {
 			inputClass = MotorStopModeField.class;
 		} else if (root.get("OUTPUT") != null) {
-			inputClass = MenuOutput.class;
+			inputClass = OutputSpecifierField.class;
 		}
 		if (root.isEmpty(null)) {
 			return null;

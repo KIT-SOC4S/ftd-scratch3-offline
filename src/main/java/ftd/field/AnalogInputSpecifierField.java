@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
-public class MenuInput extends ScratchField {
+public class AnalogInputSpecifierField extends ScratchField {
 	private List<String> INPUT;
-	private InputSpecifier inputSpecifier;
+	private AnalogInputSpecifier inputSpecifier;
 
 	@JsonCreator()
-	private MenuInput(@JsonProperty(value = "INPUT") List<String> input) {
+	private AnalogInputSpecifierField(@JsonProperty(value = "INPUT") List<String> input) {
 		if (input.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -24,16 +24,16 @@ public class MenuInput extends ScratchField {
 		}
 		this.INPUT = input;
 		if (input.get(0) != null) {
-			inputSpecifier = InputSpecifier.forValue(input.get(0));
+			inputSpecifier = AnalogInputSpecifier.forValue(input.get(0));
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "MenuInput [INPUT=" + INPUT + ", inputSpecifier=" + inputSpecifier + "]";
+		return "AnalogInputSpecifierField [INPUT=" + INPUT + ", inputSpecifier=" + inputSpecifier + "]";
 	}
 
-	public InputSpecifier getInputSpecifier() {
+	public AnalogInputSpecifier getInputSpecifier() {
 		return inputSpecifier;
 	}
 
@@ -41,10 +41,10 @@ public class MenuInput extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
-	public static enum InputSpecifier {
+	public static enum AnalogInputSpecifier {
 
 		I1, I2, I3, I4, I5, I6, I7, I8;
-		private static Map<String, InputSpecifier> namesMap = new HashMap<String, InputSpecifier>(8);
+		private static Map<String, AnalogInputSpecifier> namesMap = new HashMap<String, AnalogInputSpecifier>(8);
 
 		static {
 			namesMap.put("I1", I1);
@@ -58,7 +58,7 @@ public class MenuInput extends ScratchField {
 		}
 
 		@JsonCreator
-		public static InputSpecifier forValue(String value) {
+		public static AnalogInputSpecifier forValue(String value) {
 			String searchValue = value.toUpperCase(Locale.ROOT);
 			if (!namesMap.containsKey(searchValue)) {
 				throw new IllegalStateException("unknown value:" + value);

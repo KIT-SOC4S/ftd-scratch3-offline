@@ -11,7 +11,7 @@ import ftd.block.ScratchBlock;
 
 public class OnOffStateField extends ScratchField {
 	private List<String> ONOFFSTATE;
-	public State state;
+	public OnOffState state;
 
 	@JsonCreator()
 	private OnOffStateField(@JsonProperty(value = "ONOFFSTATE") List<String> onOffState) {
@@ -22,11 +22,7 @@ public class OnOffStateField extends ScratchField {
 			throw new IllegalStateException("expected null");
 		}
 		this.ONOFFSTATE = onOffState;
-		this.state = State.forValue(onOffState.get(0));
-	}
-
-	@Override
-	public void updateRelations(Map<String, ScratchBlock> blocks) {
+		this.state = OnOffState.forValue(onOffState.get(0));
 	}
 
 	@Override
@@ -34,19 +30,24 @@ public class OnOffStateField extends ScratchField {
 		return "OnOffStateField [ONOFFSTATE=" + ONOFFSTATE + ", state=" + state + "]";
 	}
 
-	public static enum State {
+	@Override
+	public void updateRelations(Map<String, ScratchBlock> blocks) {
+	}
+
+	public static enum OnOffState {
 
 		ON, OFF;
-		private static Map<String, State> namesMap = new HashMap<String, State>(3);
+		private static Map<String, OnOffState> namesMap = new HashMap<String, OnOffState>(4);
 
 		static {
 			namesMap.put("On", ON);
-			namesMap.put("1", ON); // TODO correct?
+			namesMap.put("1", ON);
 			namesMap.put("0", OFF);
+			namesMap.put("Off", OFF);
 		}
 
 		@JsonCreator
-		public static State forValue(String value) {
+		public static OnOffState forValue(String value) {
 			if (!namesMap.containsKey(value)) {
 				throw new IllegalStateException("unknown value:" + value);
 			}

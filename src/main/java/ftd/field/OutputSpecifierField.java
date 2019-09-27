@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
-public class MenuOutput extends ScratchField {
+public class OutputSpecifierField extends ScratchField {
 	private List<String> OUTPUT;
 	private OutputSpecifier outputSpecifier;
 
 	@JsonCreator()
-	private MenuOutput(@JsonProperty(value = "OUTPUT") List<String> output) {
+	private OutputSpecifierField(@JsonProperty(value = "OUTPUT") List<String> output) {
 		if (output.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -30,7 +30,7 @@ public class MenuOutput extends ScratchField {
 
 	@Override
 	public String toString() {
-		return "MenuOutput [OUTPUT=" + OUTPUT + ", outputSpecifier=" + outputSpecifier + "]";
+		return "OutputSpecifierField [OUTPUT=" + OUTPUT + ", outputSpecifier=" + outputSpecifier + "]";
 	}
 
 	public OutputSpecifier getOutputSpecifier() {

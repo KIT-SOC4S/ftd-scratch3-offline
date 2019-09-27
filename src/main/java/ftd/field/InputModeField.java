@@ -9,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
-public class InputMode extends ScratchField {
+public class InputModeField extends ScratchField {
 	private List<String> MODE;
-	private Mode inputMode;
+	private InputMode inputMode;
 
 	@JsonCreator()
-	private InputMode(@JsonProperty(value = "MODE") List<String> mode) {
+	private InputModeField(@JsonProperty(value = "MODE") List<String> mode) {
 		if (mode.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -23,16 +23,16 @@ public class InputMode extends ScratchField {
 		}
 		this.MODE = mode;
 		if (mode.get(0) != null) {
-			inputMode = Mode.forValue(mode.get(0));
+			inputMode = InputMode.forValue(mode.get(0));
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "InputMode [MODE=" + MODE + ", inputMode=" + inputMode + "]";
+		return "InputModeField [MODE=" + MODE + ", inputMode=" + inputMode + "]";
 	}
 
-	public Mode getInputMode() {
+	public InputMode getInputMode() {
 		return inputMode;
 	}
 
@@ -40,10 +40,10 @@ public class InputMode extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
-	public static enum Mode {
+	public static enum InputMode {
 
 		VOLTAGE, RESISTANCE, SWITCH, COUNTER;
-		private static Map<String, Mode> namesMap = new HashMap<String, Mode>(4);
+		private static Map<String, InputMode> namesMap = new HashMap<String, InputMode>(4);
 
 		static {
 			namesMap.put("voltage", VOLTAGE);
@@ -53,7 +53,7 @@ public class InputMode extends ScratchField {
 		}
 
 		@JsonCreator
-		public static Mode forValue(String value) {
+		public static InputMode forValue(String value) {
 			if (!namesMap.containsKey(value)) {
 				throw new IllegalStateException("unknown value:" + value);
 			}

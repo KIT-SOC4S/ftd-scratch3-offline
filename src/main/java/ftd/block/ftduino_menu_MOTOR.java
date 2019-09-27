@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ftd.field.MenuMotor;
-import ftd.field.MenuMotor.Motor;
+import ftd.field.MotorSpecifierField;
+import ftd.field.MotorSpecifierField.MotorSpecifier;
 
 public class ftduino_menu_MOTOR extends ScratchBlock {
 
@@ -17,7 +17,7 @@ public class ftduino_menu_MOTOR extends ScratchBlock {
 
 	@Override
 	public String gen() {
-		Motor motorSpecifier = ((MenuMotor) fields).getMotorSpecifier();
+		MotorSpecifier motorSpecifier = ((MotorSpecifierField) fields).getMotorSpecifier();
 		String code = "scratchString(\"" + motorSpecifier.name() + "\")";
 		return code;
 	}

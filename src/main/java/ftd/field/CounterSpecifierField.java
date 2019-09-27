@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
-public class MenuCounter extends ScratchField {
+public class CounterSpecifierField extends ScratchField {
 	private List<String> COUNTER;
 	private CounterSpecifier counterSpecifier;
 
 	@JsonCreator()
-	private MenuCounter(@JsonProperty(value = "COUNTER") List<String> counter) {
+	private CounterSpecifierField(@JsonProperty(value = "COUNTER") List<String> counter) {
 		if (counter.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -30,7 +30,7 @@ public class MenuCounter extends ScratchField {
 
 	@Override
 	public String toString() {
-		return "MenuCounter [COUNTER=" + COUNTER + ", counterSpecifier=" + counterSpecifier + "]";
+		return "CounterSpecifierField [COUNTER=" + COUNTER + ", counterSpecifier=" + counterSpecifier + "]";
 	}
 
 	public CounterSpecifier getCounterSpecifier() {

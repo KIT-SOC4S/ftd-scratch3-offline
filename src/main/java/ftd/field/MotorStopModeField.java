@@ -28,13 +28,13 @@ public class MotorStopModeField extends ScratchField {
 		}
 	}
 
-	public MotorStopMode getMotorStopMode() {
-		return motorStopMode;
-	}
-
 	@Override
 	public String toString() {
 		return "MotorStopModeField [STOPMODE=" + STOPMODE + ", motorStopMode=" + motorStopMode + "]";
+	}
+
+	public MotorStopMode getMotorStopMode() {
+		return motorStopMode;
 	}
 
 	@Override

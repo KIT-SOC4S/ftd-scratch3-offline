@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
-public class MenuMotorDir extends ScratchField {
+public class MotorDirectionField extends ScratchField {
 	private List<String> DIR;
 	private MotorDir motorDir;
 
 	@JsonCreator()
-	private MenuMotorDir(@JsonProperty(value = "DIR") List<String> dir) {
+	private MotorDirectionField(@JsonProperty(value = "DIR") List<String> dir) {
 		if (dir.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -28,13 +28,13 @@ public class MenuMotorDir extends ScratchField {
 		}
 	}
 
-	public MotorDir getMotorDirection() {
-		return motorDir;
-	}
-
 	@Override
 	public String toString() {
-		return "MenuMotorDir [DIR=" + DIR + ", motorDir=" + motorDir + "]";
+		return "MotorDirectionField [DIR=" + DIR + ", motorDir=" + motorDir + "]";
+	}
+
+	public MotorDir getMotorDirection() {
+		return motorDir;
 	}
 
 	@Override

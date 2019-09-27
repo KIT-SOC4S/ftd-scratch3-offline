@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ftd.field.MenuOutput;
-import ftd.field.MenuOutput.OutputSpecifier;
+import ftd.field.OutputSpecifierField;
+import ftd.field.OutputSpecifierField.OutputSpecifier;
 
 public class ftduino_menu_OUTPUT extends ScratchBlock {
 
@@ -17,7 +17,7 @@ public class ftduino_menu_OUTPUT extends ScratchBlock {
 
 	@Override
 	public String gen() {
-		OutputSpecifier outputSpecifier = ((MenuOutput) fields).getOutputSpecifier();
+		OutputSpecifier outputSpecifier = ((OutputSpecifierField) fields).getOutputSpecifier();
 		String code = "scratchString(\"" + outputSpecifier.name() + "\")";
 		return code;
 	}
