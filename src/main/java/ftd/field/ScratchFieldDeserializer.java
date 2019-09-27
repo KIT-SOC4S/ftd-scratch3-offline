@@ -9,13 +9,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import ftd.input2.ScratchInput;
-
 @SuppressWarnings("serial")
 public class ScratchFieldDeserializer extends StdDeserializer<ScratchField> {
 
 	public ScratchFieldDeserializer() {
-		super(ScratchInput.class);
+		super(ScratchField.class);
 	}
 
 	@Override
