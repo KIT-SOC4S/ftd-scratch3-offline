@@ -25,6 +25,7 @@ public class Library {
 		mapper.registerModule(module);
 		testRessourceFile(mapper, "biggertest.sb3");
 		testRessourceFile(mapper, "when_input_test.sb3");
+		testRessourceFile(mapper, "motor_stop_test.sb3");
 	}
 
 	private static void testRessourceFile(ObjectMapper mapper, String ressourceName) throws IOException {

@@ -14,6 +14,8 @@ enum class MotorSpecifier : int8_t {INVALID_SPECIFIER, M1, M2, M3, M4};
 
 enum class MotorDir : int8_t {INVALID_DIRECTION, LEFT, RIGHT};
 
+enum class MotorStopMode : int8_t {INVALID_MODE, STOP, BRAKE};
+
 enum class CounterSpecifier : int8_t {INVALID_SPECIFIER, C1, C2, C3, C4};
 
 enum class InputMode : int8_t {INVALID_MODE, VOLTAGE, RESISTANCE, SWITCH};
@@ -29,6 +31,8 @@ void scratch_ftduino_output(ScratchValue, ScratchValue);
 void scratch_ftduino_output_analog(ScratchValue, ScratchValue);
 
 void scratch_ftduino_motor(ScratchValue, ScratchValue, ScratchValue);
+
+void scratch_ftduino_motor_stop(ScratchValue, ScratchValue);
 
 ScratchValue scratch_ftduino_input_counter(ScratchValue);
 

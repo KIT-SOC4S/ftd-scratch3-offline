@@ -20,6 +20,19 @@ class FreeableString {
     }
 };
 
+MotorStopMode toMotorStopMode(ScratchValue stopMode) {
+  bool shouldFree;
+  const char* string = toString(stopMode, &shouldFree);
+  FreeableString(string, shouldFree);
+  if (strcasecmp(string, "OFF") == 0) {
+    return MotorStopMode::STOP;
+  } else if (strcasecmp(string, "BRAKE") == 0) {
+    return MotorStopMode::BRAKE;
+  } else {
+    return MotorStopMode::INVALID_MODE;
+  }
+}
+
 MotorDir toMotorDir(ScratchValue motorDir) {
   bool shouldFree;
   const char* string = toString(motorDir, &shouldFree);
@@ -157,6 +170,15 @@ __attribute__ ((const)) uint8_t toFtduinoSpecifier(CounterSpecifier specifier) {
     case CounterSpecifier::C3 : return Ftduino::C3;
     case CounterSpecifier::C4 : return Ftduino::C4;
     case CounterSpecifier::INVALID_SPECIFIER : assert(false); // This should never happen. Other functions should have checked that the specifier is valid!
+    default: assert(false);
+  }
+}
+
+__attribute__ ((const)) uint8_t toFtduinoSpecifier(MotorStopMode stopMode) {
+  switch (stopMode) {
+    case MotorStopMode::STOP : return Ftduino::OFF;
+    case MotorStopMode::BRAKE : return Ftduino::BRAKE;
+    case MotorStopMode::INVALID_MODE : assert(false); // This should never happen. Other functions should have checked that the mode is valid!
     default: assert(false);
   }
 }
@@ -318,6 +340,23 @@ void scratch_ftduino_motor(ScratchValue scratchMotorSpecifier, ScratchValue scra
     uint8_t ftduinoMotorSpecifier = toFtduinoSpecifier(motorSpecifier);
     uint8_t ftduinoMotorDir = toFtduinoSpecifier(dir);
     ftduino.motor_set(ftduinoMotorSpecifier, ftduinoMotorDir, toNumber(value));
+  }
+}
+
+
+void scratch_ftduino_motor_stop(ScratchValue scratchMotorSpecifier, ScratchValue scratchStopMode) {
+  MotorSpecifier motorSpecifier = toMotorSpecifier(scratchMotorSpecifier);
+  MotorStopMode stopMode = toMotorStopMode(scratchStopMode);
+  if (motorSpecifier != MotorSpecifier::INVALID_SPECIFIER && stopMode != MotorStopMode::INVALID_MODE) {
+    uint8_t ftduinoMotorSpecifier = toFtduinoSpecifier(motorSpecifier);
+    uint8_t ftduinoMotorStopMode = toFtduinoSpecifier(stopMode);
+    ftduino.motor_set(ftduinoMotorSpecifier, ftduinoMotorStopMode, 100);
+    /*
+       Value is fixed to 100 just as the webusb online scratch version does. See
+       https://github.com/harbaum/scratch-vm/blob/
+       9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/
+       index.js#L822
+    */
   }
 }
 

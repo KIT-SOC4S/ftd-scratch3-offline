@@ -26,7 +26,7 @@ public class ftduino_when_input extends ScratchBlock {
 	@Override
 	protected String afterGen() {
 		String ifBody = super.afterGen();
-		String ifConditionEnd = "while(1) { delay(100);\n}\n}\n";
+		String ifConditionEnd = "while(1) {\n delay(100);\n}\n}\n";
 		String loopCodeEnd = "}\n";
 		return ifBody + ifConditionEnd + loopCodeEnd;
 	}
