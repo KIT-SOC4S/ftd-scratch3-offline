@@ -10,6 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the COUNTER field. The counter specifier is used for the
+ * ftudino_input_counter/ftudino_clear_counter blocks.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L709-L712"
+ *      target="_top">ftduino COUNTER field</a>
+ */
 public class CounterSpecifierField extends ScratchField {
 	private List<String> COUNTER;
 	private CounterSpecifier counterSpecifier;
@@ -33,6 +41,11 @@ public class CounterSpecifierField extends ScratchField {
 		return "CounterSpecifierField [COUNTER=" + COUNTER + ", counterSpecifier=" + counterSpecifier + "]";
 	}
 
+	/**
+	 * Returns the parsed counter specifier.
+	 * 
+	 * @return the parsed counter specifier.
+	 */
 	public CounterSpecifier getCounterSpecifier() {
 		return counterSpecifier;
 	}
@@ -41,6 +54,11 @@ public class CounterSpecifierField extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual counter specifier as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L709-L712"
+	 * target="_top">here</a>.
+	 */
 	public static enum CounterSpecifier {
 
 		C1, C2, C3, C4;

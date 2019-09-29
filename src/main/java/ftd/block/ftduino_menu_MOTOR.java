@@ -7,6 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ftd.field.MotorSpecifierField;
 import ftd.field.MotorSpecifierField.MotorSpecifier;
 
+/**
+ * Not really a block but more like a wrapper for
+ * {@link ftd.field.MotorSpecifierField}. Converts the wrapped field to a String
+ * consumable by Scratch.
+ */
 public class ftduino_menu_MOTOR extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

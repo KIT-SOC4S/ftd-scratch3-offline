@@ -7,6 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ftd.ScratchConstants;
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch not operator. The actual C++ code is in operators.cpp.
+ * Computes !operand. The input is converted to a boolean if necessary. The
+ * returned value is a boolean.
+ */
 public class operator_not extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -14,16 +19,16 @@ public class operator_not extends ScratchBlock {
 
 	private static class Input {
 		@JsonProperty(value = "OPERAND")
-		public ScratchValue number1;// FIX
+		public ScratchValue operand;
 	}
 
 	public String gen() {
-		String condition = (inputs.number1 != null ? inputs.number1.generateCode() : ScratchConstants.SCRATCH_FALSE);
-		return "s_not((" + condition + "))";
+		String operand = (inputs.operand != null ? inputs.operand.generateCode() : ScratchConstants.SCRATCH_FALSE);
+		return "s_not((" + operand + "))";
 	}
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.number1.updateRelations(blocks);
+		this.inputs.operand.updateRelations(blocks);
 	}
 }

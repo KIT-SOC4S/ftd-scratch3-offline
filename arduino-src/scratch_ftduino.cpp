@@ -270,8 +270,6 @@ InputMode toInputMode(ScratchValue inputMode) {
     return InputMode::VOLTAGE;
   } else if (strcasecmp(string, "RESISTANCE") == 0) {
     return InputMode::RESISTANCE;
-  } else if (strcasecmp(string, "SWITCH") == 0) {
-    return InputMode::SWITCH;
   } else {
     return InputMode::INVALID_MODE;
   }

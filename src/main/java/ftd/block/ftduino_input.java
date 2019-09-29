@@ -6,6 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the ftduino input operator. The actual C++ code is in
+ * scratch_ftduino.cpp. This is a block that reads a digital input and returns a
+ * boolean. It expects a digital input specifier or a String that can be
+ * converted to one.
+ */
 public class ftduino_input extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -13,7 +19,7 @@ public class ftduino_input extends ScratchBlock {
 
 	private static class Input {
 		@JsonProperty(value = "INPUT")
-		public ScratchValue input;// FIX
+		public ScratchValue input;
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import ftd.block.ScratchBlock;
 import ftd.exception.ScratchNoTopLevelBlockException;
 import ftd.exception.ScratchTooManyTopLevelBlocksException;
 
+//TODO Documentation
 public class ScratchBlocks {
 	private Map<String, ScratchBlock> blocks = new HashMap<>();
 

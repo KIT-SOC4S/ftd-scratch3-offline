@@ -2,6 +2,7 @@ package ftd.field;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -9,9 +10,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the ONOFFSTATE ftduino field. The on off state is used for
+ * the ftudino_output/ftduino_led blocks.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L696-L699"
+ *      target="_top">ftduino ONOFFSTATE field</a>
+ */
 public class OnOffStateField extends ScratchField {
 	private List<String> ONOFFSTATE;
-	public OnOffState state;
+	private OnOffState state;
 
 	@JsonCreator()
 	private OnOffStateField(@JsonProperty(value = "ONOFFSTATE") List<String> onOffState) {
@@ -30,28 +39,43 @@ public class OnOffStateField extends ScratchField {
 		return "OnOffStateField [ONOFFSTATE=" + ONOFFSTATE + ", state=" + state + "]";
 	}
 
+	/**
+	 * Returns the parsed state.
+	 * 
+	 * @return the parsed state.
+	 */
+	public OnOffState getState() {
+		return state;
+	}
+
 	@Override
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual on off state as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L696-L699"
+	 * target="_top">here</a>.
+	 */
 	public static enum OnOffState {
 
 		ON, OFF;
 		private static Map<String, OnOffState> namesMap = new HashMap<String, OnOffState>(4);
 
 		static {
-			namesMap.put("On", ON);
+			namesMap.put("ON", ON);
 			namesMap.put("1", ON);
 			namesMap.put("0", OFF);
-			namesMap.put("Off", OFF);
+			namesMap.put("OFF", OFF);
 		}
 
 		@JsonCreator
 		public static OnOffState forValue(String value) {
-			if (!namesMap.containsKey(value)) {
+			String searchValue = value.toUpperCase(Locale.ROOT);
+			if (!namesMap.containsKey(searchValue)) {
 				throw new IllegalStateException("unknown value:" + value);
 			}
-			return namesMap.get(value);
+			return namesMap.get(searchValue);
 		}
 
 	}

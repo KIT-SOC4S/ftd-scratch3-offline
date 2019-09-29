@@ -21,6 +21,18 @@ import ftd.exception.ScratchUnimplementedException;
 import ftd.field.ScratchField;
 import ftd.field.ScratchFieldDeserializer;
 
+/**
+ * The main class. Converts a sb3 file to an Arduino C++ program. Can be used
+ * just like a unix command line program. Input is taken from System.in, output
+ * is written to System.out.
+ * <p>
+ * Limitations:
+ * <li>Only one hat block.</li>
+ * <li>Not every operator is supported.</li>
+ * <li>Numbers are floats and not doubles as in the scratch runtime.</li>
+ * </p>
+ *
+ */
 public class Sb3ToArduinoC {
 
 	public static final String VERSION = "1.0.0";
@@ -33,6 +45,7 @@ public class Sb3ToArduinoC {
 			command.parse(args);
 		} catch (ParameterException e) {
 			e.usage();
+			System.exit(1);
 		}
 		if (parsedArgs.showVersion) {
 			showVersion();
@@ -42,7 +55,8 @@ public class Sb3ToArduinoC {
 		}
 
 		try {
-			System.out.print(convertToArduinoC(System.in));
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("motor_stop_test.sb3");
+			System.out.print(convertToArduinoC(is));
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
 			System.exit(2);
@@ -84,7 +98,7 @@ public class Sb3ToArduinoC {
 		System.out.println("Version: " + VERSION);
 	}
 
-	static class Args {
+	private static class Args {
 		@Parameter(names = { "-h", "--help", "--usage" }, help = true, description = "Display the help")
 		private boolean showHelp;
 		@Parameter(names = { "-v", "--version" }, description = "Display the current version")
@@ -99,6 +113,17 @@ public class Sb3ToArduinoC {
 		return mapper;
 	}
 
+	/**
+	 * Expects an input stream that represents a sb3/zip file. The file must contain
+	 * a project.json file that contains the scratch program. This program is then
+	 * converted to an Arduino C++ program.
+	 * 
+	 * @param is the input stream that represents the sb3 file.
+	 * @return the sb3 file converted to an Arduino C++ program.
+	 * @throws ScratchParseException if the parsing failed.
+	 * @throws IOException           if the inputs stream could not be read or the
+	 *                               zip is malformed or some other i/o error.
+	 */
 	public static String convertToArduinoC(InputStream is) throws ScratchParseException, IOException {
 		Objects.requireNonNull(is);
 		ObjectMapper mapper = newDefaultMapper();

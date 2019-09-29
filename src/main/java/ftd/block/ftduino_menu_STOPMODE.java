@@ -7,6 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ftd.field.MotorStopModeField;
 import ftd.field.MotorStopModeField.MotorStopMode;
 
+/**
+ * Not really a block but more like a wrapper for
+ * {@link ftd.field.MotorStopModeField}. Converts the wrapped field to a String
+ * consumable by Scratch.
+ */
 public class ftduino_menu_STOPMODE extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

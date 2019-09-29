@@ -7,6 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ftd.field.CounterSpecifierField;
 import ftd.field.CounterSpecifierField.CounterSpecifier;
 
+/**
+ * Not really a block but more like a wrapper for
+ * {@link ftd.field.CounterSpecifierField}. Converts the wrapped field to a
+ * String consumable by Scratch.
+ */
 public class ftduino_menu_COUNTER extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

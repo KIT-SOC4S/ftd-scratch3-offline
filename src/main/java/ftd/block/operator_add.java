@@ -7,6 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ftd.ScratchConstants;
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch addition operator. The actual C++ code is in
+ * operators.cpp. Computes number1 + number2. Both inputs are converted to
+ * floats if necessary. The returned value is a float.
+ */
 public class operator_add extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

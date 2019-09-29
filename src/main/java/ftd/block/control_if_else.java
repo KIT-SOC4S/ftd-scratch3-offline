@@ -7,6 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ftd.ScratchConstants;
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch control if else operator. It executes the specified
+ * sub-blocks of subStack if the specified condition is true. Otherwise it
+ * executes the specified sub-blocks of subStack2.
+ */
 public class control_if_else extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

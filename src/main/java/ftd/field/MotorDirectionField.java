@@ -10,6 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the DIR ftduino field. The motor direction is used for the
+ * ftudino_motor block.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L731-L733"
+ *      target="_top">ftduino DIR field</a>
+ */
 public class MotorDirectionField extends ScratchField {
 	private List<String> DIR;
 	private MotorDir motorDir;
@@ -33,6 +41,11 @@ public class MotorDirectionField extends ScratchField {
 		return "MotorDirectionField [DIR=" + DIR + ", motorDir=" + motorDir + "]";
 	}
 
+	/**
+	 * Returns the parsed motor direction.
+	 * 
+	 * @return the parsed motor direction.
+	 */
 	public MotorDir getMotorDirection() {
 		return motorDir;
 	}
@@ -41,6 +54,11 @@ public class MotorDirectionField extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual motor direction as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L731-L733"
+	 * target="_top">here</a>.
+	 */
 	public static enum MotorDir {
 
 		LEFT, RIGHT;

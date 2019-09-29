@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ftd.ScratchConstants;
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch control if operator. It executes the specified
+ * sub-blocks if the specified condition is true.
+ */
 public class control_if extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -21,7 +25,8 @@ public class control_if extends ScratchBlock {
 	}
 
 	public String gen() {
-		String condition = (inputs.condition != null ? inputs.condition.generateCode() : ScratchConstants.SCRATCH_FALSE);
+		String condition = (inputs.condition != null ? inputs.condition.generateCode()
+				: ScratchConstants.SCRATCH_FALSE);
 		String code = "if(toBoolean(" + condition + ")) {\n";
 		if (this.inputs.subStack != null) {
 			code += inputs.subStack.generateCode();

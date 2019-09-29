@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch control wait operator. It waits the specified duration
+ * (in seconds). The duration value is converted to a float if necessary.
+ */
 public class control_wait extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

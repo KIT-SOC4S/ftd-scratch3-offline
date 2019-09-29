@@ -10,6 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the INPUT field. The analog input specifier is used for
+ * the ftudino_input_analog block.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L703-L708"
+ *      target="_top">ftduino INPUT field</a>
+ */
 public class AnalogInputSpecifierField extends ScratchField {
 	private List<String> INPUT;
 	private AnalogInputSpecifier inputSpecifier;
@@ -33,6 +41,11 @@ public class AnalogInputSpecifierField extends ScratchField {
 		return "AnalogInputSpecifierField [INPUT=" + INPUT + ", inputSpecifier=" + inputSpecifier + "]";
 	}
 
+	/**
+	 * Returns the parsed analog output specifier.
+	 * 
+	 * @return the parsed analog output specifier.
+	 */
 	public AnalogInputSpecifier getInputSpecifier() {
 		return inputSpecifier;
 	}
@@ -41,6 +54,11 @@ public class AnalogInputSpecifierField extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual analog output specifier as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L703-L708"
+	 * target="_top">here</a>.
+	 */
 	public static enum AnalogInputSpecifier {
 
 		I1, I2, I3, I4, I5, I6, I7, I8;

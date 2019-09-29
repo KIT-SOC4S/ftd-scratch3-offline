@@ -11,6 +11,7 @@ import ftd.block.ScratchBlock;
 import ftd.util.NumberUtil;
 import ftd.util.RelationShip;
 
+// TODO Documentation
 public class ScratchValue implements RelationShip {
 
 	public final ShadowType shadowType;

@@ -10,6 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the MOTOR field. The motor specifier is used for the
+ * ftudino_motor/ftudino_motor_stop blocks.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L727-L730"
+ *      target="_top">ftduino MOTOR field</a>
+ */
 public class MotorSpecifierField extends ScratchField {
 	private List<String> MOTOR;
 	private MotorSpecifier motorSpecifier;
@@ -33,6 +41,11 @@ public class MotorSpecifierField extends ScratchField {
 		return "MotorSpecifierField [MOTOR=" + MOTOR + ", motorSpecifier=" + motorSpecifier + "]";
 	}
 
+	/**
+	 * Returns the parsed motor specifier.
+	 * 
+	 * @return the parsed motor specifier.
+	 */
 	public MotorSpecifier getMotorSpecifier() {
 		return motorSpecifier;
 	}
@@ -41,6 +54,11 @@ public class MotorSpecifierField extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual motor specifier as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L727-L730"
+	 * target="_top">here</a>.
+	 */
 	public static enum MotorSpecifier {
 
 		M1, M2, M3, M4;

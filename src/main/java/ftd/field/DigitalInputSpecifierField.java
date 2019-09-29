@@ -10,6 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the INPUT_D field. The digital input specifier is used for
+ * the ftudino_input/ftudino_when_input blocks.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L713-L720"
+ *      target="_top">ftduino INPUT_D field</a>
+ */
 public class DigitalInputSpecifierField extends ScratchField {
 	private List<String> INPUT_D;
 	private DigitalInputSpecifier inputSpecifier;
@@ -33,6 +41,11 @@ public class DigitalInputSpecifierField extends ScratchField {
 		return "DigitalInputSpecifierField [INPUT_D=" + INPUT_D + ", inputSpecifier=" + inputSpecifier + "]";
 	}
 
+	/**
+	 * Returns the parsed digital output specifier.
+	 * 
+	 * @return the parsed digital output specifier.
+	 */
 	public DigitalInputSpecifier getInputSpecifier() {
 		return inputSpecifier;
 	}
@@ -41,6 +54,11 @@ public class DigitalInputSpecifierField extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual digital output specifier as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L713-L720"
+	 * target="_top">here</a>.
+	 */
 	public static enum DigitalInputSpecifier {
 
 		I1, I2, I3, I4, I5, I6, I7, I8, C1, C2, C3, C4;

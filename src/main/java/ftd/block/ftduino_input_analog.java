@@ -6,6 +6,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the ftduino input analog operator. The actual C++ code is in
+ * scratch_ftduino.cpp. This is a block that reads an analog input and returns
+ * the read value as a float. It expects an analog input specifier or a String
+ * that can be converted to one. It also expects an input mode specifier or a
+ * String that can be converted to one. The supported input modes are
+ * {@link ftd.field.InputModeField.InputMode#RESISTANCE} and
+ * {@link ftd.field.InputModeField.InputMode#VOLTAGE}
+ */
 public class ftduino_input_analog extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

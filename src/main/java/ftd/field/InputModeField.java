@@ -2,6 +2,7 @@ package ftd.field;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -9,6 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the MODE ftduino field. The input mode is used for the
+ * ftudino_input_analog block.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L700-L702"
+ *      target="_top">ftduino MODE field</a>
+ */
 public class InputModeField extends ScratchField {
 	private List<String> MODE;
 	private InputMode inputMode;
@@ -32,6 +41,11 @@ public class InputModeField extends ScratchField {
 		return "InputModeField [MODE=" + MODE + ", inputMode=" + inputMode + "]";
 	}
 
+	/**
+	 * Returns the parsed input mode.
+	 * 
+	 * @return the parsed input mode.
+	 */
 	public InputMode getInputMode() {
 		return inputMode;
 	}
@@ -40,24 +54,30 @@ public class InputModeField extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual input mode as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L700-L702"
+	 * target="_top">here</a>.
+	 */
 	public static enum InputMode {
 
-		VOLTAGE, RESISTANCE, SWITCH, COUNTER;
+		VOLTAGE, RESISTANCE/* , SWITCH, COUNTER */;
 		private static Map<String, InputMode> namesMap = new HashMap<String, InputMode>(4);
 
-		static {
-			namesMap.put("voltage", VOLTAGE);
-			namesMap.put("resistance", RESISTANCE);
-			namesMap.put("switch", SWITCH);
-			namesMap.put("counter", COUNTER);
+		static { // TODO
+			namesMap.put("VOLTAGE", VOLTAGE);
+			namesMap.put("RESISTANCE", RESISTANCE);/*
+													 * namesMap.put("switch", SWITCH); namesMap.put("counter", COUNTER);
+													 */
 		}
 
 		@JsonCreator
 		public static InputMode forValue(String value) {
-			if (!namesMap.containsKey(value)) {
+			String searchValue = value.toUpperCase(Locale.ROOT);
+			if (!namesMap.containsKey(searchValue)) {
 				throw new IllegalStateException("unknown value:" + value);
 			}
-			return namesMap.get(value);
+			return namesMap.get(searchValue);
 		}
 
 	}

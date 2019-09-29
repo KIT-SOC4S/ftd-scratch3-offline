@@ -7,6 +7,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ftd.ScratchConstants;
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch random operator. The actual C++ code is in
+ * operators.cpp. Both inputs are converted to numbers if necessary. If both
+ * inputs are ints a random int is returned. Otherwise a random float is
+ * returned. The random value is from the range [number1, number2]. The returned
+ * value is a float.
+ */
 public class operator_random extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

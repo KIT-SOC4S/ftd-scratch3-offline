@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the ftduino clear counter operator. The actual C++ code is in
+ * scratch_ftduino.cpp. This is a block that clears a counter input to 0. It
+ * expects a counter input specifier or a String that can be converted to one.
+ */
 public class ftduino_clear_counter extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch control forever operator. It repeats the specified
+ * sub-blocks forever.
+ */
 public class control_forever extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

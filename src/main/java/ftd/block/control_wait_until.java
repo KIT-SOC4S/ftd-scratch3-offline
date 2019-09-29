@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch control wait until operator. It waits until the
+ * specified condition is true. The condition value is converted to a boolean if
+ * necessary.
+ */
 public class control_wait_until extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the ftduino when input operator. This is a hat block that is
+ * triggered when a specified input is high. Expects a digital input specifier
+ * or a String that can be converted to one.
+ */
 public class ftduino_when_input extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

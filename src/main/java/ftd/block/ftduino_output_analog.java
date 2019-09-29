@@ -6,6 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+// TODO
+/**
+ * Implements the ftduino output analog operator. The actual C++ code is in
+ * scratch_ftduino.cpp. This is a block that outputs analog values in the range [0, UNKOWN].
+ * It expects an output specifier or a String that can be converted to one. It
+ * also expects a value to set. This value will be converted to a number before
+ * it's set.
+ */
 public class ftduino_output_analog extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

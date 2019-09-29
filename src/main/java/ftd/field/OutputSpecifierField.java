@@ -10,6 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the OUTPUT ftduino field. The output specifier is used for
+ * the ftudino_output/ftduino_output_analog blocks.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L721-L726"
+ *      target="_top">ftduino OUTPUT field</a>
+ */
 public class OutputSpecifierField extends ScratchField {
 	private List<String> OUTPUT;
 	private OutputSpecifier outputSpecifier;
@@ -33,6 +41,11 @@ public class OutputSpecifierField extends ScratchField {
 		return "OutputSpecifierField [OUTPUT=" + OUTPUT + ", outputSpecifier=" + outputSpecifier + "]";
 	}
 
+	/**
+	 * Returns the parsed output specifier.
+	 * 
+	 * @return the parsed output specifier.
+	 */
 	public OutputSpecifier getOutputSpecifier() {
 		return outputSpecifier;
 	}
@@ -41,6 +54,11 @@ public class OutputSpecifierField extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual output specifiers as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L721-L726"
+	 * target="_top">here</a>.
+	 */
 	public static enum OutputSpecifier {
 
 		O1, O2, O3, O4, O5, O6, O7, O8;

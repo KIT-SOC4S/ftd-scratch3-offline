@@ -10,6 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.block.ScratchBlock;
 
+/**
+ * Representation for the STOPMODE ftduino field. The stop mode is used for the
+ * ftudino_motor_stop block.
+ * 
+ * @see <a href=
+ *      "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L734-L736"
+ *      target="_top">ftduino STOPMODE field</a>
+ */
 public class MotorStopModeField extends ScratchField {
 	private List<String> STOPMODE;
 	private MotorStopMode motorStopMode;
@@ -33,6 +41,11 @@ public class MotorStopModeField extends ScratchField {
 		return "MotorStopModeField [STOPMODE=" + STOPMODE + ", motorStopMode=" + motorStopMode + "]";
 	}
 
+	/**
+	 * Returns the parsed motor stop mode.
+	 * 
+	 * @return the parsed motor stop mode.
+	 */
 	public MotorStopMode getMotorStopMode() {
 		return motorStopMode;
 	}
@@ -41,9 +54,22 @@ public class MotorStopModeField extends ScratchField {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 	}
 
+	/**
+	 * The actual stop mode as specified <a href=
+	 * "https://github.com/harbaum/scratch-vm/blob/9b63c1117a27b70dc8ef10c8a2ce80d412030104/src/extensions/scratch3_ftduino/index.js#L734-L736"
+	 * target="_top">here</a>.
+	 */
 	public static enum MotorStopMode {
-
-		STOP("OFF"), BRAKE("BRAKE");
+		/**
+		 * Stops the motor, I guess. I did not find a specific explanation of this in
+		 * the ftduino documentation.
+		 */
+		STOP("OFF"),
+		/**
+		 * Actively (?) brakes the motor, I guess. I did not find a specific explanation
+		 * of this in the ftduino documentation.
+		 */
+		BRAKE("BRAKE");
 
 		private String associatedCValue;
 

@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the ftduino led operator. Sets the built-in led to HIGH when the
+ * input is true, otherwise to LOW. The input is converted to a boolean if
+ * necessary.
+ */
 public class ftduino_led extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -13,7 +18,7 @@ public class ftduino_led extends ScratchBlock {
 
 	private static class Input {
 		@JsonProperty(value = "VALUE")
-		public ScratchValue value;// FIX
+		public ScratchValue value;
 	}
 
 	@Override

@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ftd.ScratchValue;
 
+/**
+ * Implements the scratch control repeat until operator. It repeats the
+ * specified sub-blocks until the specified condition is true.
+ */
 public class control_repeat_until extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
