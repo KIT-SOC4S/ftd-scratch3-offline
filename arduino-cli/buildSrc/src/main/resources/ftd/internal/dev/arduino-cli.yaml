@@ -1,0 +1,4 @@
+arduino_data: .
+board_manager:
+  additional_urls:
+    - https://harbaum.github.io/ftduino/package_ftduino_index.json
