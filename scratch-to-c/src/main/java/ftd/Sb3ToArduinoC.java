@@ -55,8 +55,7 @@ public class Sb3ToArduinoC {
 		}
 
 		try {
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("motor_stop_test.sb3");
-			System.out.print(convertToArduinoC(is));
+			System.out.println(convertToArduinoC(System.in));
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
 			System.exit(2);

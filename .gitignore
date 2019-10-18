@@ -25,11 +25,11 @@ hs_err_pid*
 # Gradle
 # ------
 .gradle
-/build
-/buildSrc/build
-/buildSrc/subprojects/*/build
-/subprojects/*/build
-/subprojects/docs/src/samples/**/build
+build/
+#/buildSrc/build
+#/buildSrc/subprojects/*/build
+#/subprojects/*/build
+#/subprojects/docs/src/samples/**/build
 /subprojects/internal-android-performance-testing/build-android-libs
 
 # IDEA
@@ -62,8 +62,8 @@ hs_err_pid*
 *.classpath
 *.project
 *.settings
-/bin
-/subprojects/*/bin
+bin/
+#/subprojects/*/bin
 atlassian-ide-plugin.xml
 .metadata/
 
