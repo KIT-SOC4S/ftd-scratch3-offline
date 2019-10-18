@@ -18,7 +18,7 @@ repositories {
     mavenCentral()
 }
 
-import ftd.internal.dev.ArduinoCliCreator
+import com.github.intrigus.ftd.internal.dev.ArduinoCliCreator
 
 task gatherNecessaryBinaries(type: ArduinoCliCreator)
 compileJava.dependsOn gatherNecessaryBinaries

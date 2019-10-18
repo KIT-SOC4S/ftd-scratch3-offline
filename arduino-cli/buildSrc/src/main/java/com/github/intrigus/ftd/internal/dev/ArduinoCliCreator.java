@@ -2,11 +2,13 @@ package com.github.intrigus.ftd.internal.dev;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.OutputDirectory;
@@ -15,10 +17,10 @@ import org.zeroturnaround.exec.InvalidExitValueException;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 
+import com.github.intrigus.ftd.ArduinoCLI;
+import com.github.intrigus.ftd.exception.BinaryNotFoundException;
 import com.github.intrigus.ftd.internal.util.FileUtil;
 
-import ftd.ArduinoCLI;
-import ftd.exception.BinaryNotFoundException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -174,8 +176,11 @@ public class ArduinoCliCreator extends DefaultTask {
 
 	private void createArduinoCliConfigFile(UrlsForOS urls) throws IOException {
 		Path targetFile = projectFolder.resolve("arduino_cli").resolve(urls.osName).resolve("arduino-cli.yaml");
-		Files.copy(ArduinoCliCreator.class.getResourceAsStream("/ftd/internal/dev/arduino-cli.yaml"), targetFile,
-				StandardCopyOption.REPLACE_EXISTING);
+		String arduinoCliConfigFilePath = "/com/github/intrigus/ftd/internal/dev/arduino-cli.yaml";
+		InputStream arduinoCliConfigFileStream = ArduinoCliCreator.class.getResourceAsStream(arduinoCliConfigFilePath);
+		Objects.requireNonNull(arduinoCliConfigFileStream,
+				"Failed to get an InputStream for the ressource " + arduinoCliConfigFilePath);
+		Files.copy(arduinoCliConfigFileStream, targetFile, StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	private void updateArduinoCliCoreIndex() throws IOException, InterruptedException {
