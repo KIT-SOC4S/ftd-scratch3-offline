@@ -18,6 +18,9 @@ repositories {
     mavenCentral()
 }
 
+group = "com.github.intrigus.ftd"
+version = "1.0.0"
+
 import com.github.intrigus.ftd.internal.dev.ArduinoCliCreator
 
 task gatherNecessaryBinaries(type: ArduinoCliCreator)

@@ -21,10 +21,10 @@ repositories {
 sourceSets {
     main {
         java {
-            srcDir '../src/main/java'
+            srcDir '../arduino-cli/src/main/java'
         }
         resources {
-            srcDir '../src/main/resources'
+            srcDir '../arduino-cli/src/main/resources'
         }
     }
 }

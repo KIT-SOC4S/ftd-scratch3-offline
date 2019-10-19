@@ -18,12 +18,16 @@ repositories {
     mavenCentral()
 }
 
+group = "com.github.intrigus.ftd"
+version = "1.0.0"
+
 dependencies {
     implementation "com.beust:jcommander:1.71"
     implementation "net.freeutils:jlhttp:2.4"
     implementation "org.zeroturnaround:zt-exec:1.11"
-    implementation ":arduino-cli"
-    implementation ":scratch-to-c"
+    implementation project(":arduino-cli")
+    implementation project(":scratch-to-c")
+    //implementation "com.github.intrigus.ftd:scratch-to-c:1.0.0"
 
     // Use JUnit test framework
     testImplementation "junit:junit:4.12"

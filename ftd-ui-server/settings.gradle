@@ -8,5 +8,3 @@
  */
 
 rootProject.name = "ftd-ui-server"
-
-includeBuild "../scratch-to-c"
