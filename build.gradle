@@ -1,3 +1,70 @@
+plugins {
+    // Apply the java-library plugin to add support for Java Library
+    id 'java-library'
+}
+
 wrapper {
     gradleVersion = "5.0"
+}
+
+allprojects {
+	apply plugin: "java-library"
+
+    group = 'com.github.intrigus.ftd'
+    version = '1.0.0'
+
+    buildscript {
+        repositories {
+            google()
+            jcenter()
+            mavenCentral()
+            maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        }
+    }
+
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
+
+project(":arduino-cli") {
+    
+    dependencies {
+        implementation "com.beust:jcommander:1.71"
+        implementation "org.zeroturnaround:zt-exec:1.11"
+        implementation "org.slf4j:slf4j-simple:1.7.28"
+        
+        // Use JUnit test framework
+        testImplementation "junit:junit:4.12"
+    }
+}
+
+project(":scratch-to-c") {
+    
+    dependencies {
+        implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
+        implementation "com.beust:jcommander:1.71"
+        implementation project(":arduino-cli")
+
+        // Use JUnit test framework
+        testImplementation "junit:junit:4.12"
+    }
+}
+
+project(":ftd-ui-server") {
+    
+    dependencies {
+        implementation "com.beust:jcommander:1.71"
+        implementation "net.freeutils:jlhttp:2.4"
+        implementation "org.zeroturnaround:zt-exec:1.11"
+        implementation project(":arduino-cli")
+        implementation project(":scratch-to-c")
+        //implementation "com.github.intrigus.ftd:scratch-to-c:1.0.0"
+    
+        // Use JUnit test framework
+        testImplementation "junit:junit:4.12"
+    }
 }

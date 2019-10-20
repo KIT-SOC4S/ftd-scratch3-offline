@@ -1,5 +1,3 @@
 rootProject.name = "ftd"
 
-include "arduino-cli"
-include "scratch-to-c"
-include "ftd-ui-server"
+include "arduino-cli", "scratch-to-c", "ftd-ui-server"
