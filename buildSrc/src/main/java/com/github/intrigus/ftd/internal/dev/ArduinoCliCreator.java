@@ -61,7 +61,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private static final String ARDUINO_VERSION = "1.8.1";
-	private static final String ARDUINO_CLI_VERSION = "0.5.0";
+	private static final String ARDUINO_CLI_VERSION = "0.6.0";
 	private static final String FTDUINO_VERSION = "0.0.14";
 	private static final String SERIAL_DISCOVERY_VERSION = "1.0.0";
 
