@@ -17,7 +17,7 @@ public class ScratchBlockResolver extends TypeIdResolverBase {
 
 	@Override
 	public JavaType typeFromId(DatabindContext context, String id) throws IOException {
-		return TypeFactory.defaultInstance().constructFromCanonical("ftd.block." + id);
+		return TypeFactory.defaultInstance().constructFromCanonical("com.github.intrigus.ftd.block." + id);
 	}
 
 	@Override
