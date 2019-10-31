@@ -8,7 +8,7 @@ wrapper {
 }
 
 allprojects {
-	apply plugin: "java-library"
+    apply plugin: "java"
 
     group = 'com.github.intrigus.ftd'
     version = '1.0.0'
@@ -31,6 +31,11 @@ allprojects {
 }
 
 project(":arduino-cli") {
+    apply plugin: "application"
+
+    application {
+        mainClassName = "com.github.intrigus.ftd.ArduinoCLI"
+    }
     
     dependencies {
         implementation "com.beust:jcommander:1.71"
@@ -43,6 +48,11 @@ project(":arduino-cli") {
 }
 
 project(":scratch-to-c") {
+    apply plugin: "application"
+
+    application {
+        mainClassName = "com.github.intrigus.ftd.Sb3ToArduinoC"
+    }
     
     dependencies {
         implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
