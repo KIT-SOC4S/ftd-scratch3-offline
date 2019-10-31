@@ -6,6 +6,8 @@ Date: 2019-10-20
 
 Accepted
 
+Amended by [19. Allow direct input of project.json without a .sb3 file](0019-allow-direct-input-of-project-json-without-a-sb3-file.md)
+
 ## Context
 
 We need a way to get the used scratch blocks from a scratch program.  

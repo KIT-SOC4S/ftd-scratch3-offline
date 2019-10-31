@@ -112,41 +112,33 @@ public class Sb3ToArduinoC {
 	}
 
 	/**
-	 * Expects an input stream that represents a sb3/zip file. The file must contain
-	 * a project.json file that contains the scratch program. This program is then
+	 * Expects an input stream that represents a project.json file. This
+	 * project.json file contains the scratch program. This program is then
 	 * converted to an Arduino C++ program.
 	 * 
-	 * @param is the input stream that represents the sb3 file.
-	 * @return the sb3 file converted to an Arduino C++ program.
+	 * @param is the input stream that represents the project.json file.
+	 * @return the project.json file converted to an Arduino C++ program.
 	 * @throws ScratchParseException if the parsing failed.
-	 * @throws IOException           if the inputs stream could not be read or the
-	 *                               zip is malformed or some other i/o error.
+	 * @throws IOException           if the inputs stream could not be read or some
+	 *                               other i/o error.
 	 */
-	public static String convertToArduinoC(InputStream is) throws ScratchParseException, IOException {
-		Objects.requireNonNull(is);
+	public static String convertJsonToArduinoC(InputStream is) throws IOException, ScratchParseException {
+		byte[] projectJsonBytes = is.readAllBytes();
+
+		if (projectJsonBytes == null) {
+			throw new RuntimeException("The given json input is empty.");
+		}
+		return convertJsonToArduinoC(projectJsonBytes);
+	}
+
+	/**
+	 * @see Sb3ToArduinoC#convertJsonToArduinoC(InputStream)
+	 */
+	private static String convertJsonToArduinoC(byte[] projectJsonBytes) throws IOException, ScratchParseException {
 		ObjectMapper mapper = newDefaultMapper();
-
-		ZipInputStream zipStream = new ZipInputStream(is);
-		byte[] bytes = null;
-
-		ZipEntry entry;
-
-		while ((entry = zipStream.getNextEntry()) != null) {
-			if ("project.json".equals(entry.getName())) {
-				bytes = zipStream.readAllBytes();
-				break;
-			} else {
-				continue;
-			}
-		}
-
-		if (bytes == null) {
-			throw new RuntimeException("project.json is missing from the .sb3 file.");
-		}
-
 		ScratchSave scratchSave;
 		try {
-			scratchSave = mapper.readValue(bytes, ScratchSave.class);
+			scratchSave = mapper.readValue(projectJsonBytes, ScratchSave.class);
 		} catch (JsonParseException | JsonMappingException e) {
 			throw new ScratchParseException(e);
 		}
@@ -159,5 +151,40 @@ public class Sb3ToArduinoC {
 		scratchBigger.init();
 		String code = scratchBigger.generateCCode();
 		return code;
+	}
+
+	/**
+	 * Expects an input stream that represents a sb3/zip file. The file must contain
+	 * a project.json file that contains the scratch program. This program is then
+	 * converted to an Arduino C++ program.
+	 * 
+	 * @param is the input stream that represents the sb3 file.
+	 * @return the sb3 file converted to an Arduino C++ program.
+	 * @throws ScratchParseException if the parsing failed.
+	 * @throws IOException           if the inputs stream could not be read or the
+	 *                               zip is malformed or some other i/o error.
+	 */
+	public static String convertToArduinoC(InputStream is) throws ScratchParseException, IOException {
+		Objects.requireNonNull(is);
+
+		ZipInputStream zipStream = new ZipInputStream(is);
+		byte[] projectJsonBytes = null;
+
+		ZipEntry entry;
+
+		while ((entry = zipStream.getNextEntry()) != null) {
+			if ("project.json".equals(entry.getName())) {
+				projectJsonBytes = zipStream.readAllBytes();
+				break;
+			} else {
+				continue;
+			}
+		}
+
+		if (projectJsonBytes == null) {
+			throw new RuntimeException("project.json is missing from the .sb3 file.");
+		}
+
+		return convertJsonToArduinoC(projectJsonBytes);
 	}
 }
