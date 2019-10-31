@@ -1,9 +1,9 @@
 package com.github.intrigus.ftd;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,17 +22,84 @@ public class ArduinoCLI {
 
 	public static void main(String[] args) {
 		try {
-			System.out.println(compileArduinoC(new FileInputStream(new File("arduino-src/arduino-src.ino"))));
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
-			System.exit(2);
-		} catch (RuntimeException e) {
+			System.out.println(compileArduinoC(System.in));
+		} /*
+			 * catch (IOException e) { e.printStackTrace(System.err); System.exit(2); }
+			 */ catch (RuntimeException e) {
 			e.printStackTrace(System.err);
 			System.exit(1);
 		} catch (CompilationFailedException e) {
 			e.printStackTrace(System.err);
 			System.exit(3);
 		}
+	}
+
+	/**
+	 * Converts a String to an InputStream. The String is assumed to be encoded
+	 * using UTF8.
+	 * 
+	 * @param string the String to convert to an InputStream
+	 * @return the String converted to an InputStream
+	 */
+	private static InputStream toInputStream(String string) {
+		return new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
+	}
+
+	/**
+	 * @see ArduinoCLI#uploadArduinoC(InputStream, String)
+	 */
+	public static String uploadArduinoC(String input, String portSpecifier) throws CompilationFailedException {
+		return uploadArduinoC(toInputStream(input), portSpecifier);
+	}
+
+	/**
+	 * Expects an input stream that represents the generated C++ arduino file. The
+	 * file is compiled with the Ftduino library and the necessary files for the
+	 * scratch runtime. It is then uploaded to the Ftduino.
+	 * 
+	 * @param is            the input stream that represents the generated C++
+	 *                      arduino file.
+	 * @param portSpecifier the port that will be used for uploading i.e. the port
+	 *                      the Ftduino is connected to.
+	 * @return The log of the execution.
+	 * @throws CompilationFailedException when the compilation or upload failed.
+	 */
+	public static String uploadArduinoC(InputStream is, String portSpecifier) throws CompilationFailedException {
+		try {
+			Objects.requireNonNull(is);
+			Objects.requireNonNull(portSpecifier);
+			long currentTime = System.currentTimeMillis();
+			Path tempDir = Files.createTempDirectory("scratch" + currentTime);
+			Path sketchFile = tempDir.resolve("sketch.ino");
+			Files.createFile(sketchFile);
+			Files.copy(is, sketchFile, StandardCopyOption.REPLACE_EXISTING);
+			ProcessResult arduinoResult = new ProcessExecutor()
+					.command(getArduinoCliBinary().toAbsolutePath().toString(), "upload", "--config-file",
+							getArduinoCliBinary().resolveSibling("arduino-cli.yaml").toAbsolutePath().toString(),
+							"--fqbn", "ftduino:avr:ftduino", sketchFile.toAbsolutePath().toString(), "--port",
+							portSpecifier, "--verify")
+					.directory(getArduinoCliBinary().getParent().toAbsolutePath().toFile()).destroyOnExit()
+					.exitValueNormal().readOutput(true).executeNoTimeout();
+			return arduinoResult.outputUTF8();
+		} catch (BinaryNotFoundException e) {
+			throw new CompilationFailedException("Failed to locate the binary used for compilation and upload.", e);
+		} catch (IOException e) {
+			throw new CompilationFailedException("Failed to create the necessary files for compilation and upload.", e);
+		} catch (InvalidExitValueException e) {
+			throw new CompilationFailedException(
+					"Compilation and upload did not exit with exit value 0. Exit value: " + e.getExitValue(), e,
+					e.getResult().outputUTF8());
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new CompilationFailedException("Compilation and upload got interrupted.", e);
+		}
+	}
+
+	/**
+	 * @see ArduinoCLI#compileArduinoC(InputStream)
+	 */
+	public static String compileArduinoC(String string) throws CompilationFailedException {
+		return compileArduinoC(toInputStream(string));
 	}
 
 	/**
