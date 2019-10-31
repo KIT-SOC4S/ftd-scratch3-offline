@@ -29,7 +29,8 @@ public class ScratchBlocks {
 	}
 
 	private String generateSetupCode() {
-		return "#include <Ftduino.h>\n" + "\n" + "void setup() {\n" + "  ftduino.init();\n"
+		return "#define FTDUINO_NO_SHORTHANDS\n" + "#include <Ftduino.h>\n" + "#undef FTDUINO_NO_SHORTHANDS\n"
+				+ "#include <Scratch_Ftduino_All.h>\n" + "void setup() {\n" + "  ftduino.init();\n"
 				+ "  pinMode(LED_BUILTIN, OUTPUT);\n" + "}";
 	}
 
