@@ -71,12 +71,12 @@ project(":scratch-to-c") {
 project(":ftd-ui-server") {
     
     dependencies {
+        implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
         implementation "com.beust:jcommander:1.71"
         implementation "net.freeutils:jlhttp:2.4"
         implementation "org.zeroturnaround:zt-exec:1.11"
         implementation project(":arduino-cli")
         implementation project(":scratch-to-c")
-        //implementation "com.github.intrigus.ftd:scratch-to-c:1.0.0"
     
         // Use JUnit test framework
         testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
