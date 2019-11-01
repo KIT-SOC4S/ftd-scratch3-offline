@@ -46,7 +46,6 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static void moveDirectoryContent(Path source, Path target) throws IOException {
-		System.out.println("source: " + source + " target: " + target);
 		Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
