@@ -7,6 +7,10 @@ wrapper {
     gradleVersion = "5.0"
 }
 
+ext {
+	junitVersion = "5.5.2"
+}
+
 allprojects {
     apply plugin: "java"
 
@@ -21,6 +25,16 @@ allprojects {
             maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         }
     }
+    
+    test {
+        useJUnitPlatform()
+    }
+    
+    dependencies {
+        // Use JUnit test framework
+        testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    }
 
     repositories {
         google()
@@ -28,10 +42,6 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
-}
-
-ext {
-	junitVersion = "5.5.2"
 }
 
 project(":arduino-cli") {
@@ -45,9 +55,6 @@ project(":arduino-cli") {
         implementation "com.beust:jcommander:1.71"
         implementation "org.zeroturnaround:zt-exec:1.11"
         implementation "org.slf4j:slf4j-simple:1.7.28"
-        
-        // Use JUnit test framework
-        testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     }
 }
 
@@ -62,9 +69,6 @@ project(":scratch-to-c") {
         implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
         implementation "com.beust:jcommander:1.71"
         implementation project(":arduino-cli")
-
-        // Use JUnit test framework
-        testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     }
 }
 
@@ -77,8 +81,5 @@ project(":ftd-ui-server") {
         implementation "org.zeroturnaround:zt-exec:1.11"
         implementation project(":arduino-cli")
         implementation project(":scratch-to-c")
-    
-        // Use JUnit test framework
-        testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     }
 }

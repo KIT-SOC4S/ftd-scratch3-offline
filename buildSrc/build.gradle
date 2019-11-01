@@ -30,7 +30,4 @@ dependencies {
     implementation "org.apache.commons:commons-compress:1.19"
     implementation "org.slf4j:slf4j-simple:1.7.28"
     implementation "org.zeroturnaround:zt-exec:1.11"
-
-    // Use JUnit test framework
-    testImplementation "org.junit.jupiter:junit-jupiter:5.5.2"
 }
