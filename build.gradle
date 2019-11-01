@@ -30,6 +30,10 @@ allprojects {
     }
 }
 
+ext {
+	junitVersion = "5.5.2"
+}
+
 project(":arduino-cli") {
     apply plugin: "application"
 
@@ -43,7 +47,7 @@ project(":arduino-cli") {
         implementation "org.slf4j:slf4j-simple:1.7.28"
         
         // Use JUnit test framework
-        testImplementation "junit:junit:4.12"
+        testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     }
 }
 
@@ -60,7 +64,7 @@ project(":scratch-to-c") {
         implementation project(":arduino-cli")
 
         // Use JUnit test framework
-        testImplementation "junit:junit:4.12"
+        testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     }
 }
 
@@ -75,6 +79,6 @@ project(":ftd-ui-server") {
         //implementation "com.github.intrigus.ftd:scratch-to-c:1.0.0"
     
         // Use JUnit test framework
-        testImplementation "junit:junit:4.12"
+        testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     }
 }
