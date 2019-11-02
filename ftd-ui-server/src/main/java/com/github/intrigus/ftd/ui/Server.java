@@ -24,6 +24,15 @@ public class Server {
 		int port = 8888;
 		HTTPServer server = new HTTPServer(port);
 		VirtualHost host = server.getVirtualHost(null); // default virtual host
+
+		addConvertHandler(host);
+		addCompileHandler(host);
+		addUploadHandler(host);
+
+		server.start();
+	}
+
+	private static void addConvertHandler(VirtualHost host) {
 		host.addContext("/convert", new ContextHandler() {
 			public int serve(Request req, Response resp) throws IOException {
 				System.out.println("/convert");
@@ -45,7 +54,9 @@ public class Server {
 				return 0;
 			}
 		}, "POST");
+	}
 
+	private static void addCompileHandler(VirtualHost host) {
 		host.addContext("/compile", new ContextHandler() {
 			public int serve(Request req, Response resp) throws IOException {
 				resp.getHeaders().add("Content-Type", "text/plain");
@@ -66,7 +77,9 @@ public class Server {
 				return 0;
 			}
 		}, "POST");
+	}
 
+	private static void addUploadHandler(VirtualHost host) {
 		host.addContext("/upload", new ContextHandler() {
 			public int serve(Request req, Response resp) throws IOException {
 				resp.getHeaders().add("Content-Type", "text/plain");
@@ -99,8 +112,6 @@ public class Server {
 				return 0;
 			}
 		}, "POST");
-
-		server.start();
 	}
 
 	/**
