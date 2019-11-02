@@ -131,8 +131,7 @@ public class Server {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <T> T fromJson(InputStream inputStream, Class<CompileMessageWrapper> class1)
+	private static <T> T fromJson(InputStream inputStream, Class<T> class1)
 			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		return (T) mapper.readValue(inputStream, class1);
