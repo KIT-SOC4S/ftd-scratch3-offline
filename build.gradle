@@ -31,6 +31,9 @@ allprojects {
     }
     
     dependencies {
+        implementation "org.slf4j:slf4j-simple:1.7.28"
+        implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
+        
         // Use JUnit test framework
         testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
@@ -54,7 +57,6 @@ project(":arduino-cli") {
     dependencies {
         implementation "com.beust:jcommander:1.71"
         implementation "org.zeroturnaround:zt-exec:1.11"
-        implementation "org.slf4j:slf4j-simple:1.7.28"
     }
 }
 
@@ -66,7 +68,6 @@ project(":scratch-to-c") {
     }
     
     dependencies {
-        implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
         implementation "com.beust:jcommander:1.71"
         implementation project(":arduino-cli")
     }
@@ -75,7 +76,6 @@ project(":scratch-to-c") {
 project(":ftd-ui-server") {
     
     dependencies {
-        implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
         implementation "com.beust:jcommander:1.71"
         implementation "net.freeutils:jlhttp:2.4"
         implementation "org.zeroturnaround:zt-exec:1.11"
