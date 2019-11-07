@@ -2,6 +2,9 @@ package com.github.intrigus.ftd.ui;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.intrigus.ftd.ArduinoCLI;
 import com.github.intrigus.ftd.Sb3ToArduinoC;
+import com.github.intrigus.ftd.SerialDevice;
 import com.github.intrigus.ftd.ui.MessageWrapper.Status;
 import com.github.intrigus.ftd.util.ThrowableUtil;
 
@@ -28,6 +32,7 @@ public class Server {
 		addConvertHandler(host);
 		addCompileHandler(host);
 		addUploadHandler(host);
+		addConnectedFtduinoHandler(host);
 
 		server.start();
 	}
@@ -79,6 +84,17 @@ public class Server {
 		}, "POST");
 	}
 
+	/**
+	 * Make sure that the address is not null and also not the empty String. Make
+	 * also sure that the board is actually a ftduino board.
+	 * 
+	 * @return whether the serial device is a ftduino
+	 */
+	private static Predicate<? super SerialDevice> ftduinoFilter() {
+		return (it) -> it.getAddress() != null && !it.getAddress().equals("")
+				&& it.getBoards().stream().anyMatch((ite) -> ite.getName().startsWith("ftDuino"));
+	}
+
 	private static void addUploadHandler(VirtualHost host) {
 		host.addContext("/upload", new ContextHandler() {
 			public int serve(Request req, Response resp) throws IOException {
@@ -99,7 +115,9 @@ public class Server {
 				}
 				if (compileMessage != null) {
 					try {
-						result = ArduinoCLI.uploadArduinoC(compileMessage.getCode(), compileMessage.getSerialPort());
+						result = ArduinoCLI.uploadArduinoC(
+								Sb3ToArduinoC.convertJsonToArduinoC(compileMessage.getCode()),
+								compileMessage.getSerialPort());
 						status = Status.SUCCESS;
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -114,17 +132,44 @@ public class Server {
 		}, "POST");
 	}
 
+	private static void addConnectedFtduinoHandler(VirtualHost host) {
+		host.addContext("/ftduinos", new ContextHandler() {
+			public int serve(Request req, Response resp) throws IOException {
+				resp.getHeaders().add("Content-Type", "text/plain");
+				resp.getHeaders().add("Access-Control-Allow-Origin", "*");
+
+				List<SerialDevice> result = null;
+				String errorMessage = null;
+				Status status = Status.FAILED;
+
+				try {
+					result = ArduinoCLI.getConnectedFtduino().stream().filter(ftduinoFilter())
+							.collect(Collectors.toList());
+					status = Status.SUCCESS;
+				} catch (Exception e) {
+					e.printStackTrace();
+					errorMessage = ThrowableUtil.throwableToString(e);
+					status = Status.FAILED;
+				}
+
+				String jsonResult = toJson(result);
+				resp.send(200, toJson(new AnswerMessageWrapper(status, errorMessage, jsonResult)));
+				return 0;
+			}
+		}, "POST");
+	}
+
 	/**
-	 * Converts a {@link MessageWrapper} to json.
+	 * Converts an Object to json.
 	 * 
-	 * @param message the message to convert.
-	 * @return returns the message converted to json. Returns an invalid json String
-	 *         when conversion fails!.
+	 * @param object the object to convert
+	 * @return returns the object converted to json. Returns an invalid json String
+	 *         when conversion fails!
 	 */
-	private static String toJson(MessageWrapper message) {
+	private static String toJson(Object object) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return mapper.writeValueAsString(message);
+			return mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return "Internal error:\n" + ThrowableUtil.throwableToString(e);
