@@ -119,16 +119,15 @@ public class ArduinoCLI {
 		try {
 			Objects.requireNonNull(is);
 			Objects.requireNonNull(portSpecifier);
-			long currentTime = System.currentTimeMillis();
-			Path tempDir = Files.createTempDirectory("scratch" + currentTime);
-			Path sketchFile = tempDir.resolve("sketch.ino");
+			Path tempDir = Files.createTempDirectory("scratch");
+			Path sketchFile = tempDir.resolve(tempDir.getFileName() + ".ino");
 			Files.createFile(sketchFile);
 			Files.copy(is, sketchFile, StandardCopyOption.REPLACE_EXISTING);
 			ProcessResult arduinoResult = new ProcessExecutor()
-					.command(getArduinoCliBinary().toAbsolutePath().toString(), "upload", "--config-file",
+					.command(getArduinoCliBinary().toAbsolutePath().toString(), "compile", "--config-file",
 							getArduinoCliBinary().resolveSibling("arduino-cli.yaml").toAbsolutePath().toString(),
-							"--fqbn", "ftduino:avr:ftduino", sketchFile.toAbsolutePath().toString(), "--port",
-							portSpecifier, "--verify")
+							"--upload", "--fqbn", "ftduino:avr:ftduino", "--port", portSpecifier, "--verify",
+							tempDir.toAbsolutePath().toString())
 					.directory(getArduinoCliBinary().getParent().toAbsolutePath().toFile()).destroyOnExit()
 					.exitValueNormal().readOutput(true).executeNoTimeout();
 			return arduinoResult.outputUTF8();
