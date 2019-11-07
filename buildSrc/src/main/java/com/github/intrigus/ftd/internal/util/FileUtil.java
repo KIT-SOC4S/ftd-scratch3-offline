@@ -38,6 +38,34 @@ public class FileUtil {
 	}
 
 	/**
+	 * Copies the content of the directory to the specified target directory.
+	 * Existing files are replaced.
+	 * 
+	 * @param source the directory to copy
+	 * @param target the target directory of the copy
+	 * @throws IOException
+	 */
+	public static void copyDirectoryContent(Path source, Path target) throws IOException {
+		Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
+
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+				Path targetPath = target.resolve(source.relativize(dir));
+				if (!Files.exists(targetPath)) {
+					Files.createDirectory(targetPath);
+				}
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.copy(file, target.resolve(source.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+				return FileVisitResult.CONTINUE;
+			}
+		});
+	}
+
+	/**
 	 * Moves the content of the directory to the specified target directory.
 	 * Existing files are replaced.
 	 * 

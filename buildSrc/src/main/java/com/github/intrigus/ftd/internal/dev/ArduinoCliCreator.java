@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.zeroturnaround.exec.InvalidExitValueException;
@@ -153,6 +155,12 @@ public class ArduinoCliCreator extends DefaultTask {
 		return projectFolder.resolve("arduino_cli");
 	}
 
+	@InputDirectory
+	private Path getScratchFtduinoLibraryFolder() {
+		return getProject().findProject(":scratch-to-c").getProjectDir().toPath()
+				.resolve(Paths.get("arduino-src", "Scratch_Ftduino_All"));
+	}
+
 	@TaskAction
 	public void createArduinoCli() throws IOException, InterruptedException {
 		fetchArduinoCli();
@@ -164,8 +172,30 @@ public class ArduinoCliCreator extends DefaultTask {
 		fetchFtduinoLibs();
 		stripUnnecessaryStuff();
 		createFolderStructureForArduinoCli();
+		copyScratchFtduinoLibraryToPackageFolder();
 		createArduinoCliConfigFile();
 		updateArduinoCliCoreIndex();
+	}
+
+	private void copyScratchFtduinoLibraryToPackageFolder() throws IOException {
+		for (UrlsForOS urls : URLS) {
+			copyScratchFtduinoLibraryToPackageFolder(urls);
+		}
+	}
+
+	private void copyScratchFtduinoLibraryToPackageFolder(UrlsForOS urls) throws IOException {
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path packagesDir = targetDir.resolve("packages");
+
+		Path ftduinoDir = targetDir.resolve("ftduino");
+		Files.createDirectories(ftduinoDir);
+		Path ftduinoTargetDir = packagesDir.resolve("ftduino").resolve("hardware").resolve("avr")
+				.resolve(FTDUINO_VERSION);
+
+		Path scratchFtduinoLibraryTargetDir = ftduinoTargetDir.resolve("libraries").resolve("Scratch_Ftduino_All");
+		Files.createDirectories(scratchFtduinoLibraryTargetDir);
+
+		FileUtil.copyDirectoryContent(getScratchFtduinoLibraryFolder(), scratchFtduinoLibraryTargetDir);
 	}
 
 	private void createArduinoCliConfigFile() throws IOException {

@@ -23,6 +23,7 @@ sourceSets {
     
 dependencies {
     implementation gradleApi()
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
     implementation "com.squareup.okhttp3:okhttp:4.2.1"
     implementation ("org.rauschig:jarchivelib:1.0.0") {
         exclude group: 'org.apache.commons', module: 'commons-compress'
