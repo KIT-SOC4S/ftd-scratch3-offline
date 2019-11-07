@@ -1,7 +1,9 @@
 package com.github.intrigus.ftd;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -129,6 +131,24 @@ public class Sb3ToArduinoC {
 			throw new RuntimeException("The given json input is empty.");
 		}
 		return convertJsonToArduinoC(projectJsonBytes);
+	}
+
+	/**
+	 * Converts a String to an InputStream. The String is assumed to be encoded
+	 * using UTF8.
+	 * 
+	 * @param string the String to convert to an InputStream
+	 * @return the String converted to an InputStream
+	 */
+	private static InputStream toInputStream(String string) {
+		return new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
+	}
+
+	/**
+	 * @see Sb3ToArduinoC#convertJsonToArduinoC(InputStream)
+	 */
+	public static String convertJsonToArduinoC(String code) throws IOException, ScratchParseException {
+		return convertJsonToArduinoC(toInputStream(code));
 	}
 
 	/**
