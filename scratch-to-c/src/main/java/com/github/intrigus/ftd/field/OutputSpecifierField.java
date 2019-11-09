@@ -22,7 +22,7 @@ public class OutputSpecifierField extends ScratchField {
 	private OutputSpecifier outputSpecifier;
 
 	@JsonCreator()
-	private OutputSpecifierField(@JsonProperty(value = "OUTPUT") List<String> output) {
+	private OutputSpecifierField(@JsonProperty(index = 1) List<String> output) {
 		if (output.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -33,6 +33,12 @@ public class OutputSpecifierField extends ScratchField {
 		if (output.get(0) != null) {
 			outputSpecifier = OutputSpecifier.forValue(output.get(0));
 		}
+	}
+
+	@Override
+	public String generateCode() {
+		String code = "scratchString(\"" + outputSpecifier.name() + "\")";
+		return code;
 	}
 
 	@Override
@@ -61,6 +67,7 @@ public class OutputSpecifierField extends ScratchField {
 	public static enum OutputSpecifier {
 
 		O1, O2, O3, O4, O5, O6, O7, O8;
+
 		private static Map<String, OutputSpecifier> namesMap = new HashMap<>(8);
 
 		static {

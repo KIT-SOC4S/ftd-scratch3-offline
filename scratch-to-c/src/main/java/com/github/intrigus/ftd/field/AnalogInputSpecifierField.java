@@ -22,7 +22,7 @@ public class AnalogInputSpecifierField extends ScratchField {
 	private AnalogInputSpecifier inputSpecifier;
 
 	@JsonCreator()
-	private AnalogInputSpecifierField(@JsonProperty(value = "INPUT") List<String> input) {
+	private AnalogInputSpecifierField(@JsonProperty(index = 1) List<String> input) {
 		if (input.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -33,6 +33,12 @@ public class AnalogInputSpecifierField extends ScratchField {
 		if (input.get(0) != null) {
 			inputSpecifier = AnalogInputSpecifier.forValue(input.get(0));
 		}
+	}
+
+	@Override
+	public String generateCode() {
+		String code = "scratchString(\"" + inputSpecifier.name() + "\")";
+		return code;
 	}
 
 	@Override
@@ -61,6 +67,7 @@ public class AnalogInputSpecifierField extends ScratchField {
 	public static enum AnalogInputSpecifier {
 
 		I1, I2, I3, I4, I5, I6, I7, I8;
+
 		private static Map<String, AnalogInputSpecifier> namesMap = new HashMap<String, AnalogInputSpecifier>(8);
 
 		static {

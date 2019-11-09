@@ -22,7 +22,7 @@ public class MotorSpecifierField extends ScratchField {
 	private MotorSpecifier motorSpecifier;
 
 	@JsonCreator()
-	private MotorSpecifierField(@JsonProperty(value = "MOTOR") List<String> motor) {
+	private MotorSpecifierField(@JsonProperty(index = 1) List<String> motor) {
 		if (motor.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -33,6 +33,12 @@ public class MotorSpecifierField extends ScratchField {
 		if (motor.get(0) != null) {
 			motorSpecifier = MotorSpecifier.forValue(motor.get(0));
 		}
+	}
+
+	@Override
+	public String generateCode() {
+		String code = "scratchString(\"" + motorSpecifier.name() + "\")";
+		return code;
 	}
 
 	@Override
@@ -61,6 +67,7 @@ public class MotorSpecifierField extends ScratchField {
 	public static enum MotorSpecifier {
 
 		M1, M2, M3, M4;
+
 		private static Map<String, MotorSpecifier> namesMap = new HashMap<String, MotorSpecifier>(4);
 		static {
 			namesMap.put("M1", M1);

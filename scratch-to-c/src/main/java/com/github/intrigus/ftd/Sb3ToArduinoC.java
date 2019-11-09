@@ -19,8 +19,6 @@ import com.github.intrigus.ftd.exception.ScratchNoTopLevelBlockException;
 import com.github.intrigus.ftd.exception.ScratchParseException;
 import com.github.intrigus.ftd.exception.ScratchTooManyTopLevelBlocksException;
 import com.github.intrigus.ftd.exception.ScratchUnimplementedException;
-import com.github.intrigus.ftd.field.ScratchField;
-import com.github.intrigus.ftd.field.ScratchFieldDeserializer;
 
 /**
  * The main class. Converts a sb3 file to an Arduino C++ program. Can be used
@@ -108,7 +106,6 @@ public class Sb3ToArduinoC {
 	private static ObjectMapper newDefaultMapper() {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
-		module.addDeserializer(ScratchField.class, new ScratchFieldDeserializer());
 		mapper.registerModule(module);
 		return mapper;
 	}

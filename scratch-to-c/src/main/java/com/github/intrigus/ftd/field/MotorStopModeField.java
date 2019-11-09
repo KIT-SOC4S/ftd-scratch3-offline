@@ -22,7 +22,7 @@ public class MotorStopModeField extends ScratchField {
 	private MotorStopMode motorStopMode;
 
 	@JsonCreator()
-	private MotorStopModeField(@JsonProperty(value = "STOPMODE") List<String> stopMode) {
+	private MotorStopModeField(@JsonProperty(index = 1) List<String> stopMode) {
 		if (stopMode.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -33,6 +33,12 @@ public class MotorStopModeField extends ScratchField {
 		if (stopMode.get(0) != null) {
 			motorStopMode = MotorStopMode.forValue(stopMode.get(0));
 		}
+	}
+
+	@Override
+	public String generateCode() {
+		String code = "scratchString(\"" + motorStopMode.getCRepresentation() + "\")";
+		return code;
 	}
 
 	@Override

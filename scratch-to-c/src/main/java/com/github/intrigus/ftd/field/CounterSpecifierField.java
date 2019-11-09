@@ -22,7 +22,7 @@ public class CounterSpecifierField extends ScratchField {
 	private CounterSpecifier counterSpecifier;
 
 	@JsonCreator()
-	private CounterSpecifierField(@JsonProperty(value = "COUNTER") List<String> counter) {
+	private CounterSpecifierField(@JsonProperty(index = 1) List<String> counter) {
 		if (counter.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -33,6 +33,12 @@ public class CounterSpecifierField extends ScratchField {
 		if (counter.get(0) != null) {
 			counterSpecifier = CounterSpecifier.forValue(counter.get(0));
 		}
+	}
+
+	@Override
+	public String generateCode() {
+		String code = "scratchString(\"" + counterSpecifier.name() + "\")";
+		return code;
 	}
 
 	@Override
@@ -61,6 +67,7 @@ public class CounterSpecifierField extends ScratchField {
 	public static enum CounterSpecifier {
 
 		C1, C2, C3, C4;
+
 		private static Map<String, CounterSpecifier> namesMap = new HashMap<>(4);
 		static {
 			namesMap.put("C1", C1);

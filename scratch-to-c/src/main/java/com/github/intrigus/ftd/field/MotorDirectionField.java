@@ -22,7 +22,7 @@ public class MotorDirectionField extends ScratchField {
 	private MotorDir motorDir;
 
 	@JsonCreator()
-	private MotorDirectionField(@JsonProperty(value = "DIR") List<String> dir) {
+	private MotorDirectionField(@JsonProperty(index = 1) List<String> dir) {
 		if (dir.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -33,6 +33,12 @@ public class MotorDirectionField extends ScratchField {
 		if (dir.get(0) != null) {
 			motorDir = MotorDir.forValue(dir.get(0));
 		}
+	}
+
+	@Override
+	public String generateCode() {
+		String code = "scratchString(\"" + motorDir.name() + "\")";
+		return code;
 	}
 
 	@Override
@@ -61,6 +67,7 @@ public class MotorDirectionField extends ScratchField {
 	public static enum MotorDir {
 
 		LEFT, RIGHT;
+
 		private static Map<String, MotorDir> namesMap = new HashMap<String, MotorDir>(2);
 		static {
 			namesMap.put("LEFT", LEFT);

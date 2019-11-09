@@ -22,7 +22,7 @@ public class OnOffStateField extends ScratchField {
 	private OnOffState state;
 
 	@JsonCreator()
-	private OnOffStateField(@JsonProperty(value = "ONOFFSTATE") List<String> onOffState) {
+	private OnOffStateField(@JsonProperty(index = 1) List<String> onOffState) {
 		if (onOffState.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -31,6 +31,17 @@ public class OnOffStateField extends ScratchField {
 		}
 		this.ONOFFSTATE = onOffState;
 		this.state = OnOffState.forValue(onOffState.get(0));
+	}
+
+	@Override
+	public String generateCode() {
+		if (state == OnOffState.ON) {
+			return "scratchBoolean(true)";
+		} else if (state == OnOffState.OFF) {
+			return "scratchBoolean(false)";
+		} else {
+			throw new RuntimeException("HUH?");
+		}
 	}
 
 	@Override
@@ -59,6 +70,7 @@ public class OnOffStateField extends ScratchField {
 	public static enum OnOffState {
 
 		ON, OFF;
+
 		private static Map<String, OnOffState> namesMap = new HashMap<String, OnOffState>(4);
 
 		static {

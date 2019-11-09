@@ -22,7 +22,7 @@ public class DigitalInputSpecifierField extends ScratchField {
 	private DigitalInputSpecifier inputSpecifier;
 
 	@JsonCreator()
-	private DigitalInputSpecifierField(@JsonProperty(value = "INPUT_D") List<String> inputD) {
+	private DigitalInputSpecifierField(@JsonProperty(index = 1) List<String> inputD) {
 		if (inputD.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -33,6 +33,12 @@ public class DigitalInputSpecifierField extends ScratchField {
 		if (inputD.get(0) != null) {
 			inputSpecifier = DigitalInputSpecifier.forValue(inputD.get(0));
 		}
+	}
+
+	@Override
+	public String generateCode() {
+		String code = "scratchString(\"" + inputSpecifier.name() + "\")";
+		return code;
 	}
 
 	@Override
@@ -61,6 +67,7 @@ public class DigitalInputSpecifierField extends ScratchField {
 	public static enum DigitalInputSpecifier {
 
 		I1, I2, I3, I4, I5, I6, I7, I8, C1, C2, C3, C4;
+
 		private static Map<String, DigitalInputSpecifier> namesMap = new HashMap<String, DigitalInputSpecifier>(12);
 		static {
 			namesMap.put("I1", I1);

@@ -22,7 +22,7 @@ public class InputModeField extends ScratchField {
 	private InputMode inputMode;
 
 	@JsonCreator()
-	private InputModeField(@JsonProperty(value = "MODE") List<String> mode) {
+	private InputModeField(@JsonProperty(index = 1) List<String> mode) {
 		if (mode.size() < 2) {
 			throw new IllegalStateException("unexpected");
 		}
@@ -33,6 +33,12 @@ public class InputModeField extends ScratchField {
 		if (mode.get(0) != null) {
 			inputMode = InputMode.forValue(mode.get(0));
 		}
+	}
+
+	@Override
+	public String generateCode() {
+		String code = "scratchString(\"" + inputMode.name() + "\")";
+		return code;
 	}
 
 	@Override
@@ -61,6 +67,7 @@ public class InputModeField extends ScratchField {
 	public static enum InputMode {
 
 		VOLTAGE, RESISTANCE/* , SWITCH, COUNTER */;
+
 		private static Map<String, InputMode> namesMap = new HashMap<String, InputMode>(4);
 
 		static { // TODO
