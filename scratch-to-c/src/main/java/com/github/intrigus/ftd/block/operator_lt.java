@@ -2,6 +2,7 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchConstants;
 import com.github.intrigus.ftd.ScratchValue;
@@ -13,6 +14,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * converted to strings and compared case insensitive. The returned value is a
  * boolean.
  */
+@JsonIgnoreProperties(value = { "fields" })
 public class operator_lt extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

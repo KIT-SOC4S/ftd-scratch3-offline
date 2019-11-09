@@ -2,6 +2,7 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchConstants;
 import com.github.intrigus.ftd.ScratchValue;
@@ -11,6 +12,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * sub-blocks of subStack if the specified condition is true. Otherwise it
  * executes the specified sub-blocks of subStack2.
  */
+@JsonIgnoreProperties(value = { "fields" })
 public class control_if_else extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

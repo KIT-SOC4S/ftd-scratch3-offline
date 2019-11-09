@@ -50,7 +50,6 @@ public class ConversionTest {
 	}
 
 	@Test
-	@Disabled
 	public void testAllMilestone1BlocksConversion() throws ScratchParseException, IOException {
 		InputStream testFile = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("all_milestone_1_blocks.sb3");

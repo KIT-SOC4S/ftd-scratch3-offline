@@ -2,6 +2,7 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchValue;
 
@@ -9,6 +10,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * Implements the scratch control wait operator. It waits the specified duration
  * (in seconds). The duration value is converted to a float if necessary.
  */
+@JsonIgnoreProperties(value = { "fields" })
 public class control_wait extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

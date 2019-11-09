@@ -6,12 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import com.github.intrigus.ftd.field.ScratchField;
 import com.github.intrigus.ftd.util.RelationShip;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "opcode")
 @JsonTypeIdResolver(ScratchBlockResolver.class)
-@JsonIgnoreProperties({ "x", "y" })
 public abstract class ScratchBlock implements RelationShip {
 	@JsonProperty(value = "opcode")
 	public String opcode;
@@ -24,18 +22,18 @@ public abstract class ScratchBlock implements RelationShip {
 	public boolean shadow;
 	public boolean topLevel;
 
-	@JsonProperty(value = "fields")
-	public ScratchField fields;
+	@JsonProperty(value = "x")
+	private double x;
 
-	// @JsonProperty(value = "inputs")
-	// public Map<String, ScratchValue> inputs;
+	@JsonProperty(value = "y")
+	private double y;
 
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 		this.next = blocks.get(next_);
 		this.parent = blocks.get(parent_);
-		if (fields != null) {
-			fields.updateRelations(blocks);
-		}
+		// if (fields != null) {
+		// fields.updateRelations(blocks);
+		// }
 		updateOtherRelations(blocks);
 	}
 
@@ -62,7 +60,7 @@ public abstract class ScratchBlock implements RelationShip {
 	@Override
 	public String toString() {
 		return "ScratchBlock [opcode=" + opcode + ", next_=" + next_ + ", parent_=" + parent_ + ", shadow=" + shadow
-				+ ", topLevel=" + topLevel + ", fields=" + fields + "]";
+				+ ", topLevel=" + topLevel + /* ", fields=" + fields + */ "]";
 	}
 
 }

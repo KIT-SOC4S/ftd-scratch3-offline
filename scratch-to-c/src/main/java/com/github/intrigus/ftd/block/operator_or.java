@@ -2,6 +2,7 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchConstants;
 import com.github.intrigus.ftd.ScratchValue;
@@ -11,6 +12,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * Computes operand1 || operand2. Both inputs are converted to booleans if
  * necessary. The returned value is a boolean.
  */
+@JsonIgnoreProperties(value = { "fields" })
 public class operator_or extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

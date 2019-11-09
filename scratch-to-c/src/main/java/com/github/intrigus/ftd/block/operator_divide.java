@@ -2,6 +2,7 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchConstants;
 import com.github.intrigus.ftd.ScratchValue;
@@ -11,6 +12,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * operators.cpp. Computes number1 / number2. Both inputs are converted to
  * floats if necessary. The returned value is a float.
  */
+@JsonIgnoreProperties(value = { "fields" })
 public class operator_divide extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

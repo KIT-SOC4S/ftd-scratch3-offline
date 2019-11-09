@@ -2,8 +2,10 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.intrigus.ftd.ScratchValue;
+import com.github.intrigus.ftd.field.OnOffStateField;
+import com.github.intrigus.ftd.field.OutputSpecifierField;
 
 /**
  * Implements the ftduino output operator. The actual C++ code is in
@@ -12,31 +14,31 @@ import com.github.intrigus.ftd.ScratchValue;
  * also expects a value to set. This value will be converted to a boolean before
  * it's set.
  */
+@JsonIgnoreProperties(value = "inputs")
 public class ftduino_output extends ScratchBlock {
 
-	@JsonProperty(value = "inputs")
-	private Input inputs;
+	@JsonProperty(value = "fields")
+	private Field fields;
 
-	private static class Input {
+	private static class Field {
 		@JsonProperty(value = "OUTPUT")
-		public ScratchValue output;
+		public OutputSpecifierField output;
 
 		@JsonProperty(value = "VALUE")
-		public ScratchValue value;
-
+		public OnOffStateField value;
 	}
 
 	@Override
 	public String gen() {
-		String code = "scratch_ftduino_output(" + inputs.output.generateCode() + ", " + inputs.value.generateCode()
+		String code = "scratch_ftduino_output(" + fields.output.generateCode() + ", " + fields.value.generateCode()
 				+ ");\n";
 		return code;
 	}
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.output.updateRelations(blocks);
-		this.inputs.value.updateRelations(blocks);
+		this.fields.output.updateRelations(blocks);
+		this.fields.value.updateRelations(blocks);
 	}
 
 }

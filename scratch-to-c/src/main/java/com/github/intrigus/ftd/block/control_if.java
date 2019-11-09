@@ -2,6 +2,7 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchConstants;
 import com.github.intrigus.ftd.ScratchValue;
@@ -10,6 +11,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * Implements the scratch control if operator. It executes the specified
  * sub-blocks if the specified condition is true.
  */
+@JsonIgnoreProperties(value = { "fields"})
 public class control_if extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

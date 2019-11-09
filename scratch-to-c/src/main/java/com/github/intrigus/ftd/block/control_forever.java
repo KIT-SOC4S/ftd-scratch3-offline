@@ -2,6 +2,7 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchValue;
 
@@ -9,6 +10,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * Implements the scratch control forever operator. It repeats the specified
  * sub-blocks forever.
  */
+@JsonIgnoreProperties(value = { "fields"})
 public class control_forever extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

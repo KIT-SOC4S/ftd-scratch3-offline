@@ -2,6 +2,7 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchValue;
 
@@ -10,6 +11,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * specified condition is true. The condition value is converted to a boolean if
  * necessary.
  */
+@JsonIgnoreProperties(value = { "fields" })
 public class control_wait_until extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")

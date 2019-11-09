@@ -2,28 +2,30 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.intrigus.ftd.ScratchValue;
+import com.github.intrigus.ftd.field.DigitalInputSpecifierField;
 
 /**
  * Implements the ftduino when input operator. This is a hat block that is
  * triggered when a specified input is high. Expects a digital input specifier
  * or a String that can be converted to one.
  */
+@JsonIgnoreProperties(value = "inputs")
 public class ftduino_when_input extends ScratchBlock {
 
-	@JsonProperty(value = "inputs")
-	private Input inputs;
+	@JsonProperty(value = "fields")
+	private Field fields;
 
-	private static class Input {
+	private static class Field {
 		@JsonProperty(value = "INPUT")
-		public ScratchValue input;
+		public DigitalInputSpecifierField input;
 	}
 
 	@Override
 	protected String beginGen() {
 		String loopCode = "void loop() {\n";
-		String ifCode = "if(toBoolean(scratch_ftduino_input(" + inputs.input.generateCode() + "))) {\n";
+		String ifCode = "if(toBoolean(scratch_ftduino_input(" + fields.input.generateCode() + "))) {\n";
 		return loopCode + ifCode;
 	}
 
@@ -41,7 +43,7 @@ public class ftduino_when_input extends ScratchBlock {
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.input.updateRelations(blocks);
+		this.fields.input.updateRelations(blocks);
 	}
 
 }

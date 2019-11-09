@@ -4,6 +4,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.intrigus.ftd.ScratchValue;
+import com.github.intrigus.ftd.field.MotorDirectionField;
+import com.github.intrigus.ftd.field.MotorSpecifierField;
 
 //TODO
 /**
@@ -17,6 +19,17 @@ import com.github.intrigus.ftd.ScratchValue;
  */
 public class ftduino_motor extends ScratchBlock {
 
+	@JsonProperty(value = "fields")
+	private Field fields;
+
+	private static class Field {
+		@JsonProperty(value = "MOTOR")
+		public MotorSpecifierField motor;
+
+		@JsonProperty(value = "DIR")
+		public MotorDirectionField dir;
+	}
+
 	@JsonProperty(value = "inputs")
 	private Input inputs;
 
@@ -24,25 +37,19 @@ public class ftduino_motor extends ScratchBlock {
 		@JsonProperty(value = "VALUE")
 		public ScratchValue value;
 
-		@JsonProperty(value = "MOTOR")
-		public ScratchValue motor;
-
-		@JsonProperty(value = "DIR")
-		public ScratchValue dir;
-
 	}
 
 	@Override
 	public String gen() {
-		String code = "scratch_ftduino_motor(" + inputs.motor.generateCode() + ", " + inputs.dir.generateCode() + ", "
+		String code = "scratch_ftduino_motor(" + fields.motor.generateCode() + ", " + fields.dir.generateCode() + ", "
 				+ inputs.value.generateCode() + ");\n";
 		return code;
 	}
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.motor.updateRelations(blocks);
-		this.inputs.dir.updateRelations(blocks);
+		this.fields.motor.updateRelations(blocks);
+		this.fields.dir.updateRelations(blocks);
 		this.inputs.value.updateRelations(blocks);
 	}
 
