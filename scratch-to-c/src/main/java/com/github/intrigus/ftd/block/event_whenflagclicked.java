@@ -19,7 +19,10 @@ public class event_whenflagclicked extends ScratchBlock {
 
 	@Override
 	protected String afterGen() {
-		return super.afterGen() + "}\n";
+		// make sure that the blocks are only executed once, since the arduino loop
+		// function is called over and over
+		String onlyOnceTrigger = "while(1) {\n delay(100);\n}\n";
+		return super.afterGen() + onlyOnceTrigger + "}\n";
 	}
 
 	public String gen() {
