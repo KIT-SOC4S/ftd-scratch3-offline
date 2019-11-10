@@ -41,4 +41,8 @@ public class ftduino_output extends ScratchBlock {
 		this.fields.value.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.STACK;
+	}
 }

@@ -33,4 +33,9 @@ public class ftduino_clear_counter extends ScratchBlock {
 		this.fields.input.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.STACK;
+	}
+
 }

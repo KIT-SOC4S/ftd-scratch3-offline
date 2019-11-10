@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.github.intrigus.ftd.block.ScratchBlock;
 import com.github.intrigus.ftd.exception.ScratchNoTopLevelBlockException;
 import com.github.intrigus.ftd.exception.ScratchTooManyTopLevelBlocksException;
+import com.github.intrigus.ftd.block.ScratchBlock.BlockType;
 
 //TODO Documentation
 public class ScratchBlocks {

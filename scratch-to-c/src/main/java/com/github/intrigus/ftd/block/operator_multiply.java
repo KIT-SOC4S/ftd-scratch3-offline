@@ -12,7 +12,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * operators.cpp. Computes number1 * number2. Both inputs are converted to
  * floats if necessary. The returned value is a float.
  */
-@JsonIgnoreProperties(value = { "fields"})
+@JsonIgnoreProperties(value = { "fields" })
 public class operator_multiply extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -36,5 +36,10 @@ public class operator_multiply extends ScratchBlock {
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
 		this.inputs.number1.updateRelations(blocks);
 		this.inputs.number2.updateRelations(blocks);
+	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.REPORTER;
 	}
 }

@@ -39,4 +39,9 @@ public class control_repeat_until extends ScratchBlock {
 		this.inputs.condition.updateRelations(blocks);
 		this.inputs.subStack.updateRelations(blocks);
 	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.C;
+	}
 }

@@ -12,7 +12,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * Computes !operand. The input is converted to a boolean if necessary. The
  * returned value is a boolean.
  */
-@JsonIgnoreProperties(value = { "fields"})
+@JsonIgnoreProperties(value = { "fields" })
 public class operator_not extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -31,5 +31,10 @@ public class operator_not extends ScratchBlock {
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
 		this.inputs.operand.updateRelations(blocks);
+	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.BOOLEAN;
 	}
 }

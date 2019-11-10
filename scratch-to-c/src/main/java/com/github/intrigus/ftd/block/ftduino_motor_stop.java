@@ -45,4 +45,8 @@ public class ftduino_motor_stop extends ScratchBlock {
 		this.fields.stopMode.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.STACK;
+	}
 }

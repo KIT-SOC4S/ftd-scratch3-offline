@@ -2,7 +2,6 @@ package com.github.intrigus.ftd.block;
 
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
@@ -39,6 +38,8 @@ public abstract class ScratchBlock implements RelationShip {
 
 	protected abstract void updateOtherRelations(Map<String, ScratchBlock> blocks);
 
+	public abstract BlockType getBlockType();
+
 	protected String beginGen() {
 		return "";
 	}
@@ -57,10 +58,7 @@ public abstract class ScratchBlock implements RelationShip {
 
 	protected abstract String gen();
 
-	@Override
-	public String toString() {
-		return "ScratchBlock [opcode=" + opcode + ", next_=" + next_ + ", parent_=" + parent_ + ", shadow=" + shadow
-				+ ", topLevel=" + topLevel + /* ", fields=" + fields + */ "]";
+	public static enum BlockType {
+		HAT, REPORTER, BOOLEAN, C, STACK, CUSTOM_DEF, CUSTOM_HAT
 	}
-
 }

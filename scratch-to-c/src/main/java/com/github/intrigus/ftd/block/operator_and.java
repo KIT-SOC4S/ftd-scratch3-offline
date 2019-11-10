@@ -37,4 +37,9 @@ public class operator_and extends ScratchBlock {
 		this.inputs.operand1.updateRelations(blocks);
 		this.inputs.operand2.updateRelations(blocks);
 	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.BOOLEAN;
+	}
 }

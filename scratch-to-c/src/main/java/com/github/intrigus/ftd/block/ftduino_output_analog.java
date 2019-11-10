@@ -46,4 +46,8 @@ public class ftduino_output_analog extends ScratchBlock {
 		this.inputs.value.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.STACK;
+	}
 }

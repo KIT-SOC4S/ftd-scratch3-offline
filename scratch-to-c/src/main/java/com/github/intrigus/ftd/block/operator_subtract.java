@@ -37,4 +37,9 @@ public class operator_subtract extends ScratchBlock {
 		this.inputs.number1.updateRelations(blocks);
 		this.inputs.number2.updateRelations(blocks);
 	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.REPORTER;
+	}
 }

@@ -35,4 +35,9 @@ public class ftduino_input_counter extends ScratchBlock {
 		this.fields.input.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.REPORTER;
+	}
+
 }

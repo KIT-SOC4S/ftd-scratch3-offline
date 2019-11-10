@@ -53,4 +53,9 @@ public class control_if_else extends ScratchBlock {
 		this.inputs.subStack.updateRelations(blocks);
 		this.inputs.subStack2.updateRelations(blocks);
 	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.C;
+	}
 }

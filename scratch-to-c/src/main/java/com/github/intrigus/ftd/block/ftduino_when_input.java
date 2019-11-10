@@ -46,4 +46,9 @@ public class ftduino_when_input extends ScratchBlock {
 		this.fields.input.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.HAT;
+	}
+
 }

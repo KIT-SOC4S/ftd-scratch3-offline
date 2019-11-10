@@ -11,7 +11,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * Implements the scratch control if operator. It executes the specified
  * sub-blocks if the specified condition is true.
  */
-@JsonIgnoreProperties(value = { "fields"})
+@JsonIgnoreProperties(value = { "fields" })
 public class control_if extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -40,5 +40,10 @@ public class control_if extends ScratchBlock {
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
 		this.inputs.condition.updateRelations(blocks);
 		this.inputs.subStack.updateRelations(blocks);
+	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.C;
 	}
 }

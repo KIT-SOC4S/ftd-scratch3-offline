@@ -32,4 +32,9 @@ public class event_whenflagclicked extends ScratchBlock {
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
 	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.HAT;
+	}
 }

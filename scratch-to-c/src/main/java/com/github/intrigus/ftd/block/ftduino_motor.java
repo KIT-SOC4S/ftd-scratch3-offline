@@ -53,4 +53,9 @@ public class ftduino_motor extends ScratchBlock {
 		this.inputs.value.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.STACK;
+	}
+
 }

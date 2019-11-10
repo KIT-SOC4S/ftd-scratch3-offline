@@ -43,4 +43,9 @@ public class ftduino_input_analog extends ScratchBlock {
 		this.fields.mode.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.REPORTER;
+	}
+
 }

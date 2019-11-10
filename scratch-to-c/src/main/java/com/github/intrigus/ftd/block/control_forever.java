@@ -10,7 +10,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * Implements the scratch control forever operator. It repeats the specified
  * sub-blocks forever.
  */
-@JsonIgnoreProperties(value = { "fields"})
+@JsonIgnoreProperties(value = { "fields" })
 public class control_forever extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -36,5 +36,10 @@ public class control_forever extends ScratchBlock {
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
 		this.inputs.subStack.updateRelations(blocks);
+	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.C;
 	}
 }

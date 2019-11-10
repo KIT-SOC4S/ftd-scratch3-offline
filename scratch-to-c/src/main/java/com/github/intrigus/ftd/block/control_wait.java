@@ -33,4 +33,9 @@ public class control_wait extends ScratchBlock {
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
 		this.inputs.duration.updateRelations(blocks);
 	}
+
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.STACK;
+	}
 }

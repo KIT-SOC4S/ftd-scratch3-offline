@@ -10,7 +10,7 @@ import com.github.intrigus.ftd.ScratchValue;
  * Implements the scratch control repeat operator. It repeats the specified
  * sub-blocks the specified times.
  */
-@JsonIgnoreProperties(value = { "fields"})
+@JsonIgnoreProperties(value = { "fields" })
 public class control_repeat extends ScratchBlock {
 
 	@JsonProperty(value = "inputs")
@@ -46,4 +46,8 @@ public class control_repeat extends ScratchBlock {
 		this.inputs.times.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.C;
+	}
 }

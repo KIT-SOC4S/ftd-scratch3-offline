@@ -36,4 +36,9 @@ public class ftduino_led extends ScratchBlock {
 		this.fields.value.updateRelations(blocks);
 	}
 
+	@Override
+	public BlockType getBlockType() {
+		return BlockType.STACK;
+	}
+
 }
