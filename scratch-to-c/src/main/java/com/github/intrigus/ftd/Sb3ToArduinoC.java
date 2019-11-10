@@ -15,9 +15,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.github.intrigus.ftd.exception.ScratchNoTopLevelBlockException;
+import com.github.intrigus.ftd.exception.ScratchNoTopLevelHatBlockException;
 import com.github.intrigus.ftd.exception.ScratchParseException;
-import com.github.intrigus.ftd.exception.ScratchTooManyTopLevelBlocksException;
+import com.github.intrigus.ftd.exception.ScratchTooManyTopLevelHatBlocksException;
 import com.github.intrigus.ftd.exception.ScratchUnimplementedException;
 
 /**
@@ -64,10 +64,10 @@ public class Sb3ToArduinoC {
 		} catch (ScratchUnimplementedException e) {
 			e.printStackTrace(System.err);
 			System.exit(4);
-		} catch (ScratchNoTopLevelBlockException e) {
+		} catch (ScratchNoTopLevelHatBlockException e) {
 			e.printStackTrace(System.err);
 			System.exit(5);
-		} catch (ScratchTooManyTopLevelBlocksException e) {
+		} catch (ScratchTooManyTopLevelHatBlocksException e) {
 			e.printStackTrace(System.err);
 			System.exit(6);
 		} catch (Exception e) {

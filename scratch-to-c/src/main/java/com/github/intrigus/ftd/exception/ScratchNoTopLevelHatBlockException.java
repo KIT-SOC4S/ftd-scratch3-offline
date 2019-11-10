@@ -6,5 +6,5 @@ package com.github.intrigus.ftd.exception;
  * top level block.
  */
 @SuppressWarnings("serial")
-public class ScratchNoTopLevelBlockException extends RuntimeException {
+public class ScratchNoTopLevelHatBlockException extends RuntimeException {
 }

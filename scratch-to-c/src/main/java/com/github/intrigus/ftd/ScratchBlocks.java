@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.github.intrigus.ftd.block.ScratchBlock;
-import com.github.intrigus.ftd.exception.ScratchNoTopLevelBlockException;
-import com.github.intrigus.ftd.exception.ScratchTooManyTopLevelBlocksException;
 import com.github.intrigus.ftd.block.ScratchBlock.BlockType;
+import com.github.intrigus.ftd.exception.ScratchNoTopLevelHatBlockException;
+import com.github.intrigus.ftd.exception.ScratchTooManyTopLevelHatBlocksException;
 
 //TODO Documentation
 public class ScratchBlocks {
@@ -40,14 +40,31 @@ public class ScratchBlocks {
 				.collect(Collectors.toList());
 	}
 
+	private List<ScratchBlock> getHatBlocks() {
+		return getTopLevelBlocks().stream().filter(e -> e.getBlockType() == BlockType.HAT).collect(Collectors.toList());
+	}
+
+	private List<ScratchBlock> getHatBlocksAndCustomBlocks() {
+		return getTopLevelBlocks().stream()
+				.filter(e -> e.getBlockType() == BlockType.HAT || e.getBlockType() == BlockType.CUSTOM_HAT)
+				.collect(Collectors.toList());
+	}
+
+	// TODO properly detect top level( should be called hat blocks)
 	private String generateLoopCode() {
-		List<ScratchBlock> topLevelBlocks = getTopLevelBlocks();
-		if (topLevelBlocks.size() <= 0) {
-			throw new ScratchNoTopLevelBlockException();
-		} else if (topLevelBlocks.size() > 1) {
-			throw new ScratchTooManyTopLevelBlocksException();
+		List<ScratchBlock> hatBlocks = getHatBlocks();
+		List<ScratchBlock> blocksToGenerate = getHatBlocksAndCustomBlocks();
+		if (hatBlocks.size() <= 0) {
+			throw new ScratchNoTopLevelHatBlockException();
+		} else if (hatBlocks.size() > 1) {
+			throw new ScratchTooManyTopLevelHatBlocksException();
 		}
-		return topLevelBlocks.get(0).generateCode();
+		String code = "";
+		for (ScratchBlock blockToGenerate : blocksToGenerate) {
+			code += blockToGenerate.generateCode();
+			code += "\n\n";
+		}
+		return code;
 	}
 
 	public String generateCCode() {

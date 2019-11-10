@@ -7,6 +7,6 @@ package com.github.intrigus.ftd.exception;
  * possible.
  */
 @SuppressWarnings("serial")
-public class ScratchTooManyTopLevelBlocksException extends RuntimeException {
+public class ScratchTooManyTopLevelHatBlocksException extends RuntimeException {
 
 }
