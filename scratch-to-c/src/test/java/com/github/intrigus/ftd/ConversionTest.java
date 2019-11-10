@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.github.intrigus.ftd.exception.CompilationFailedException;
 import com.github.intrigus.ftd.exception.ScratchParseException;
 
 public class ConversionTest {
@@ -39,5 +40,10 @@ public class ConversionTest {
 		Sb3ToArduinoC.convertToArduinoC(testFile);
 	}
 
+	@ParameterizedTest(name = "{index} {0}")
+	@MethodSource("provideScratchTestFiles")
+	public void testCompilation(String testName, InputStream testFile)
+			throws ScratchParseException, IOException, CompilationFailedException {
+		ArduinoCLI.compileArduinoC(Sb3ToArduinoC.convertToArduinoC(testFile));
 	}
 }
