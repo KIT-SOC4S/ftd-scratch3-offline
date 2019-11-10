@@ -122,6 +122,8 @@ public class ArduinoCLI {
 			Path tempDir = Files.createTempDirectory("scratch");
 			Path sketchFile = tempDir.resolve(tempDir.getFileName() + ".ino");
 			Files.createFile(sketchFile);
+			sketchFile.toFile().deleteOnExit();
+			tempDir.toFile().deleteOnExit();
 			Files.copy(is, sketchFile, StandardCopyOption.REPLACE_EXISTING);
 			ProcessResult arduinoResult = new ProcessExecutor()
 					.command(getArduinoCliBinary().toAbsolutePath().toString(), "compile", "--config-file",
@@ -168,6 +170,8 @@ public class ArduinoCLI {
 			Path tempDir = Files.createTempDirectory("scratch" + currentTime);
 			Path sketchFile = tempDir.resolve("sketch.ino");
 			Files.createFile(sketchFile);
+			sketchFile.toFile().deleteOnExit();
+			tempDir.toFile().deleteOnExit();
 			Files.copy(is, sketchFile, StandardCopyOption.REPLACE_EXISTING);
 			ProcessResult arduinoResult = new ProcessExecutor()
 					.command(getArduinoCliBinary().toAbsolutePath().toString(), "compile", "--config-file",
