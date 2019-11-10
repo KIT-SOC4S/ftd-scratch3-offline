@@ -74,10 +74,6 @@ public class Sb3ToArduinoC {
 			e.printStackTrace(System.err);
 			System.exit(1);
 		}
-
-		// testRessourceFile(mapper, "biggertest.sb3");
-		// testRessourceFile(mapper, "when_input_test.sb3");
-		// testRessourceFile(mapper, "motor_stop_test.sb3");
 	}
 
 	private static void showHelp() {
