@@ -27,9 +27,8 @@ public class ConversionTest {
 	}
 
 	private static Stream<Arguments> provideScratchTestFiles() {
-		return Stream
-				.of("biggertest.sb3", /* "Einparker_V1_0.sb3", */ "motor_stop_test.sb3", "when_input_test.sb3",
-						"all_milestone_1_blocks.sb3")
+		return Stream.of("biggertest.sb3", /* "Einparker_V1_0.sb3", */ "motor_stop_test.sb3", "when_input_test.sb3",
+				"all_milestone_1_blocks.sb3", /*"self_defined_func_with_args.sb3",*/ "self_defined_func_without_args.sb3")
 				.map((name) -> Arguments.of(name,
 						Thread.currentThread().getContextClassLoader().getResourceAsStream(name)));
 	}
