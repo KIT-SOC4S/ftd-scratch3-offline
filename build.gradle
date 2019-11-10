@@ -41,6 +41,7 @@ allprojects {
         // Use JUnit test framework
         testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     }
 
     repositories {
@@ -74,6 +75,10 @@ project(":scratch-to-c") {
     dependencies {
         implementation "com.beust:jcommander:1.71"
         implementation project(":arduino-cli")
+    }
+    
+    test {
+    	workingDir = project(":arduino-cli").projectDir
     }
 }
 
