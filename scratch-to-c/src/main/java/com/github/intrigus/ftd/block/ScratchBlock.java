@@ -30,9 +30,6 @@ public abstract class ScratchBlock implements RelationShip {
 	public void updateRelations(Map<String, ScratchBlock> blocks) {
 		this.next = blocks.get(next_);
 		this.parent = blocks.get(parent_);
-		// if (fields != null) {
-		// fields.updateRelations(blocks);
-		// }
 		updateOtherRelations(blocks);
 	}
 
