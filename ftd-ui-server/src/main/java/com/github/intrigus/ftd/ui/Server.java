@@ -1,5 +1,6 @@
 package com.github.intrigus.ftd.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -18,6 +19,7 @@ import com.github.intrigus.ftd.util.ThrowableUtil;
 
 import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.ContextHandler;
+import net.freeutils.httpserver.HTTPServer.FileContextHandler;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
@@ -33,8 +35,13 @@ public class Server {
 		addCompileHandler(host);
 		addUploadHandler(host);
 		addConnectedFtduinoHandler(host);
+		addScratchFilesHandler(host);
 
 		server.start();
+	}
+
+	private static void addScratchFilesHandler(VirtualHost host) throws IOException {
+		host.addContext("/scratch/", new FileContextHandler(new File("scratch/")));
 	}
 
 	private static void addConvertHandler(VirtualHost host) {
