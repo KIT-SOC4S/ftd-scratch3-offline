@@ -27,7 +27,20 @@ import net.freeutils.httpserver.HTTPServer.VirtualHost;
 public class Server {
 
 	public static void main(String[] args) throws IOException {
-		int port = 8888;
+		HTTPServer server = getNewConfiguredServerInstance(8888);
+		server.start();
+	}
+
+	/**
+	 * Returns a new server ready for serving the scratch web app and providing the
+	 * convert, compile, upload and ftduino enumeration function. You then only have
+	 * to call #start() on the server. The server will listen on the specified port.
+	 * 
+	 * @param port the port the server will listen on
+	 * @return a new server read for use
+	 * @throws IOException
+	 */
+	public static HTTPServer getNewConfiguredServerInstance(int port) throws IOException {
 		HTTPServer server = new HTTPServer(port);
 		VirtualHost host = server.getVirtualHost(null); // default virtual host
 
@@ -37,7 +50,7 @@ public class Server {
 		addConnectedFtduinoHandler(host);
 		addScratchFilesHandler(host);
 
-		server.start();
+		return server;
 	}
 
 	private static void addScratchFilesHandler(VirtualHost host) throws IOException {
