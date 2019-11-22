@@ -19,6 +19,8 @@ plugins {
     id "de.undercouch.download" version "4.0.1"
 }
 
+gradle.startParameter.showStacktrace = org.gradle.api.logging.configuration.ShowStacktrace.ALWAYS
+
 wrapper {
     gradleVersion = "5.0"
 }
