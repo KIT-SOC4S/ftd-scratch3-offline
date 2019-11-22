@@ -36,7 +36,9 @@ public class ScratchValue implements RelationShip {
 		if (values.get(1) instanceof List<?>) {
 			directValue = true;
 			this.array = (List<Object>) values.get(1);
-		} else if (values.get(1) instanceof String) {
+		} else if (values.get(1) instanceof String || values.get(1) == null) {
+			// can be null, e.g. when a while block doesn't have a block as input for its
+			// body
 			directValue = false;
 			this.id = (String) values.get(1);
 		} else {
@@ -108,19 +110,19 @@ public class ScratchValue implements RelationShip {
 			// break;
 			case Angle:
 				throw new IllegalStateException("unimplemented");
-				// break;
+			// break;
 			case Broadcast:
 				throw new IllegalStateException("unimplemented");
-				// break;
+			// break;
 			case Color:
 				throw new IllegalStateException("unimplemented");
-				// break;
+			// break;
 			case Integer:
 				return "scratchNumber(" + NumberUtil.asInt(array.get(1)) + ")";
 			// break;
 			case List:
 				throw new IllegalStateException("unimplemented");
-				// break;
+			// break;
 			case PosInteger:
 				return "scratchNumber(" + NumberUtil.asPosInt(array.get(1)) + ")";
 			// break;
@@ -132,12 +134,12 @@ public class ScratchValue implements RelationShip {
 			// break;
 			case Variable:
 				throw new IllegalStateException("unimplemented");
-				// break;
+			// break;
 			default:
 				throw new IllegalStateException("should not happen");
 			}
 		} else {
-			return this.block.generateCode();
+			return (this.block != null ? this.block.generateCode() : "");
 		}
 	}
 

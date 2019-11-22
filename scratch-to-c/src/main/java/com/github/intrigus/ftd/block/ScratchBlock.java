@@ -56,6 +56,6 @@ public abstract class ScratchBlock implements RelationShip {
 	protected abstract String gen();
 
 	public static enum BlockType {
-		HAT, REPORTER, BOOLEAN, C, STACK, CUSTOM_DEF, CUSTOM_HAT
+		HAT, REPORTER, BOOLEAN, C, STACK, CUSTOM_DEF, CUSTOM_HAT, INTERNAL
 	}
 }
