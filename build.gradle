@@ -127,7 +127,7 @@ project(":ftd-ui-server") {
         
         app {
             appName = "fus"
-            withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre")
+            withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre/Contents/Home")
         }
     }
     
