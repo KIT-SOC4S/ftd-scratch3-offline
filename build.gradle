@@ -1,6 +1,22 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+        
+     dependencies {
+        classpath group: 'org.mini2Dx', name: 'parcl', version: '1.6.1'
+    }
+}
+
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
+    id "de.undercouch.download" version "4.0.1"
 }
 
 wrapper {
@@ -16,15 +32,6 @@ allprojects {
 
     group = 'com.github.intrigus.ftd'
     version = '1.0.0'
-
-    buildscript {
-        repositories {
-            google()
-            jcenter()
-            mavenCentral()
-            maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        }
-    }
     
     test {
         useJUnitPlatform()
@@ -67,6 +74,7 @@ project(":arduino-cli") {
 
 project(":scratch-to-c") {
     apply plugin: "application"
+    apply plugin: "org.mini2Dx.parcl"
 
     application {
         mainClassName = "com.github.intrigus.ftd.Sb3ToArduinoC"
@@ -80,9 +88,21 @@ project(":scratch-to-c") {
     test {
     	workingDir = project(":arduino-cli").projectDir
     }
+    
+    parcl {		
+        linux {
+            binName = "stc"
+        }
+    }
 }
 
 project(":ftd-ui-server") {
+    apply plugin: "application"
+    apply plugin: "org.mini2Dx.parcl"
+
+    application {
+        mainClassName = "com.github.intrigus.ftd.ui.MainUI"
+    }
     
     dependencies {
         implementation "com.beust:jcommander:1.71"
@@ -91,4 +111,123 @@ project(":ftd-ui-server") {
         implementation project(":arduino-cli")
         implementation project(":scratch-to-c")
     }
+    
+    parcl {		
+        linux {
+            binName = "fus"
+            withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre")
+        }
+        
+        exe {
+            exeName = "fus"
+            withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre")
+        }
+        
+        app {
+            appName = "fus"
+            withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre")
+        }
+    }
+    
+    def targetFolder = {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            "${project.buildDir}/windows/"
+        } else if (Os.isFamily(Os.FAMILY_MAC)) {                
+            "${project.buildDir}/mac/"
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            "${project.buildDir}/linux/"
+        } else {
+            throw new GradleException("Failed to detect the running os")
+        }
+    }()
+    
+    def matchingJREUrlBase = "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/"
+    
+    def matchingJREFileName = {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            "OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip"
+        } else if (Os.isFamily(Os.FAMILY_MAC)) {                
+            "OpenJDK11U-jre_x64_mac_hotspot_11.0.5_10.tar.gz"
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            "OpenJDK11U-jre_x64_linux_hotspot_11.0.5_10.tar.gz"
+        } else {
+            throw new GradleException("Failed to detect the running os")
+        }
+    }()
+    
+    def matchingJRESHA256 = {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            "3f9e3e4256cb2c1b63b56864dca248d7f406874b21e859e5ac7ba7ada989eceb"
+        } else if (Os.isFamily(Os.FAMILY_MAC)) {                
+            "dfd212023321ebb41bce8cced15b4668001e86ecff6bffdd4f2591ccaae41566"
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            "2f08c469c9a8adea1b6ee3444ba2a8242a7e99d87976a077faf037a9eb7f884b"
+        } else {
+            throw new GradleException("Failed to detect the running os")
+        }
+    }()
+    
+    task copyArduinoCli(type: Copy) {
+        println targetFolder
+        from ("${project(":arduino-cli").projectDir}") {
+            include "arduino_cli/**"
+        }
+        into targetFolder
+        println 'copyArduinoCli'
+    }
+    
+    task fetchMatchingJRE(type: Download) {
+        src matchingJREUrlBase + matchingJREFileName
+        new File("${buildDir}/jre_tmp/").mkdirs()
+        dest new File("${buildDir}/jre_tmp/")
+    }
+    
+    task verifyMatchingJRE(type: Verify, dependsOn: fetchMatchingJRE) {
+        src new File("$buildDir/jre_tmp", matchingJREFileName)
+        algorithm 'SHA-256'
+        checksum matchingJRESHA256
+    }
+    
+    task unpackMatchingJRE(type: Copy) {
+        if(matchingJREFileName.endsWith(".zip")) {
+            from zipTree(new File("$buildDir/jre_tmp", matchingJREFileName))
+        } else {
+            from tarTree(new File("$buildDir/jre_tmp", matchingJREFileName))
+        }
+        into "$buildDir/jre_to_be_bundled"
+    }
+    
+    task distributeUnix(type: Tar) {
+        compression = Compression.GZIP
+        destinationDir = file("$buildDir/dist")
+        if (Os.isFamily(Os.FAMILY_MAC)) {                
+            archiveName = "my_distribution_mac_x86_64.tar"
+            from "${project.buildDir}/mac"
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            archiveName = "my_distribution_linux_x86_64.tar"
+            destinationDir = file("$buildDir/dist")
+            from "${project.buildDir}/linux"
+        }
+    }
+    
+    task distributeWindows(type: Zip) {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            archiveFileName = "my_distribution_windows_x86_64.zip"
+            destinationDirectory = file("$buildDir/dist")
+            from "${project.buildDir}/windows"
+        }
+    }
+    
+    task distribute {
+        doLast {            
+            println 'distribute'
+        }
+    }
+    
+    unpackMatchingJRE.dependsOn verifyMatchingJRE
+    bundleNative.dependsOn unpackMatchingJRE
+    copyArduinoCli.dependsOn bundleNative
+    distributeWindows.dependsOn copyArduinoCli
+    distributeUnix.dependsOn copyArduinoCli
+    distribute.dependsOn distributeWindows, distributeUnix
 }
