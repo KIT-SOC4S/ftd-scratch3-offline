@@ -145,8 +145,8 @@ public class ArduinoCliCreator extends DefaultTask {
 
 	private static final List<UrlsForOS> URLS = Arrays
 			.asList(LINUX_64/*
-							 * , LINUX_32 , LINUX_ARM_64, LINUX_ARM_32, WINDOWS_64, WINDOWS_32, MACOS_64
-							 */);
+							 * , LINUX_32 , LINUX_ARM_64, LINUX_ARM_32, WINDOWS_64, WINDOWS_32
+							 */, MACOS_64);
 
 	private Path projectFolder = getProject().getProjectDir().toPath();
 
