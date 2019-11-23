@@ -126,7 +126,12 @@ project(":ftd-ui-server") {
         }
         
         app {
-            appName = "fus"
+            appName = "fus"            
+            icon = "${project.projectDir}/icon.icns"
+            applicationCategory = "public.app-category.education"
+            displayName = 'fus'
+            identifier = 'com.github.intrigus.ftd.ui'
+            copyright = 'Copyright 2019 intrigus'
             withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre/Contents/Home")
         }
     }
@@ -170,12 +175,12 @@ project(":ftd-ui-server") {
     }()
     
     task copyArduinoCli(type: Copy) {
-        println targetFolder
-        from ("${project(":arduino-cli").projectDir}") {
-            include "arduino_cli/**"
+        doLast {
+            from ("${project(":arduino-cli").projectDir}") {
+                include "arduino_cli/**"
+            }
+            into targetFolder
         }
-        into targetFolder
-        println 'copyArduinoCli'
     }
     
     task fetchMatchingJRE(type: Download) {
