@@ -9,6 +9,7 @@ jdk:
 
 script:
   - ./gradlew check distribute 
+  - echo "HUH?"
   - echo | curl --upload-file ./ftd-ui-server/build/distributions/ftd-ui-server-1.0.0.tar https://transfer.sh/dist.tar
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
