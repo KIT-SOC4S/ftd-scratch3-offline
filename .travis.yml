@@ -9,8 +9,7 @@ jdk:
 
 script:
   - ./gradlew check distribute 
-  - ls -R | grep "jre"
-
+  - curl --upload-file ./build/distributions/ftd-ui-server-1.0.0.tar https://transfer.sh/dist.tar
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
