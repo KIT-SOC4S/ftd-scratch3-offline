@@ -175,12 +175,27 @@ project(":ftd-ui-server") {
     }()
     
     task copyArduinoCli(type: Copy) {
-        doLast {
-            from ("${project(":arduino-cli").projectDir}") {
-                include "arduino_cli/**"
-            }
-            into targetFolder
+        from ("${project(":arduino-cli").projectDir}") {
+            include "arduino_cli/**"
         }
+        into targetFolder        
+    }
+    
+    task fetchMatchingScratchRelease(type: Download) {
+        src "https://github.com/intrigus/scratch-gui/releases/download/0.2.0.int2/scratch_dist.tar"
+        new File("${buildDir}/scratch_tmp/").mkdirs()
+        dest new File("${buildDir}/scratch_tmp/")
+    }
+    
+    task verifyMatchingScratchRelease(type: Verify, dependsOn: fetchMatchingScratchRelease) {
+        src new File("${buildDir}/scratch_tmp/", "scratch_dist.tar")
+        algorithm 'SHA-256'
+        checksum "78a0607bc620f1f79ad4d889f3d028030a48db23e19967cefd8249b9c5d263b5"
+    }
+    
+    task unpackMatchingScratchRelease(type: Copy, dependsOn: verifyMatchingScratchRelease) {
+        from tarTree(new File("${buildDir}/scratch_tmp/", "scratch_dist.tar"))
+        into "${targetFolder}/scratch/"
     }
     
     task fetchMatchingJRE(type: Download) {
@@ -195,7 +210,7 @@ project(":ftd-ui-server") {
         checksum matchingJRESHA256
     }
     
-    task unpackMatchingJRE(type: Copy) {
+    task unpackMatchingJRE(type: Copy, dependsOn: verifyMatchingJRE) {
         if(matchingJREFileName.endsWith(".zip")) {
             from zipTree(new File("$buildDir/jre_tmp", matchingJREFileName))
         } else {
@@ -230,11 +245,11 @@ project(":ftd-ui-server") {
             println 'distribute'
         }
     }
-    
-    unpackMatchingJRE.dependsOn verifyMatchingJRE
+        
     bundleNative.dependsOn unpackMatchingJRE
     copyArduinoCli.dependsOn bundleNative
-    distributeWindows.dependsOn copyArduinoCli
-    distributeUnix.dependsOn copyArduinoCli
+    unpackMatchingScratchRelease.dependsOn bundleNative
+    distributeWindows.dependsOn copyArduinoCli, unpackMatchingScratchRelease
+    distributeUnix.dependsOn copyArduinoCli, unpackMatchingScratchRelease
     distribute.dependsOn distributeWindows, distributeUnix
 }
