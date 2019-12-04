@@ -111,8 +111,8 @@ public class Server {
 	 * @return whether the serial device is a ftduino
 	 */
 	private static Predicate<? super SerialDevice> ftduinoFilter() {
-		return (it) -> it.getAddress() != null && !it.getAddress().equals("")
-				&& it.getBoards().stream().anyMatch((ite) -> ite.getName().startsWith("ftDuino"));
+		return (it) -> it.getAddress() != null && !it.getAddress().equals("") && it.getBoards() != null && it
+				.getBoards().stream().anyMatch((ite) -> ite.getName() != null && ite.getName().startsWith("ftDuino"));
 	}
 
 	private static void addUploadHandler(VirtualHost host) {
