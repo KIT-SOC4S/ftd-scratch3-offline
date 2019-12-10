@@ -1,21 +1,28 @@
 package com.github.intrigus.ftd.ui;
 
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import net.freeutils.httpserver.HTTPServer;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.awt.event.ActionEvent;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class MainUI {
 
 	private JFrame frame;
 
 	private static int port = 8888;
+	private JTextField txtTest;
+
+	private URI targetUrl = java.net.URI.create("http://localhost:" + port + "/scratch/");
 
 	/**
 	 * Launch the application.
@@ -54,12 +61,13 @@ public class MainUI {
 		btnScratchImBrowser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://localhost:" + port + "/scratch/"));
-				} catch (IOException e1) {
-					// TODO add fitting error dialog using JOptionPane
-					// allow the user to manually copy and paste the url
-					// TODO Auto-generated catch block
+					java.awt.Desktop.getDesktop().browse(targetUrl);
+					throw new IOException();
+				} catch (IOException | UnsupportedOperationException e1) {
 					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null,
+							"Der Browser konnte leider nicht geöffnet werden.\nBitte kopiere die URL manuell in den Browser.",
+							"Fehler", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -67,6 +75,14 @@ public class MainUI {
 		btnScratchImBrowser.setBounds(80, 103, 236, 25);
 		new ServerStartWorker(btnScratchImBrowser).execute();
 		frame.getContentPane().add(btnScratchImBrowser);
+
+		txtTest = new JTextField();
+		txtTest.setHorizontalAlignment(SwingConstants.CENTER);
+		txtTest.setText(targetUrl.toString());
+		txtTest.setEditable(false);
+		txtTest.setBounds(80, 138, 236, 19);
+		frame.getContentPane().add(txtTest);
+		txtTest.setColumns(10);
 	}
 
 	private static class ServerStartWorker extends SwingWorker<Void, Void> {
