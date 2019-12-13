@@ -7,7 +7,7 @@ buildscript {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
-        
+
      dependencies {
         classpath group: 'org.mini2Dx', name: 'parcl', version: '1.6.1'
     }
@@ -34,19 +34,19 @@ allprojects {
 
     group = 'com.github.intrigus.ftd'
     version = '1.0.0'
-    
+
     test {
         useJUnitPlatform()
-                
+
         testLogging {
             exceptionFormat = 'full'
         }
     }
-    
+
     dependencies {
         implementation "org.slf4j:slf4j-simple:1.7.28"
         implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
-        
+
         // Use JUnit test framework
         testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
@@ -67,7 +67,7 @@ project(":arduino-cli") {
     application {
         mainClassName = "com.github.intrigus.ftd.ArduinoCLI"
     }
-    
+
     dependencies {
         implementation "com.beust:jcommander:1.71"
         implementation "org.zeroturnaround:zt-exec:1.11"
@@ -81,17 +81,17 @@ project(":scratch-to-c") {
     application {
         mainClassName = "com.github.intrigus.ftd.Sb3ToArduinoC"
     }
-    
+
     dependencies {
         implementation "com.beust:jcommander:1.71"
         implementation project(":arduino-cli")
     }
-    
+
     test {
     	workingDir = project(":arduino-cli").projectDir
     }
-    
-    parcl {		
+
+    parcl {
         linux {
             binName = "stc"
         }
@@ -105,7 +105,7 @@ project(":ftd-ui-server") {
     application {
         mainClassName = "com.github.intrigus.ftd.ui.MainUI"
     }
-    
+
     dependencies {
         implementation "com.beust:jcommander:1.71"
         implementation "net.freeutils:jlhttp:2.4"
@@ -113,20 +113,20 @@ project(":ftd-ui-server") {
         implementation project(":arduino-cli")
         implementation project(":scratch-to-c")
     }
-    
-    parcl {		
+
+    parcl {
         linux {
             binName = "fus"
             withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre")
         }
-        
+
         exe {
             exeName = "fus"
             withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre")
         }
-        
+
         app {
-            appName = "fus"            
+            appName = "fus"
             icon = "${project.projectDir}/icon.icns"
             applicationCategory = "public.app-category.education"
             displayName = 'fus'
@@ -135,11 +135,11 @@ project(":ftd-ui-server") {
             withJre("$buildDir/jre_to_be_bundled/jdk-11.0.5+10-jre/Contents/Home")
         }
     }
-    
+
     def targetFolder = {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             "${project.buildDir}/windows/"
-        } else if (Os.isFamily(Os.FAMILY_MAC)) {                
+        } else if (Os.isFamily(Os.FAMILY_MAC)) {
             "${project.buildDir}/mac/"
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
             "${project.buildDir}/linux/"
@@ -147,13 +147,13 @@ project(":ftd-ui-server") {
             throw new GradleException("Failed to detect the running os")
         }
     }()
-    
+
     def matchingJREUrlBase = "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/"
-    
+
     def matchingJREFileName = {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             "OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip"
-        } else if (Os.isFamily(Os.FAMILY_MAC)) {                
+        } else if (Os.isFamily(Os.FAMILY_MAC)) {
             "OpenJDK11U-jre_x64_mac_hotspot_11.0.5_10.tar.gz"
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
             "OpenJDK11U-jre_x64_linux_hotspot_11.0.5_10.tar.gz"
@@ -161,11 +161,11 @@ project(":ftd-ui-server") {
             throw new GradleException("Failed to detect the running os")
         }
     }()
-    
+
     def matchingJRESHA256 = {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             "3f9e3e4256cb2c1b63b56864dca248d7f406874b21e859e5ac7ba7ada989eceb"
-        } else if (Os.isFamily(Os.FAMILY_MAC)) {                
+        } else if (Os.isFamily(Os.FAMILY_MAC)) {
             "dfd212023321ebb41bce8cced15b4668001e86ecff6bffdd4f2591ccaae41566"
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
             "2f08c469c9a8adea1b6ee3444ba2a8242a7e99d87976a077faf037a9eb7f884b"
@@ -173,43 +173,43 @@ project(":ftd-ui-server") {
             throw new GradleException("Failed to detect the running os")
         }
     }()
-    
+
     task copyArduinoCli(type: Copy) {
         from ("${project(":arduino-cli").projectDir}") {
             include "arduino_cli/**"
         }
-        into targetFolder        
+        into targetFolder
     }
-    
+
     task fetchMatchingScratchRelease(type: Download) {
         src "https://github.com/intrigus/scratch-gui/releases/download/0.2.0.int2/scratch_dist.tar"
         new File("${buildDir}/scratch_tmp/").mkdirs()
         dest new File("${buildDir}/scratch_tmp/")
     }
-    
+
     task verifyMatchingScratchRelease(type: Verify, dependsOn: fetchMatchingScratchRelease) {
         src new File("${buildDir}/scratch_tmp/", "scratch_dist.tar")
         algorithm 'SHA-256'
         checksum "78a0607bc620f1f79ad4d889f3d028030a48db23e19967cefd8249b9c5d263b5"
     }
-    
+
     task unpackMatchingScratchRelease(type: Copy, dependsOn: verifyMatchingScratchRelease) {
         from tarTree(new File("${buildDir}/scratch_tmp/", "scratch_dist.tar"))
         into "${targetFolder}/scratch/"
     }
-    
+
     task fetchMatchingJRE(type: Download) {
         src matchingJREUrlBase + matchingJREFileName
         new File("${buildDir}/jre_tmp/").mkdirs()
         dest new File("${buildDir}/jre_tmp/")
     }
-    
+
     task verifyMatchingJRE(type: Verify, dependsOn: fetchMatchingJRE) {
         src new File("$buildDir/jre_tmp", matchingJREFileName)
         algorithm 'SHA-256'
         checksum matchingJRESHA256
     }
-    
+
     task unpackMatchingJRE(type: Copy, dependsOn: verifyMatchingJRE) {
         if(matchingJREFileName.endsWith(".zip")) {
             from zipTree(new File("$buildDir/jre_tmp", matchingJREFileName))
@@ -218,11 +218,11 @@ project(":ftd-ui-server") {
         }
         into "$buildDir/jre_to_be_bundled"
     }
-    
+
     task distributeUnix(type: Tar) {
         compression = Compression.GZIP
         destinationDir = file("$buildDir/dist")
-        if (Os.isFamily(Os.FAMILY_MAC)) {                
+        if (Os.isFamily(Os.FAMILY_MAC)) {
             archiveName = "my_distribution_mac_x86_64.tar"
             from "${project.buildDir}/mac"
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
@@ -231,21 +231,21 @@ project(":ftd-ui-server") {
             from "${project.buildDir}/linux"
         }
     }
-    
+
     task distributeWindows(type: Zip) {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            archiveFileName = "my_distribution_windows_x86_64.zip"
-            destinationDirectory = file("$buildDir/dist")
+            archiveName = "my_distribution_windows_x86_64.zip"
+            destinationDir = file("$buildDir/dist")
             from "${project.buildDir}/windows"
         }
     }
-    
+
     task distribute {
-        doLast {            
+        doLast {
             println 'distribute'
         }
     }
-        
+
     bundleNative.dependsOn unpackMatchingJRE
     copyArduinoCli.dependsOn bundleNative
     unpackMatchingScratchRelease.dependsOn bundleNative
