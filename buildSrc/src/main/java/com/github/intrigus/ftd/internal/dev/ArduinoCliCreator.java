@@ -214,6 +214,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	private void selectTargetArchitectures() {
 		String internalTarget = target;
 		if (target.equals("ALL")) {
+			targets = URLS;
 			return;
 		} else if (target.equals("NATIVE")) {
 			internalTarget = OsUtil.getTargetName();

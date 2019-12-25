@@ -1,4 +1,5 @@
 import org.apache.tools.ant.taskdefs.condition.Os
+import com.github.intrigus.ftd.util.OsUtil
 
 buildscript {
     repositories {
@@ -176,7 +177,7 @@ project(":ftd-ui-server") {
 
     task copyArduinoCli(type: Copy) {
         from ("${project(":arduino-cli").projectDir}") {
-            include "arduino_cli/**"
+            include "arduino_cli/${OsUtil.targetName}/**"
         }
         into targetFolder
     }
@@ -184,7 +185,7 @@ project(":ftd-ui-server") {
     task fetchMatchingScratchRelease(type: Download) {
         src "https://github.com/intrigus/scratch-gui/releases/download/0.2.0.int2/scratch_dist.tar"
         new File("${buildDir}/scratch_tmp/").mkdirs()
-        dest new File("${buildDir}/scratch_tmp/")
+        dest new File("${buildDir}/scratch_tmp/scratch_dist.tar")
     }
 
     task verifyMatchingScratchRelease(type: Verify, dependsOn: fetchMatchingScratchRelease) {
@@ -201,20 +202,20 @@ project(":ftd-ui-server") {
     task fetchMatchingJRE(type: Download) {
         src matchingJREUrlBase + matchingJREFileName
         new File("${buildDir}/jre_tmp/").mkdirs()
-        dest new File("${buildDir}/jre_tmp/")
+        dest new File("${buildDir}/jre_tmp/", matchingJREFileName)
     }
 
     task verifyMatchingJRE(type: Verify, dependsOn: fetchMatchingJRE) {
-        src new File("$buildDir/jre_tmp", matchingJREFileName)
+        src new File("${buildDir}/jre_tmp/", matchingJREFileName)
         algorithm 'SHA-256'
         checksum matchingJRESHA256
     }
 
     task unpackMatchingJRE(type: Copy, dependsOn: verifyMatchingJRE) {
         if(matchingJREFileName.endsWith(".zip")) {
-            from zipTree(new File("$buildDir/jre_tmp", matchingJREFileName))
+            from zipTree(new File("${buildDir}/jre_tmp/", matchingJREFileName))
         } else {
-            from tarTree(new File("$buildDir/jre_tmp", matchingJREFileName))
+            from tarTree(new File("${buildDir}/jre_tmp/", matchingJREFileName))
         }
         into "$buildDir/jre_to_be_bundled"
     }
@@ -241,10 +242,8 @@ project(":ftd-ui-server") {
     }
 
     task distribute {
-        doFirst {
-            // see ArduinoCliCreator#target for information about the possible values 
-            tasks.getByPath(":arduino-cli:gatherNecessaryBinaries").target = "ALL"
-        }
+        // see ArduinoCliCreator#target for information about the possible values 
+        tasks.getByPath(":arduino-cli:gatherNecessaryBinaries").target = "ALL"
                 
         doLast {
             println 'distribute'
