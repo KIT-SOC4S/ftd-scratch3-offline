@@ -236,23 +236,7 @@ public class ArduinoCLI {
 	 */
 	public static Path getArduinoCliBinary(Path workingDir) throws BinaryNotFoundException {
 		Objects.requireNonNull(workingDir);
-		String directory = null;
-		String bitness = OsUtil.IS_64_BIT ? "64" : "32";
-
-		if (OsUtil.IS_WINDOWS) {
-			directory = "WINDOWS" + "_" + bitness;
-		} else if (OsUtil.IS_MAC) {
-			directory = "MACOS" + "_" + bitness;
-		} else if (OsUtil.IS_LINUX) {
-			if (OsUtil.IS_ARM) {
-				directory = "LINUX_ARM" + "_" + bitness;
-			} else {
-				directory = "LINUX" + "_" + bitness;
-			}
-		} else {
-			throw new RuntimeException("Unsupported os. os.name: " + System.getProperty("os.name") + " os.arch: "
-					+ System.getProperty("os.arch"));
-		}
+		String directory = OsUtil.getTargetName();
 		Path path = workingDir.resolve(Paths.get("arduino_cli", directory, OsUtil.mapExecutableName("arduino-cli")))
 				.toAbsolutePath();
 		if (!Files.exists(path)) {

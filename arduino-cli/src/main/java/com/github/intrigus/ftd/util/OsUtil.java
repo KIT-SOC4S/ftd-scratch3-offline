@@ -40,4 +40,39 @@ public class OsUtil {
 			return executableName;
 		}
 	}
+
+	/**
+	 * Returns the name of this target.
+	 * <p>
+	 * <li>LINUX_64</li>
+	 * <li>LINUX_32</li>
+	 * <li>LINUX_ARM_64</li>
+	 * <li>LINUX_ARM_32</li>
+	 * <li>WINDOWS_64</li>
+	 * <li>WINDOWS_32</li>
+	 * <li>MACOS_64</li>
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public static String getTargetName() {
+		String internalTarget;
+		String bitness = OsUtil.IS_64_BIT ? "64" : "32";
+
+		if (OsUtil.IS_WINDOWS) {
+			internalTarget = "WINDOWS" + "_" + bitness;
+		} else if (OsUtil.IS_MAC) {
+			internalTarget = "MACOS" + "_" + bitness;
+		} else if (OsUtil.IS_LINUX) {
+			if (OsUtil.IS_ARM) {
+				internalTarget = "LINUX_ARM" + "_" + bitness;
+			} else {
+				internalTarget = "LINUX" + "_" + bitness;
+			}
+		} else {
+			throw new RuntimeException("Unsupported os. os.name: " + System.getProperty("os.name") + " os.arch: "
+					+ System.getProperty("os.arch"));
+		}
+		return internalTarget;
+	}
 }

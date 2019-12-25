@@ -216,34 +216,13 @@ public class ArduinoCliCreator extends DefaultTask {
 		if (target.equals("ALL")) {
 			return;
 		} else if (target.equals("NATIVE")) {
-			internalTarget = getNativeTarget();
+			internalTarget = OsUtil.getTargetName();
 		}
 
 		// Java requires realTarget to be final or effectively final which it can't
 		// prove for internalTarget so we have to manually help it
 		String realTarget = internalTarget;
 		targets = URLS.stream().filter((it) -> it.osName.equals(realTarget)).collect(Collectors.toList());
-	}
-
-	private String getNativeTarget() {
-		String internalTarget;
-		String bitness = OsUtil.IS_64_BIT ? "64" : "32";
-
-		if (OsUtil.IS_WINDOWS) {
-			internalTarget = "WINDOWS" + "_" + bitness;
-		} else if (OsUtil.IS_MAC) {
-			internalTarget = "MACOS" + "_" + bitness;
-		} else if (OsUtil.IS_LINUX) {
-			if (OsUtil.IS_ARM) {
-				internalTarget = "LINUX_ARM" + "_" + bitness;
-			} else {
-				internalTarget = "LINUX" + "_" + bitness;
-			}
-		} else {
-			throw new RuntimeException("Unsupported os. os.name: " + System.getProperty("os.name") + " os.arch: "
-					+ System.getProperty("os.arch"));
-		}
-		return internalTarget;
 	}
 
 	private void copyScratchFtduinoLibraryToPackageFolder() throws IOException {
