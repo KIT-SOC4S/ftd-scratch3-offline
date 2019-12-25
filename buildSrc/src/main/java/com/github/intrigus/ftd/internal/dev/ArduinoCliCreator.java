@@ -1,6 +1,5 @@
 package com.github.intrigus.ftd.internal.dev;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,19 +8,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -32,6 +24,7 @@ import org.zeroturnaround.exec.ProcessResult;
 import com.github.intrigus.ftd.ArduinoCLI;
 import com.github.intrigus.ftd.exception.BinaryNotFoundException;
 import com.github.intrigus.ftd.internal.util.FileUtil;
+import com.github.intrigus.ftd.util.OsUtil;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -153,16 +146,46 @@ public class ArduinoCliCreator extends DefaultTask {
 			"https://downloads.arduino.cc/tools/serial-discovery-macosx-v" + SERIAL_DISCOVERY_VERSION + ".tar.bz2",
 			"serial-discovery.tar.bz2");
 
-	private static final List<UrlsForOS> URLS = Arrays
-			.asList(LINUX_64/*
-							 * , LINUX_32 , LINUX_ARM_64, LINUX_ARM_32, WINDOWS_64, WINDOWS_32 , MACOS_64
-							 */);
+	private static final List<UrlsForOS> URLS = Arrays.asList(LINUX_64, LINUX_32, LINUX_ARM_64, LINUX_ARM_32,
+			WINDOWS_64, WINDOWS_32, MACOS_64);
+
+	private List<UrlsForOS> targets;
 
 	private Path projectFolder = getProject().getProjectDir().toPath();
 
 	@OutputDirectory
 	private Path getBinariesFolder() {
 		return projectFolder.resolve("arduino_cli");
+	}
+
+	private String target = "NATIVE";
+
+	/**
+	 * Determines which architecture will be targeted. Possible values:
+	 * <p>
+	 * <li>ALL - Builds all available architectures (default when
+	 * {@code gradle distribute}ing.</li>
+	 * <li>NATIVE - Only builds for the architecture of the current host
+	 * (default).</li>
+	 * <li>LINUX_64</li>
+	 * <li>LINUX_32</li>
+	 * <li>LINUX_ARM_64</li>
+	 * <li>LINUX_ARM_32</li>
+	 * <li>WINDOWS_64</li>
+	 * <li>WINDOWS_32</li>
+	 * <li>MACOS_64</li>
+	 * </p>
+	 * Other values are silently ignored!
+	 * 
+	 * @return
+	 */
+	@Input
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
 	}
 
 	@InputDirectory
@@ -173,6 +196,7 @@ public class ArduinoCliCreator extends DefaultTask {
 
 	@TaskAction
 	public void createArduinoCli() throws IOException, InterruptedException {
+		selectTargetArchitectures();
 		fetchArduinoCli();
 		fetchArduinoCores();
 		fetchAvrGcc();
@@ -187,8 +211,43 @@ public class ArduinoCliCreator extends DefaultTask {
 		updateArduinoCliCoreIndex();
 	}
 
+	private void selectTargetArchitectures() {
+		String internalTarget = target;
+		if (target.equals("ALL")) {
+			return;
+		} else if (target.equals("NATIVE")) {
+			internalTarget = getNativeTarget();
+		}
+
+		// Java requires realTarget to be final or effectively final which it can't
+		// prove for internalTarget so we have to manually help it
+		String realTarget = internalTarget;
+		targets = URLS.stream().filter((it) -> it.osName.equals(realTarget)).collect(Collectors.toList());
+	}
+
+	private String getNativeTarget() {
+		String internalTarget;
+		String bitness = OsUtil.IS_64_BIT ? "64" : "32";
+
+		if (OsUtil.IS_WINDOWS) {
+			internalTarget = "WINDOWS" + "_" + bitness;
+		} else if (OsUtil.IS_MAC) {
+			internalTarget = "MACOS" + "_" + bitness;
+		} else if (OsUtil.IS_LINUX) {
+			if (OsUtil.IS_ARM) {
+				internalTarget = "LINUX_ARM" + "_" + bitness;
+			} else {
+				internalTarget = "LINUX" + "_" + bitness;
+			}
+		} else {
+			throw new RuntimeException("Unsupported os. os.name: " + System.getProperty("os.name") + " os.arch: "
+					+ System.getProperty("os.arch"));
+		}
+		return internalTarget;
+	}
+
 	private void copyScratchFtduinoLibraryToPackageFolder() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			copyScratchFtduinoLibraryToPackageFolder(urls);
 		}
 	}
@@ -209,7 +268,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void createArduinoCliConfigFile() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			createArduinoCliConfigFile(urls);
 		}
 	}
@@ -224,7 +283,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void updateArduinoCliCoreIndex() throws IOException, InterruptedException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			updateArduinoCliCoreIndex(urls);
 		}
 	}
@@ -252,7 +311,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void createFolderStructureForArduinoCli() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			createFolderStructureForArduinoCli(urls);
 		}
 	}
@@ -306,7 +365,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchArduinoCli() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			fetchArduinoCli(urls);
 		}
 	}
@@ -333,7 +392,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchArduinoCores() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			fetchArduinoCores(urls);
 		}
 	}
@@ -361,7 +420,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchAvrDude() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			fetchAvrDude(urls);
 		}
 	}
@@ -388,7 +447,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchAvrGcc() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			fetchAvrGcc(urls);
 		}
 	}
@@ -420,7 +479,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchCTags() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			fetchCTags(urls);
 		}
 	}
@@ -447,7 +506,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchFtduinoLibs() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			fetchFtduinoLibs(urls);
 		}
 	}
@@ -475,7 +534,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchSerialDiscovery() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			fetchSerialDiscovery(urls);
 		}
 	}
@@ -533,7 +592,7 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void stripUnnecessaryStuff() throws IOException {
-		for (UrlsForOS urls : URLS) {
+		for (UrlsForOS urls : targets) {
 			stripUnnecessaryStuff(urls);
 		}
 	}

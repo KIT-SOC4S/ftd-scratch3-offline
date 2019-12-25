@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -65,8 +66,10 @@ public class TarExtractor {
 						Files.createDirectories(pathEntryOutput);
 				} else {
 					Files.createDirectories(pathEntryOutput.getParent());
-					Files.copy(new ByteArrayInputStream(entry.getValue().data), pathEntryOutput);
+					Files.copy(new ByteArrayInputStream(entry.getValue().data), pathEntryOutput,
+							StandardCopyOption.REPLACE_EXISTING);
 				}
+				// apply posix permissions to this file
 				MyFileModeMapper.map(entry.getValue().entry.getMode(), pathEntryOutput);
 			}
 
