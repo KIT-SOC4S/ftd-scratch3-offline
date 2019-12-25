@@ -1,5 +1,6 @@
 package com.github.intrigus.ftd.internal.dev;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +9,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
@@ -145,8 +155,8 @@ public class ArduinoCliCreator extends DefaultTask {
 
 	private static final List<UrlsForOS> URLS = Arrays
 			.asList(LINUX_64/*
-							 * , LINUX_32 , LINUX_ARM_64, LINUX_ARM_32, WINDOWS_64, WINDOWS_32
-							 */, MACOS_64);
+							 * , LINUX_32 , LINUX_ARM_64, LINUX_ARM_32, WINDOWS_64, WINDOWS_32 , MACOS_64
+							 */);
 
 	private Path projectFolder = getProject().getProjectDir().toPath();
 
@@ -534,4 +544,5 @@ public class ArduinoCliCreator extends DefaultTask {
 		stripSecondPart(urls, targetDir);
 		stripGdbObjdump(urls, targetDir);
 	}
+
 }

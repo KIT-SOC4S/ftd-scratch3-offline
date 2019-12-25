@@ -10,9 +10,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import org.rauschig.jarchivelib.Archiver;
 import org.rauschig.jarchivelib.ArchiverFactory;
-import org.zeroturnaround.exec.InvalidExitValueException;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.ProcessResult;
+import org.rauschig.jarchivelib.CompressionType;
 
 public class FileUtil {
 	/**
@@ -109,21 +107,11 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static void extract(Path pathInput, Path pathOutput) throws IOException {
-		if (pathInput.toFile().getName().endsWith(".tar.bz2")) {
-			ProcessResult tarResult = null;
-			try {
-				tarResult = new ProcessExecutor()
-						.command("tar", "-xf", pathInput.toAbsolutePath().toString(), "-C",
-								pathOutput.toAbsolutePath().toString())
-						.destroyOnExit().exitValueNormal().readOutput(true).executeNoTimeout();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				throw new IOException(e);
-			} catch (InvalidExitValueException e) {
-				System.out.println(tarResult.outputUTF8());
-				throw new RuntimeException(
-						"Tar process did not exit with exit value 0. Check StdOut. Exit value: " + e.getExitValue());
-			}
+		String fileName = pathInput.toFile().getName();
+		if (fileName.endsWith(".tar.bz2") || fileName.endsWith("tbz2")) {
+			new TarExtractor(CompressionType.BZIP2).extract(pathInput, pathOutput);
+		} else if (fileName.endsWith(".tar.gz") || fileName.endsWith(".tgz")) {
+			new TarExtractor(CompressionType.GZIP).extract(pathInput, pathOutput);
 		} else {
 			Archiver archiver = ArchiverFactory.createArchiver(pathInput.toFile());
 			archiver.extract(pathInput.toFile(), pathOutput.toFile());
