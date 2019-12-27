@@ -146,8 +146,8 @@ public class ArduinoCliCreator extends DefaultTask {
 			"https://downloads.arduino.cc/tools/serial-discovery-macosx-v" + SERIAL_DISCOVERY_VERSION + ".tar.bz2",
 			"serial-discovery.tar.bz2");
 
-	private static final List<UrlsForOS> URLS = Arrays.asList(LINUX_64, LINUX_32, LINUX_ARM_64, LINUX_ARM_32,
-			WINDOWS_64, WINDOWS_32, MACOS_64);
+	// the shared client used for making http requests
+	private final OkHttpClient client = new OkHttpClient();
 
 	private List<UrlsForOS> targets;
 
@@ -351,7 +351,6 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchArduinoCli(UrlsForOS urls) throws IOException {
-		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder().url(urls.arduinoCliUrl).build();
 
 		try (Response response = client.newCall(request).execute()) {
@@ -378,7 +377,6 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchArduinoCores(UrlsForOS urls) throws IOException {
-		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder()
 				.url("http://downloads.arduino.cc/cores/avr-" + ARDUINO_VERSION + ".tar.bz2").build();
 
@@ -406,7 +404,6 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchAvrDude(UrlsForOS urls) throws IOException {
-		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder().url(urls.avrDudeUrl).build();
 
 		try (Response response = client.newCall(request).execute()) {
@@ -433,7 +430,6 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchAvrGcc(UrlsForOS urls) throws IOException {
-		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder().url(urls.avrGccUrl).build();
 
 		try (Response response = client.newCall(request).execute()) {
@@ -465,7 +461,6 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchCTags(UrlsForOS urls) throws IOException {
-		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder().url(urls.ctagsUrl).build();
 
 		try (Response response = client.newCall(request).execute()) {
@@ -492,7 +487,6 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchFtduinoLibs(UrlsForOS urls) throws IOException {
-		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder().url("https://github.com/harbaum/ftduino/releases/download/"
 				+ FTDUINO_VERSION + "/ftduino-" + FTDUINO_VERSION + ".zip").build();
 
@@ -520,7 +514,6 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchSerialDiscovery(UrlsForOS urls) throws IOException {
-		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder().url(urls.serialDiscoveryUrl).build();
 
 		try (Response response = client.newCall(request).execute()) {
