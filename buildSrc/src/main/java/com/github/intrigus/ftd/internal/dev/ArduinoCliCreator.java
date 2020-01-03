@@ -10,6 +10,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
@@ -149,6 +152,9 @@ public class ArduinoCliCreator extends DefaultTask {
 	// the shared client used for making http requests
 	private final OkHttpClient client = new OkHttpClient();
 
+	private static final List<UrlsForOS> URLS = Arrays.asList(LINUX_64, LINUX_32, LINUX_ARM_64, LINUX_ARM_32,
+			WINDOWS_64, WINDOWS_32, MACOS_64);
+
 	private List<UrlsForOS> targets;
 
 	private Path projectFolder = getProject().getProjectDir().toPath();
@@ -194,21 +200,63 @@ public class ArduinoCliCreator extends DefaultTask {
 				.resolve(Paths.get("arduino-src", "Scratch_Ftduino_All"));
 	}
 
+	private static interface ExceptionWrappingConsumer<T> {
+		void accept(T t) throws IOException;
+	}
+
 	@TaskAction
 	public void createArduinoCli() throws IOException, InterruptedException {
 		selectTargetArchitectures();
-		fetchArduinoCli();
-		fetchArduinoCores();
-		fetchAvrGcc();
-		fetchAvrDude();
-		fetchCTags();
-		fetchSerialDiscovery();
-		fetchFtduinoLibs();
-		stripUnnecessaryStuff();
-		createFolderStructureForArduinoCli();
-		copyScratchFtduinoLibraryToPackageFolder();
-		createArduinoCliConfigFile();
-		updateArduinoCliCoreIndex();
+		fetchDependencies();
+
+		ExecutorService otherTaskExecutor = Executors.newWorkStealingPool();
+		for (UrlsForOS target : targets) {
+			otherTaskExecutor.submit(() -> {
+				try {
+					stripUnnecessaryStuff(target);
+					createFolderStructureForArduinoCli(target);
+					copyScratchFtduinoLibraryToPackageFolder(target);
+					createArduinoCliConfigFile(target);
+					updateArduinoCliCoreIndex(target);
+				} catch (IOException e) {
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
+			});
+		}
+		otherTaskExecutor.shutdown();
+		otherTaskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+
+	}
+
+	private void fetchDependencies() throws InterruptedException {
+		// execute all fetch task in parallel
+		ExecutorService fetchTaskExecutor = Executors.newWorkStealingPool();
+
+		ExceptionWrappingConsumer<UrlsForOS> fetchArduinoCli = (UrlsForOS target) -> fetchArduinoCli(target);
+		ExceptionWrappingConsumer<UrlsForOS> fetchArduinoCores = (UrlsForOS target) -> fetchArduinoCores(target);
+		ExceptionWrappingConsumer<UrlsForOS> fetchAvrGcc = (UrlsForOS target) -> fetchAvrGcc(target);
+		ExceptionWrappingConsumer<UrlsForOS> fetchAvrDude = (UrlsForOS target) -> fetchAvrDude(target);
+		ExceptionWrappingConsumer<UrlsForOS> fetchCTags = (UrlsForOS target) -> fetchCTags(target);
+		ExceptionWrappingConsumer<UrlsForOS> fetchSerialDiscovery = (UrlsForOS target) -> fetchSerialDiscovery(target);
+		ExceptionWrappingConsumer<UrlsForOS> fetchFtduinoLibs = (UrlsForOS target) -> fetchFtduinoLibs(target);
+		List<ExceptionWrappingConsumer<UrlsForOS>> fetchFunctions = List.of(fetchArduinoCli, fetchArduinoCores,
+				fetchAvrGcc, fetchAvrDude, fetchCTags, fetchSerialDiscovery, fetchFtduinoLibs);
+
+		for (UrlsForOS target : targets) {
+			for (ExceptionWrappingConsumer<UrlsForOS> fetchFunction : fetchFunctions) {
+				fetchTaskExecutor.submit(() -> {
+					try {
+						fetchFunction.accept(target);
+					} catch (IOException e) {
+						e.printStackTrace();
+						throw new RuntimeException(e);
+					}
+				});
+			}
+		}
+		fetchTaskExecutor.shutdown();
+		fetchTaskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 	}
 
 	private void selectTargetArchitectures() {
@@ -226,12 +274,6 @@ public class ArduinoCliCreator extends DefaultTask {
 		targets = URLS.stream().filter((it) -> it.osName.equals(realTarget)).collect(Collectors.toList());
 	}
 
-	private void copyScratchFtduinoLibraryToPackageFolder() throws IOException {
-		for (UrlsForOS urls : targets) {
-			copyScratchFtduinoLibraryToPackageFolder(urls);
-		}
-	}
-
 	private void copyScratchFtduinoLibraryToPackageFolder(UrlsForOS urls) throws IOException {
 		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
 		Path packagesDir = targetDir.resolve("packages");
@@ -247,12 +289,6 @@ public class ArduinoCliCreator extends DefaultTask {
 		FileUtil.copyDirectoryContent(getScratchFtduinoLibraryFolder(), scratchFtduinoLibraryTargetDir);
 	}
 
-	private void createArduinoCliConfigFile() throws IOException {
-		for (UrlsForOS urls : targets) {
-			createArduinoCliConfigFile(urls);
-		}
-	}
-
 	private void createArduinoCliConfigFile(UrlsForOS urls) throws IOException {
 		Path targetFile = projectFolder.resolve("arduino_cli").resolve(urls.osName).resolve("arduino-cli.yaml");
 		String arduinoCliConfigFilePath = "/com/github/intrigus/ftd/internal/dev/arduino-cli.yaml";
@@ -260,12 +296,6 @@ public class ArduinoCliCreator extends DefaultTask {
 		Objects.requireNonNull(arduinoCliConfigFileStream,
 				"Failed to get an InputStream for the ressource " + arduinoCliConfigFilePath);
 		Files.copy(arduinoCliConfigFileStream, targetFile, StandardCopyOption.REPLACE_EXISTING);
-	}
-
-	private void updateArduinoCliCoreIndex() throws IOException, InterruptedException {
-		for (UrlsForOS urls : targets) {
-			updateArduinoCliCoreIndex(urls);
-		}
 	}
 
 	private void updateArduinoCliCoreIndex(UrlsForOS urls) {
@@ -287,12 +317,6 @@ public class ArduinoCliCreator extends DefaultTask {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("Compilation got interrupted.", e);
-		}
-	}
-
-	private void createFolderStructureForArduinoCli() throws IOException {
-		for (UrlsForOS urls : targets) {
-			createFolderStructureForArduinoCli(urls);
 		}
 	}
 
@@ -344,12 +368,6 @@ public class ArduinoCliCreator extends DefaultTask {
 		FileUtil.moveDirectoryContent(ftduinoDir, ftduinoTargetDir);
 	}
 
-	private void fetchArduinoCli() throws IOException {
-		for (UrlsForOS urls : targets) {
-			fetchArduinoCli(urls);
-		}
-	}
-
 	private void fetchArduinoCli(UrlsForOS urls) throws IOException {
 		Request request = new Request.Builder().url(urls.arduinoCliUrl).build();
 
@@ -367,12 +385,6 @@ public class ArduinoCliCreator extends DefaultTask {
 			FileUtil.extract(downloadedFile, targetDir);
 
 			Files.delete(downloadedFile);
-		}
-	}
-
-	private void fetchArduinoCores() throws IOException {
-		for (UrlsForOS urls : targets) {
-			fetchArduinoCores(urls);
 		}
 	}
 
@@ -397,12 +409,6 @@ public class ArduinoCliCreator extends DefaultTask {
 		}
 	}
 
-	private void fetchAvrDude() throws IOException {
-		for (UrlsForOS urls : targets) {
-			fetchAvrDude(urls);
-		}
-	}
-
 	private void fetchAvrDude(UrlsForOS urls) throws IOException {
 		Request request = new Request.Builder().url(urls.avrDudeUrl).build();
 
@@ -420,12 +426,6 @@ public class ArduinoCliCreator extends DefaultTask {
 			FileUtil.extract(downloadedFile, targetDir);
 
 			Files.delete(downloadedFile);
-		}
-	}
-
-	private void fetchAvrGcc() throws IOException {
-		for (UrlsForOS urls : targets) {
-			fetchAvrGcc(urls);
 		}
 	}
 
@@ -454,12 +454,6 @@ public class ArduinoCliCreator extends DefaultTask {
 		}
 	}
 
-	private void fetchCTags() throws IOException {
-		for (UrlsForOS urls : targets) {
-			fetchCTags(urls);
-		}
-	}
-
 	private void fetchCTags(UrlsForOS urls) throws IOException {
 		Request request = new Request.Builder().url(urls.ctagsUrl).build();
 
@@ -477,12 +471,6 @@ public class ArduinoCliCreator extends DefaultTask {
 			FileUtil.extract(downloadedFile, targetDir);
 
 			Files.delete(downloadedFile);
-		}
-	}
-
-	private void fetchFtduinoLibs() throws IOException {
-		for (UrlsForOS urls : targets) {
-			fetchFtduinoLibs(urls);
 		}
 	}
 
@@ -504,12 +492,6 @@ public class ArduinoCliCreator extends DefaultTask {
 			FileUtil.extract(downloadedFile, targetDir);
 
 			Files.delete(downloadedFile);
-		}
-	}
-
-	private void fetchSerialDiscovery() throws IOException {
-		for (UrlsForOS urls : targets) {
-			fetchSerialDiscovery(urls);
 		}
 	}
 
@@ -561,12 +543,6 @@ public class ArduinoCliCreator extends DefaultTask {
 				|| name.startsWith("avrxmega") || (name.startsWith("avr") && !name.equals("avr5")));
 		for (File toDelete : filesToDelete) {
 			FileUtil.deleteDirectory(toDelete.toPath());
-		}
-	}
-
-	private void stripUnnecessaryStuff() throws IOException {
-		for (UrlsForOS urls : targets) {
-			stripUnnecessaryStuff(urls);
 		}
 	}
 
