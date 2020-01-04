@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -216,6 +217,7 @@ public class ArduinoCliCreator extends DefaultTask {
 					stripUnnecessaryStuff(target);
 					createFolderStructureForArduinoCli(target);
 					copyScratchFtduinoLibraryToPackageFolder(target);
+					patchFtduinoPlatformTxtDefinition(target);
 					createArduinoCliConfigFile(target);
 					updateArduinoCliCoreIndex(target);
 				} catch (IOException e) {
@@ -257,6 +259,19 @@ public class ArduinoCliCreator extends DefaultTask {
 		}
 		fetchTaskExecutor.shutdown();
 		fetchTaskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+	}
+
+	private void patchFtduinoPlatformTxtDefinition(UrlsForOS urls) throws IOException {
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path packagesDir = targetDir.resolve("packages");
+
+		Path ftduinoDir = packagesDir.resolve("ftduino");
+		Path platformTxtFile = ftduinoDir.resolve(Paths.get("hardware/avr/" + FTDUINO_VERSION + "/platform.txt"));
+		Files.writeString(platformTxtFile, "\n", StandardOpenOption.APPEND);
+		Files.writeString(platformTxtFile, "recipe.output.tmp_file={build.project_name}.hex\n",
+				StandardOpenOption.APPEND);
+		Files.writeString(platformTxtFile, "recipe.output.save_file={build.project_name}.{build.variant}.hex\n",
+				StandardOpenOption.APPEND);
 	}
 
 	private void selectTargetArchitectures() {
