@@ -21,12 +21,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
-import org.zeroturnaround.exec.InvalidExitValueException;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.ProcessResult;
 
-import com.github.intrigus.ftd.ArduinoCLI;
-import com.github.intrigus.ftd.exception.BinaryNotFoundException;
 import com.github.intrigus.ftd.internal.util.FileUtil;
 import com.github.intrigus.ftd.util.OsUtil;
 
@@ -155,6 +150,9 @@ public class ArduinoCliCreator extends DefaultTask {
 
 	private static final List<UrlsForOS> URLS = Arrays.asList(LINUX_64, LINUX_32, LINUX_ARM_64, LINUX_ARM_32,
 			WINDOWS_64, WINDOWS_32, MACOS_64);
+	private static final String LIBRARY_INDEX_JSON_URL = "https://downloads.arduino.cc/libraries/library_index.json";
+	private static final String PACAKGE_INDEX_JSON_URL = "https://downloads.arduino.cc/packages/package_index.json";
+	private static final String PACKAGE_FTDUINO_INDEX_JSON_URL = "https://harbaum.github.io/ftduino/package_ftduino_index.json";
 
 	private List<UrlsForOS> targets;
 
@@ -219,7 +217,6 @@ public class ArduinoCliCreator extends DefaultTask {
 					copyScratchFtduinoLibraryToPackageFolder(target);
 					patchFtduinoPlatformTxtDefinition(target);
 					createArduinoCliConfigFile(target);
-					updateArduinoCliCoreIndex(target);
 				} catch (IOException e) {
 					e.printStackTrace();
 					throw new RuntimeException(e);
@@ -242,8 +239,11 @@ public class ArduinoCliCreator extends DefaultTask {
 		ExceptionWrappingConsumer<UrlsForOS> fetchCTags = (UrlsForOS target) -> fetchCTags(target);
 		ExceptionWrappingConsumer<UrlsForOS> fetchSerialDiscovery = (UrlsForOS target) -> fetchSerialDiscovery(target);
 		ExceptionWrappingConsumer<UrlsForOS> fetchFtduinoLibs = (UrlsForOS target) -> fetchFtduinoLibs(target);
+		ExceptionWrappingConsumer<UrlsForOS> fetchArduinoCliConfigFiles = (
+				UrlsForOS target) -> fetchArduinoCliConfigFiles(target);
 		List<ExceptionWrappingConsumer<UrlsForOS>> fetchFunctions = List.of(fetchArduinoCli, fetchArduinoCores,
-				fetchAvrGcc, fetchAvrDude, fetchCTags, fetchSerialDiscovery, fetchFtduinoLibs);
+				fetchAvrGcc, fetchAvrDude, fetchCTags, fetchSerialDiscovery, fetchFtduinoLibs,
+				fetchArduinoCliConfigFiles);
 
 		for (UrlsForOS target : targets) {
 			for (ExceptionWrappingConsumer<UrlsForOS> fetchFunction : fetchFunctions) {
@@ -313,28 +313,6 @@ public class ArduinoCliCreator extends DefaultTask {
 		Files.copy(arduinoCliConfigFileStream, targetFile, StandardCopyOption.REPLACE_EXISTING);
 	}
 
-	private void updateArduinoCliCoreIndex(UrlsForOS urls) {
-		try {
-			ProcessResult pr = new ProcessExecutor()
-					.directory(ArduinoCLI.getArduinoCliBinary(projectFolder).getParent().toAbsolutePath().toFile())
-					.command(ArduinoCLI.getArduinoCliBinary(projectFolder).toAbsolutePath().toString(), "core",
-							"update-index")
-					.destroyOnExit().exitValueNormal().readOutput(true).executeNoTimeout();
-			System.out.println(pr.outputUTF8());
-		} catch (BinaryNotFoundException e) {
-			throw new RuntimeException("Failed to locate the binary used for updating the index.", e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (InvalidExitValueException e) {
-			System.err.println(e.getResult().outputUTF8());
-			throw new RuntimeException("Updating index did not exit with exit value 0. Exit value: " + e.getExitValue(),
-					e);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new RuntimeException("Compilation got interrupted.", e);
-		}
-	}
-
 	private void createFolderStructureForArduinoCli(UrlsForOS urls) throws IOException {
 		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
 		Path packagesDir = targetDir.resolve("packages");
@@ -400,6 +378,60 @@ public class ArduinoCliCreator extends DefaultTask {
 			FileUtil.extract(downloadedFile, targetDir);
 
 			Files.delete(downloadedFile);
+		}
+	}
+
+	private void fetchArduinoCliConfigFiles(UrlsForOS urls) throws IOException {
+		fetchArduinoCliLibraryIndexJson(urls);
+		fetchArduinoCliPackageIndexJson(urls);
+		fetchArduinoCliFtduinoIndexJson(urls);
+	}
+
+	private void fetchArduinoCliLibraryIndexJson(UrlsForOS urls) throws IOException {
+		Request request = new Request.Builder().url(LIBRARY_INDEX_JSON_URL).build();
+
+		try (Response response = client.newCall(request).execute()) {
+			if (!response.isSuccessful())
+				throw new IOException("Unexpected code " + response);
+			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+			Files.createDirectories(targetDir);
+			Path downloadedFile = targetDir.resolve("library_index.json");
+			Files.createFile(downloadedFile);
+			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+			sink.writeAll(response.body().source());
+			sink.close();
+		}
+	}
+
+	private void fetchArduinoCliPackageIndexJson(UrlsForOS urls) throws IOException {
+		Request request = new Request.Builder().url(PACAKGE_INDEX_JSON_URL).build();
+
+		try (Response response = client.newCall(request).execute()) {
+			if (!response.isSuccessful())
+				throw new IOException("Unexpected code " + response);
+			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+			Files.createDirectories(targetDir);
+			Path downloadedFile = targetDir.resolve("package_index.json");
+			Files.createFile(downloadedFile);
+			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+			sink.writeAll(response.body().source());
+			sink.close();
+		}
+	}
+
+	private void fetchArduinoCliFtduinoIndexJson(UrlsForOS urls) throws IOException {
+		Request request = new Request.Builder().url(PACKAGE_FTDUINO_INDEX_JSON_URL).build();
+
+		try (Response response = client.newCall(request).execute()) {
+			if (!response.isSuccessful())
+				throw new IOException("Unexpected code " + response);
+			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+			Files.createDirectories(targetDir);
+			Path downloadedFile = targetDir.resolve("package_ftduino_index.json");
+			Files.createFile(downloadedFile);
+			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+			sink.writeAll(response.body().source());
+			sink.close();
 		}
 	}
 
