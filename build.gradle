@@ -181,6 +181,14 @@ project(":ftd-ui-server") {
         }
         into targetFolder
     }
+    
+    task verifyCopyArduinoCli(dependsOn: copyArduinoCli) {
+        doLast {
+            if(!file("${targetFolder}/arduino_cli/${OsUtil.targetName}/arduino-cli").exists()) {
+                throw new GradleException("arduino cli files for target: ${OsUtil.targetName} not found.")
+            }
+        }
+    }
 
     task fetchMatchingScratchRelease(type: Download) {
         src "https://github.com/intrigus/scratch-gui/releases/download/0.2.0.int2/scratch_dist.tar"
@@ -253,7 +261,7 @@ project(":ftd-ui-server") {
     bundleNative.dependsOn unpackMatchingJRE
     copyArduinoCli.dependsOn bundleNative
     unpackMatchingScratchRelease.dependsOn bundleNative
-    distributeWindows.dependsOn copyArduinoCli, unpackMatchingScratchRelease
-    distributeUnix.dependsOn copyArduinoCli, unpackMatchingScratchRelease
+    distributeWindows.dependsOn verifyCopyArduinoCli, unpackMatchingScratchRelease
+    distributeUnix.dependsOn verifyCopyArduinoCli, unpackMatchingScratchRelease
     distribute.dependsOn distributeWindows, distributeUnix
 }
