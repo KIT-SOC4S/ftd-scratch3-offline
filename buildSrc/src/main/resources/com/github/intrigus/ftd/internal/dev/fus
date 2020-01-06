@@ -1,0 +1,5 @@
+#!/bin/bash
+APPLICATION_HOME="$( cd "$( dirname "$0" )" && pwd )"
+cd "$APPLICATION_HOME"
+
+exec ./JavaAppLauncher

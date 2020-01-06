@@ -1,5 +1,6 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import com.github.intrigus.ftd.util.OsUtil
+import com.github.intrigus.ftd.internal.dev.DoMacPatching
 
 buildscript {
     repositories {
@@ -141,7 +142,7 @@ project(":ftd-ui-server") {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             "${project.buildDir}/windows/"
         } else if (Os.isFamily(Os.FAMILY_MAC)) {
-            "${project.buildDir}/mac/"
+            "${project.buildDir}/mac/${parcl.app.appName}.app/Contents/Resources/"
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
             "${project.buildDir}/linux/"
         } else {
@@ -227,7 +228,11 @@ project(":ftd-ui-server") {
         }
         into "$buildDir/jre_to_be_bundled"
     }
-
+    
+    task patchMacOsDistribution(type: DoMacPatching) {
+        appBundleName = parcl.app.appName
+    }
+    
     task distributeUnix(type: Tar) {
         compression = Compression.GZIP
         destinationDir = file("$buildDir/dist")
@@ -240,7 +245,7 @@ project(":ftd-ui-server") {
             from "${project.buildDir}/linux"
         }
     }
-
+    
     task distributeWindows(type: Zip) {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             archiveName = "my_distribution_windows_x86_64.zip"
@@ -261,7 +266,9 @@ project(":ftd-ui-server") {
     bundleNative.dependsOn unpackMatchingJRE
     copyArduinoCli.dependsOn bundleNative
     unpackMatchingScratchRelease.dependsOn bundleNative
-    distributeWindows.dependsOn verifyCopyArduinoCli, unpackMatchingScratchRelease
+    distributeWindows.dependsOn verifyCopyArduinoCli, unpackMatchingScratchRelease    
+    patchMacOsDistribution.mustRunAfter bundleNative
+    distributeUnix.dependsOn patchMacOsDistribution
     distributeUnix.dependsOn verifyCopyArduinoCli, unpackMatchingScratchRelease
     distribute.dependsOn distributeWindows, distributeUnix
 }
