@@ -199,8 +199,8 @@ public class ArduinoCliCreator extends DefaultTask {
 				.resolve(Paths.get("arduino-src", "Scratch_Ftduino_All"));
 	}
 
-	private static interface ExceptionWrappingConsumer<T> {
-		void accept(T t) throws IOException;
+	private static interface FetchTask<T> {
+		void fetch(T t) throws IOException;
 	}
 
 	@TaskAction
@@ -232,24 +232,22 @@ public class ArduinoCliCreator extends DefaultTask {
 		// execute all fetch task in parallel
 		ExecutorService fetchTaskExecutor = Executors.newWorkStealingPool();
 
-		ExceptionWrappingConsumer<UrlsForOS> fetchArduinoCli = (UrlsForOS target) -> fetchArduinoCli(target);
-		ExceptionWrappingConsumer<UrlsForOS> fetchArduinoCores = (UrlsForOS target) -> fetchArduinoCores(target);
-		ExceptionWrappingConsumer<UrlsForOS> fetchAvrGcc = (UrlsForOS target) -> fetchAvrGcc(target);
-		ExceptionWrappingConsumer<UrlsForOS> fetchAvrDude = (UrlsForOS target) -> fetchAvrDude(target);
-		ExceptionWrappingConsumer<UrlsForOS> fetchCTags = (UrlsForOS target) -> fetchCTags(target);
-		ExceptionWrappingConsumer<UrlsForOS> fetchSerialDiscovery = (UrlsForOS target) -> fetchSerialDiscovery(target);
-		ExceptionWrappingConsumer<UrlsForOS> fetchFtduinoLibs = (UrlsForOS target) -> fetchFtduinoLibs(target);
-		ExceptionWrappingConsumer<UrlsForOS> fetchArduinoCliConfigFiles = (
-				UrlsForOS target) -> fetchArduinoCliConfigFiles(target);
-		List<ExceptionWrappingConsumer<UrlsForOS>> fetchFunctions = List.of(fetchArduinoCli, fetchArduinoCores,
-				fetchAvrGcc, fetchAvrDude, fetchCTags, fetchSerialDiscovery, fetchFtduinoLibs,
-				fetchArduinoCliConfigFiles);
+		FetchTask<UrlsForOS> fetchArduinoCli = (UrlsForOS target) -> fetchArduinoCli(target);
+		FetchTask<UrlsForOS> fetchArduinoCores = (UrlsForOS target) -> fetchArduinoCores(target);
+		FetchTask<UrlsForOS> fetchAvrGcc = (UrlsForOS target) -> fetchAvrGcc(target);
+		FetchTask<UrlsForOS> fetchAvrDude = (UrlsForOS target) -> fetchAvrDude(target);
+		FetchTask<UrlsForOS> fetchCTags = (UrlsForOS target) -> fetchCTags(target);
+		FetchTask<UrlsForOS> fetchSerialDiscovery = (UrlsForOS target) -> fetchSerialDiscovery(target);
+		FetchTask<UrlsForOS> fetchFtduinoLibs = (UrlsForOS target) -> fetchFtduinoLibs(target);
+		FetchTask<UrlsForOS> fetchArduinoCliConfigFiles = (UrlsForOS target) -> fetchArduinoCliConfigFiles(target);
+		List<FetchTask<UrlsForOS>> fetchFunctions = List.of(fetchArduinoCli, fetchArduinoCores, fetchAvrGcc,
+				fetchAvrDude, fetchCTags, fetchSerialDiscovery, fetchFtduinoLibs, fetchArduinoCliConfigFiles);
 
 		for (UrlsForOS target : targets) {
-			for (ExceptionWrappingConsumer<UrlsForOS> fetchFunction : fetchFunctions) {
+			for (FetchTask<UrlsForOS> fetchFunction : fetchFunctions) {
 				fetchTaskExecutor.submit(() -> {
 					try {
-						fetchFunction.accept(target);
+						fetchFunction.fetch(target);
 					} catch (IOException e) {
 						e.printStackTrace();
 						throw new RuntimeException(e);
