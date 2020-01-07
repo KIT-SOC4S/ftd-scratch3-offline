@@ -97,10 +97,10 @@ public class FileUtil {
 	}
 
 	/**
-	 * Extracts an archive. Tar files are extracted by calling out the external
-	 * {@code tar} program. All available java based extractors either don't support
-	 * symlinks or don't restore permissions on extraction. All other archive types
-	 * are extracted using apache commons compress.
+	 * Extracts an archive. Tar files are extracted by using a partly self written
+	 * tar extractor, see {@link TarExtractor}. All available java based extractors
+	 * either don't support symlinks or don't restore permissions on extraction. All
+	 * other archive types are extracted using apache commons compress.
 	 * 
 	 * @param pathInput  the archive to extract
 	 * @param pathOutput the destination, where the files are to be extracted
