@@ -360,23 +360,11 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchArduinoCli(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url(urls.arduinoCliUrl).build();
-
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve(urls.arduinoCliTargetName);
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-
-			FileUtil.extract(downloadedFile, targetDir);
-
-			Files.delete(downloadedFile);
-		}
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve(urls.arduinoCliTargetName);
+		download(urls.arduinoCliUrl, targetFile);
+		FileUtil.extract(targetFile, targetDir);
+		Files.delete(targetFile);
 	}
 
 	private void fetchArduinoCliConfigFiles(UrlsForOS urls) throws IOException {
@@ -386,178 +374,89 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	private void fetchArduinoCliLibraryIndexJson(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url(LIBRARY_INDEX_JSON_URL).build();
-
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve("library_index.json");
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-		}
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve("library_index.json");
+		download(LIBRARY_INDEX_JSON_URL, targetFile);
 	}
 
 	private void fetchArduinoCliPackageIndexJson(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url(PACAKGE_INDEX_JSON_URL).build();
-
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve("package_index.json");
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-		}
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve("package_index.json");
+		download(PACAKGE_INDEX_JSON_URL, targetFile);
 	}
 
 	private void fetchArduinoCliFtduinoIndexJson(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url(PACKAGE_FTDUINO_INDEX_JSON_URL).build();
-
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve("package_ftduino_index.json");
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-		}
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve("package_ftduino_index.json");
+		download(PACKAGE_FTDUINO_INDEX_JSON_URL, targetFile);
 	}
 
 	private void fetchArduinoCores(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder()
-				.url("https://downloads.arduino.cc/cores/avr-" + ARDUINO_VERSION + ".tar.bz2").build();
-
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve("avr-" + ARDUINO_VERSION + ".tar.bz2");
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-
-			FileUtil.extract(downloadedFile, targetDir);
-
-			Files.delete(downloadedFile);
-		}
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve("avr-" + ARDUINO_VERSION + ".tar.bz2");
+		download("https://downloads.arduino.cc/cores/avr-" + ARDUINO_VERSION + ".tar.bz2", targetFile);
+		FileUtil.extract(targetFile, targetDir);
+		Files.delete(targetFile);
 	}
 
 	private void fetchAvrDude(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url(urls.avrDudeUrl).build();
-
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve(urls.avrDudeTargetName);
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-
-			FileUtil.extract(downloadedFile, targetDir);
-
-			Files.delete(downloadedFile);
-		}
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve(urls.avrDudeTargetName);
+		download(urls.avrDudeUrl, targetFile);
+		FileUtil.extract(targetFile, targetDir);
+		Files.delete(targetFile);
 	}
 
 	private void fetchAvrGcc(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url(urls.avrGccUrl).build();
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName).resolve("avr-gcc");
+		Path targetFile = targetDir.resolve(urls.avrGccTargetName);
+		download(urls.avrGccUrl, targetFile);
+		FileUtil.extract(targetFile, targetDir);
+		Files.delete(targetFile);
 
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName).resolve("avr-gcc");
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve(urls.avrGccTargetName);
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-
-			FileUtil.extract(downloadedFile, targetDir);
-
-			Path avrGccDir = targetDir.resolve("avr");
-			Path avrGccDirTarget = targetDir.resolve("7.3.0-atmel3.6.1-arduino5");
-			FileUtil.moveDirectoryContent(avrGccDir, avrGccDirTarget);
-
-			Files.delete(downloadedFile);
-		}
+		Path avrGccDir = targetDir.resolve("avr");
+		Path avrGccDirTarget = targetDir.resolve("7.3.0-atmel3.6.1-arduino5");
+		FileUtil.moveDirectoryContent(avrGccDir, avrGccDirTarget);
 	}
 
 	private void fetchCTags(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url(urls.ctagsUrl).build();
-
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve(urls.ctagsTargetName);
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-
-			FileUtil.extract(downloadedFile, targetDir);
-
-			Files.delete(downloadedFile);
-		}
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve(urls.ctagsTargetName);
+		download(urls.ctagsUrl, targetFile);
+		FileUtil.extract(targetFile, targetDir);
+		Files.delete(targetFile);
 	}
 
 	private void fetchFtduinoLibs(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url("https://github.com/harbaum/ftduino/releases/download/"
-				+ FTDUINO_VERSION + "/ftduino-" + FTDUINO_VERSION + ".zip").build();
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve("ftduino-" + FTDUINO_VERSION + ".zip");
+		download("https://github.com/harbaum/ftduino/releases/download/" + FTDUINO_VERSION + "/ftduino-"
+				+ FTDUINO_VERSION + ".zip", targetFile);
+		FileUtil.extract(targetFile, targetDir);
+		Files.delete(targetFile);
+	}
+
+	private void download(String url, Path targetFile) throws IOException {
+		Request request = new Request.Builder().url(url).build();
 
 		try (Response response = client.newCall(request).execute()) {
 			if (!response.isSuccessful())
 				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+			Path targetDir = targetFile.getParent();
 			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve("ftduino-" + FTDUINO_VERSION + ".zip");
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+			Files.createFile(targetFile);
+			BufferedSink sink = Okio.buffer(Okio.sink(targetFile));
 			sink.writeAll(response.body().source());
 			sink.close();
-
-			FileUtil.extract(downloadedFile, targetDir);
-
-			Files.delete(downloadedFile);
 		}
 	}
 
 	private void fetchSerialDiscovery(UrlsForOS urls) throws IOException {
-		Request request = new Request.Builder().url(urls.serialDiscoveryUrl).build();
-
-		try (Response response = client.newCall(request).execute()) {
-			if (!response.isSuccessful())
-				throw new IOException("Unexpected code " + response);
-			Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
-			Files.createDirectories(targetDir);
-			Path downloadedFile = targetDir.resolve(urls.serialDiscoveryTargetName);
-			Files.createFile(downloadedFile);
-			BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-			sink.writeAll(response.body().source());
-			sink.close();
-
-			FileUtil.extract(downloadedFile, targetDir);
-
-			Files.delete(downloadedFile);
-		}
+		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName);
+		Path targetFile = targetDir.resolve(urls.serialDiscoveryTargetName);
+		download(urls.serialDiscoveryUrl, targetFile);
+		FileUtil.extract(targetFile, targetDir);
+		Files.delete(targetFile);
 	}
 
 	private void stripFirstPart(UrlsForOS urls, Path targetDir) throws IOException {
