@@ -185,7 +185,7 @@ project(":ftd-ui-server") {
     
     task verifyCopyArduinoCli(dependsOn: copyArduinoCli) {
         doLast {
-            if(!file("${targetFolder}/arduino_cli/${OsUtil.targetName}/arduino-cli").exists()) {
+            if(!file("${targetFolder}/arduino_cli/${OsUtil.targetName}/arduino-cli.yaml").exists()) {
                 throw new GradleException("arduino cli files for target: ${OsUtil.targetName} not found.")
             }
         }
