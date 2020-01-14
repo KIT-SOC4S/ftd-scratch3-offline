@@ -8,18 +8,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.Objects;
 
 import org.zeroturnaround.exec.InvalidExitValueException;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.github.intrigus.ftd.exception.BinaryNotFoundException;
 import com.github.intrigus.ftd.exception.CompilationFailedException;
 import com.github.intrigus.ftd.util.OsUtil;
@@ -37,51 +31,6 @@ public class ArduinoCLI {
 		} catch (CompilationFailedException e) {
 			e.printStackTrace(System.err);
 			System.exit(3);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> T fromJson(String input, JavaType javaType)
-			throws JsonParseException, JsonMappingException, IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		return (T) mapper.readValue(input, javaType);
-	}
-
-	/**
-	 * Returns a list of device that are connected to the pc that can be identified
-	 * to be a ftduino.
-	 * 
-	 * @return list of ftduino devices
-	 * @throws CompilationFailedException when device enumeration failed for any
-	 *                                    reason
-	 */
-	public static List<SerialDevice> getConnectedFtduino() throws CompilationFailedException {
-		String jsonResult;
-		try {
-			ProcessResult arduinoResult = new ProcessExecutor()
-					.command(getArduinoCliBinary().toAbsolutePath().toString(), "board", "list", "--format", "json")
-					.directory(getArduinoCliBinary().getParent().toAbsolutePath().toFile()).destroyOnExit()
-					.exitValueNormal().readOutput(true).executeNoTimeout();
-			jsonResult = arduinoResult.outputUTF8();
-		} catch (BinaryNotFoundException e) {
-			throw new CompilationFailedException("Failed to locate the binary used for device enumeration.", e);
-		} catch (IOException e) {
-			throw new CompilationFailedException("Config files seem to be missing.", e);
-		} catch (InvalidExitValueException e) {
-			throw new CompilationFailedException(
-					"Device enumeration did not exit with exit value 0. Exit value: " + e.getExitValue(), e,
-					e.getResult().outputUTF8());
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new CompilationFailedException("Device enumeration got interrupted.", e);
-		}
-		try {
-			return fromJson(jsonResult,
-					TypeFactory.defaultInstance().constructCollectionType(List.class, SerialDevice.class));
-		} catch (JsonParseException | JsonMappingException e) {
-			throw new CompilationFailedException("Failed to parse json output of device enumeration.", e);
-		} catch (IOException e) {
-			throw new CompilationFailedException("Impossible exception.", e);
 		}
 	}
 
