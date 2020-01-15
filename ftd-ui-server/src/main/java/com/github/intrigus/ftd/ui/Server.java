@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.intrigus.ftd.ArduinoCLI;
 import com.github.intrigus.ftd.Sb3ToArduinoC;
 import com.github.intrigus.ftd.SerialDevice;
+import com.github.intrigus.ftd.SerialDiscoveryDaemon;
 import com.github.intrigus.ftd.ui.MessageWrapper.Status;
 import com.github.intrigus.ftd.util.ThrowableUtil;
 
@@ -104,17 +103,6 @@ public class Server {
 		}, "POST");
 	}
 
-	/**
-	 * Make sure that the address is not null and also not the empty String. Make
-	 * also sure that the board is actually a ftduino board.
-	 * 
-	 * @return whether the serial device is a ftduino
-	 */
-	private static Predicate<? super SerialDevice> ftduinoFilter() {
-		return (it) -> it.getAddress() != null && !it.getAddress().equals("") && it.getBoards() != null && it
-				.getBoards().stream().anyMatch((ite) -> ite.getName() != null && ite.getName().startsWith("ftDuino"));
-	}
-
 	private static void addUploadHandler(VirtualHost host) {
 		host.addContext("/upload", new ContextHandler() {
 			public int serve(Request req, Response resp) throws IOException {
@@ -163,8 +151,7 @@ public class Server {
 				Status status = Status.FAILED;
 
 				try {
-					result = ArduinoCLI.getConnectedFtduino().stream().filter(ftduinoFilter())
-							.collect(Collectors.toList());
+					result = SerialDiscoveryDaemon.getConnectedFtduinos();
 					status = Status.SUCCESS;
 				} catch (Exception e) {
 					e.printStackTrace();

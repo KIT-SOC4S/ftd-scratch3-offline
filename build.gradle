@@ -1,4 +1,6 @@
 import org.apache.tools.ant.taskdefs.condition.Os
+import com.github.intrigus.ftd.util.OsUtil
+import com.github.intrigus.ftd.internal.dev.DoMacPatching
 
 buildscript {
     repositories {
@@ -140,7 +142,7 @@ project(":ftd-ui-server") {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             "${project.buildDir}/windows/"
         } else if (Os.isFamily(Os.FAMILY_MAC)) {
-            "${project.buildDir}/mac/"
+            "${project.buildDir}/mac/${parcl.app.appName}.app/Contents/Resources/"
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
             "${project.buildDir}/linux/"
         } else {
@@ -176,21 +178,29 @@ project(":ftd-ui-server") {
 
     task copyArduinoCli(type: Copy) {
         from ("${project(":arduino-cli").projectDir}") {
-            include "arduino_cli/**"
+            include "arduino_cli/${OsUtil.targetName}/**"
         }
         into targetFolder
     }
+    
+    task verifyCopyArduinoCli(dependsOn: copyArduinoCli) {
+        doLast {
+            if(!file("${targetFolder}/arduino_cli/${OsUtil.targetName}/arduino-cli.yaml").exists()) {
+                throw new GradleException("arduino cli files for target: ${OsUtil.targetName} not found.")
+            }
+        }
+    }
 
     task fetchMatchingScratchRelease(type: Download) {
-        src "https://github.com/intrigus/scratch-gui/releases/download/0.2.0.int2/scratch_dist.tar"
+        src "https://github.com/intrigus/scratch-gui/releases/download/0.2.0.beta/scratch_dist.tar"
         new File("${buildDir}/scratch_tmp/").mkdirs()
-        dest new File("${buildDir}/scratch_tmp/")
+        dest new File("${buildDir}/scratch_tmp/scratch_dist.tar")
     }
 
     task verifyMatchingScratchRelease(type: Verify, dependsOn: fetchMatchingScratchRelease) {
         src new File("${buildDir}/scratch_tmp/", "scratch_dist.tar")
         algorithm 'SHA-256'
-        checksum "78a0607bc620f1f79ad4d889f3d028030a48db23e19967cefd8249b9c5d263b5"
+        checksum "3cb8792d2e86d3740b273e383734d397559f48d7a3a586d5df024adfc4f689fc"
     }
 
     task unpackMatchingScratchRelease(type: Copy, dependsOn: verifyMatchingScratchRelease) {
@@ -201,24 +211,28 @@ project(":ftd-ui-server") {
     task fetchMatchingJRE(type: Download) {
         src matchingJREUrlBase + matchingJREFileName
         new File("${buildDir}/jre_tmp/").mkdirs()
-        dest new File("${buildDir}/jre_tmp/")
+        dest new File("${buildDir}/jre_tmp/", matchingJREFileName)
     }
 
     task verifyMatchingJRE(type: Verify, dependsOn: fetchMatchingJRE) {
-        src new File("$buildDir/jre_tmp", matchingJREFileName)
+        src new File("${buildDir}/jre_tmp/", matchingJREFileName)
         algorithm 'SHA-256'
         checksum matchingJRESHA256
     }
 
     task unpackMatchingJRE(type: Copy, dependsOn: verifyMatchingJRE) {
         if(matchingJREFileName.endsWith(".zip")) {
-            from zipTree(new File("$buildDir/jre_tmp", matchingJREFileName))
+            from zipTree(new File("${buildDir}/jre_tmp/", matchingJREFileName))
         } else {
-            from tarTree(new File("$buildDir/jre_tmp", matchingJREFileName))
+            from tarTree(new File("${buildDir}/jre_tmp/", matchingJREFileName))
         }
         into "$buildDir/jre_to_be_bundled"
     }
-
+    
+    task patchMacOsDistribution(type: DoMacPatching) {
+        appBundleName = parcl.app.appName
+    }
+    
     task distributeUnix(type: Tar) {
         compression = Compression.GZIP
         destinationDir = file("$buildDir/dist")
@@ -231,7 +245,7 @@ project(":ftd-ui-server") {
             from "${project.buildDir}/linux"
         }
     }
-
+    
     task distributeWindows(type: Zip) {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             archiveName = "my_distribution_windows_x86_64.zip"
@@ -241,6 +255,9 @@ project(":ftd-ui-server") {
     }
 
     task distribute {
+        // see ArduinoCliCreator#target for information about the possible values 
+        tasks.getByPath(":arduino-cli:gatherNecessaryBinaries").target = "ALL"
+                
         doLast {
             println 'distribute'
         }
@@ -249,7 +266,9 @@ project(":ftd-ui-server") {
     bundleNative.dependsOn unpackMatchingJRE
     copyArduinoCli.dependsOn bundleNative
     unpackMatchingScratchRelease.dependsOn bundleNative
-    distributeWindows.dependsOn copyArduinoCli, unpackMatchingScratchRelease
-    distributeUnix.dependsOn copyArduinoCli, unpackMatchingScratchRelease
+    distributeWindows.dependsOn verifyCopyArduinoCli, unpackMatchingScratchRelease    
+    patchMacOsDistribution.mustRunAfter bundleNative
+    distributeUnix.dependsOn patchMacOsDistribution
+    distributeUnix.dependsOn verifyCopyArduinoCli, unpackMatchingScratchRelease
     distribute.dependsOn distributeWindows, distributeUnix
 }

@@ -9,55 +9,46 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SerialDevice {
 	@JsonProperty(value = "address")
 	private String address;
+	@JsonProperty(value = "prefs")
+	private SerialDevice.Prefs prefs;
 
-	@JsonProperty(value = "boards")
-	private List<FtduinoBoard> boards;
+	private List<String> validVendorIds = List.of("0x1c40");
+	private List<String> validProductIds = List.of("0x0537", "0x0538");
 
-	/**
-	 * The address the board is connected to. E.g. /dev/tty* on Linux and macOS,
-	 * COM3 on Windows.
-	 * 
-	 * @return the address the board is connected to
-	 */
 	public String getAddress() {
 		return address;
 	}
 
-	/**
-	 * The possible boards this device represents. Boards are identified via USB's
-	 * VID and PID, but the same VID & PID can be used for different boards. E.g.
-	 * The "normal" ftduino has the same ids as the ftduino with WebUSB support.
-	 * 
-	 * @return the possible boards this device represents
-	 */
-	public List<FtduinoBoard> getBoards() {
-		return boards;
+	public String getProductId() {
+		return prefs.productId;
 	}
 
-	public static class FtduinoBoard {
-		@JsonProperty(value = "name")
-		private String name;
-		@JsonProperty(value = "FQBN")
-		private String FQBN;
-
-		/**
-		 * 
-		 * @return the name of the board
-		 */
-		public String getName() {
-			return name;
-		}
-
-		/**
-		 * Returns the FQBN. The FQBN identifies a board. E.g. ftduino:avr:ftduino for
-		 * the "normal" ftduino and ftduino:avr:ftduinowebusb for the WebUSB enabled
-		 * ftduino.
-		 * 
-		 * @return the FQBN
-		 */
-		public String getFQBN() {
-			return FQBN;
-		}
+	public String getVendorId() {
+		return prefs.vendorId;
 	}
 
+	public boolean isFtduino() {
+		boolean isFtduinoVendorId = validVendorIds.stream().anyMatch((it) -> it.equalsIgnoreCase(getVendorId()));
+		boolean isFtduinoProductId = validProductIds.stream().anyMatch((it) -> it.equalsIgnoreCase(getProductId()));
+		return isFtduinoVendorId && isFtduinoProductId;
+	}
+
+	@Override
+	public String toString() {
+		return "SerialDevice [address=" + address + ", prefs=" + prefs + "]";
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private static class Prefs {
+		@JsonProperty(value = "productId")
+		private String productId;
+		@JsonProperty(value = "vendorId")
+		private String vendorId;
+
+		@Override
+		public String toString() {
+			return "Prefs [productId=" + productId + ", vendorId=" + vendorId + "]";
+		}
+
+	}
 }

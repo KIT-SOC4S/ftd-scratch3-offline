@@ -62,7 +62,6 @@ public class MainUI {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					java.awt.Desktop.getDesktop().browse(targetUrl);
-					throw new IOException();
 				} catch (IOException | UnsupportedOperationException e1) {
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null,
