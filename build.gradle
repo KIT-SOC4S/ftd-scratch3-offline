@@ -256,7 +256,7 @@ project(":ftd-ui-server") {
 
     task distribute {
         // see ArduinoCliCreator#target for information about the possible values 
-        tasks.getByPath(":arduino-cli:gatherNecessaryBinaries").target = "ALL"
+        //tasks.getByPath(":arduino-cli:gatherNecessaryBinaries").target = "ALL"
                 
         doLast {
             println 'distribute'
