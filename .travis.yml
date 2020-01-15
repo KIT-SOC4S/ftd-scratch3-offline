@@ -9,7 +9,8 @@ jdk:
 
 script:
   - ./gradlew check distribute 
-  - curl -F "file=@ftd-ui-server/build/dist/my_distribution"*.tar https://file.io
+  - export FILE=ftd-ui-server/build/dist/my_distribution*.tar
+  - curl -F "file=@$FILE" https://file.io
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
