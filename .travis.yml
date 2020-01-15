@@ -7,8 +7,9 @@ language: java
 jdk:
   - openjdk11
 
-script: ./gradlew check distribute && curl --upload-file ftd-ui-server/build/dist/my_distribution*.tar https://transfer.sh/dist.tar
-
+script:
+  - ./gradlew check distribute 
+  - curl --upload-file ftd-ui-server/build/dist/my_distribution*.tar https://transfer.sh/dist.tar
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
