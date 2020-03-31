@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.intrigus.ftd.ScratchConstants;
 import com.github.intrigus.ftd.ScratchValue;
 
 /**
@@ -22,16 +23,15 @@ public class control_wait extends ScratchBlock {
 	}
 
 	public String gen() {
-		if (inputs.duration != null) {
-			return "delay(1000 * toNumber(" + inputs.duration.generateCode() + "));\n";
-		} else {
-			throw new RuntimeException("HUH?");
-		}
+		String duration = (inputs.duration != null ? inputs.duration.generateCode() : ScratchConstants.SCRATCH_ZERO);
+		return "delay(1000 * toNumber(" + duration + "));\n";
 	}
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.duration.updateRelations(blocks);
+		if (inputs.duration != null) {
+			inputs.duration.updateRelations(blocks);
+		}
 	}
 
 	@Override

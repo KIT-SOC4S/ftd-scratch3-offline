@@ -37,8 +37,12 @@ public class operator_random extends ScratchBlock {
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.number1.updateRelations(blocks);
-		this.inputs.number2.updateRelations(blocks);
+		if (inputs.number1 != null) {
+			inputs.number1.updateRelations(blocks);
+		}
+		if (inputs.number2 != null) {
+			inputs.number2.updateRelations(blocks);
+		}
 	}
 
 	@Override

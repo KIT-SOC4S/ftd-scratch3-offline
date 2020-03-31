@@ -30,7 +30,9 @@ public class operator_not extends ScratchBlock {
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.operand.updateRelations(blocks);
+		if (inputs.operand != null) {
+			inputs.operand.updateRelations(blocks);
+		}
 	}
 
 	@Override

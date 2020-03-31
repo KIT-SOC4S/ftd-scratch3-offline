@@ -34,13 +34,13 @@ public class control_if_else extends ScratchBlock {
 				: ScratchConstants.SCRATCH_FALSE);
 
 		String code = "if(toBoolean(" + condition + ")) {\n";
-		if (this.inputs.subStack != null) {
+		if (inputs.subStack != null) {
 			code += inputs.subStack.generateCode();
 		}
 		code += "}\n";
 
 		code += "else {\n";
-		if (this.inputs.subStack2 != null) {
+		if (inputs.subStack2 != null) {
 			code += inputs.subStack2.generateCode();
 		}
 		code += "}\n";
@@ -49,9 +49,15 @@ public class control_if_else extends ScratchBlock {
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.condition.updateRelations(blocks);
-		this.inputs.subStack.updateRelations(blocks);
-		this.inputs.subStack2.updateRelations(blocks);
+		if (inputs.condition != null) {
+			inputs.condition.updateRelations(blocks);
+		}
+		if (inputs.subStack != null) {
+			inputs.subStack.updateRelations(blocks);
+		}
+		if (inputs.subStack2 != null) {
+			inputs.subStack2.updateRelations(blocks);
+		}
 	}
 
 	@Override

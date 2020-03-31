@@ -22,11 +22,11 @@ public class control_forever extends ScratchBlock {
 	}
 
 	public String gen() {
-		if (this.next != null) {
+		if (next != null) {
 			throw new IllegalStateException("nothing can be after forever block!");
 		}
 		String code = "while(1) {\n";
-		if (this.inputs.subStack != null) {
+		if (inputs.subStack != null) {
 			code += inputs.subStack.generateCode();
 		}
 		code += "}\n";
@@ -35,7 +35,9 @@ public class control_forever extends ScratchBlock {
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.subStack.updateRelations(blocks);
+		if (inputs.subStack != null) {
+			this.inputs.subStack.updateRelations(blocks);
+		}
 	}
 
 	@Override

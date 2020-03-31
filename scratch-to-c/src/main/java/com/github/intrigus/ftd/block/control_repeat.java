@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.intrigus.ftd.ScratchConstants;
 import com.github.intrigus.ftd.ScratchValue;
 
 /**
@@ -26,7 +27,7 @@ public class control_repeat extends ScratchBlock {
 
 	@Override
 	protected String beginGen() {
-		String expression = this.inputs.times.generateCode();
+		String expression = (inputs.times != null ? inputs.times.generateCode() : ScratchConstants.SCRATCH_ZERO);
 		return "for(uint32_t i = 0; toBoolean(s_lt(scratchNumber(i), (" + expression + "))); i++) {\n";
 	}
 
@@ -37,13 +38,21 @@ public class control_repeat extends ScratchBlock {
 
 	@Override
 	protected String gen() {
-		return inputs.subStack.generateCode();
+		if (inputs.subStack != null) {
+			return inputs.subStack.generateCode();
+		} else {
+			return "";
+		}
 	}
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.subStack.updateRelations(blocks);
-		this.inputs.times.updateRelations(blocks);
+		if (inputs.subStack != null) {
+			inputs.subStack.updateRelations(blocks);
+		}
+		if (inputs.times != null) {
+			inputs.times.updateRelations(blocks);
+		}
 	}
 
 	@Override

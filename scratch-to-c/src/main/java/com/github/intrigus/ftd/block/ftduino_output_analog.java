@@ -3,6 +3,7 @@ package com.github.intrigus.ftd.block;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.intrigus.ftd.ScratchConstants;
 import com.github.intrigus.ftd.ScratchValue;
 import com.github.intrigus.ftd.field.OutputSpecifierField;
 
@@ -35,15 +36,17 @@ public class ftduino_output_analog extends ScratchBlock {
 
 	@Override
 	public String gen() {
-		String code = "scratch_ftduino_output_analog(" + fields.output.generateCode() + ", "
-				+ inputs.value.generateCode() + ");\n";
+		String value = (inputs.value != null ? inputs.value.generateCode() : ScratchConstants.SCRATCH_ZERO);
+		String code = "scratch_ftduino_output_analog(" + fields.output.generateCode() + ", " + value + ");\n";
 		return code;
 	}
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.fields.output.updateRelations(blocks);
-		this.inputs.value.updateRelations(blocks);
+		fields.output.updateRelations(blocks);
+		if (inputs.value != null) {
+			inputs.value.updateRelations(blocks);
+		}
 	}
 
 	@Override
