@@ -24,18 +24,18 @@ import org.gradle.api.tasks.TaskAction;
  * href="https://github.com/TheInfiniteKind/appbundler>appbundler</a> sets the
  * working directory by default to <a href=
  * "https://github.com/TheInfiniteKind/appbundler/blob/master/appbundler/native/main.m#L162">the
- * user home</a> directory. This is not acceptable. Work around by using doing
- * the following: See
+ * user home</a> directory. This is not acceptable. Work around by doing the
+ * following: See
  * <a href="https://de.wikipedia.org/wiki/Application_Bundle#Struktur">here</a>
  * for the structure of an mac app bundle.
  * <p>
- * <li>Creating a starter script (fus) that changes the working dir to the
+ * <li>Creating a starter script (`fus`) that changes the working dir to the
  * folder where the executable file is located.</li>
  * <li>Patching the Info.plist file such that the key "WorkingDirectory" refers
  * to "../Resources/"</li>
  * <li>Patching the Info.plist file such that the key "CFBundleExecutable" (the
  * executable that will be executed when the app is opened) refers to our new
- * starter script"fus"</li>
+ * starter script, `fus`</li>
  * </p>
  *
  */
