@@ -38,8 +38,12 @@ public class control_if extends ScratchBlock {
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		this.inputs.condition.updateRelations(blocks);
-		this.inputs.subStack.updateRelations(blocks);
+		if (inputs.condition != null) {
+			inputs.condition.updateRelations(blocks);
+		}
+		if (inputs.subStack != null) {
+			inputs.subStack.updateRelations(blocks);
+		}
 	}
 
 	@Override
