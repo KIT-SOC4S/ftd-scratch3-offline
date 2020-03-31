@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.intrigus.ftd.ArduinoCLI;
 import com.github.intrigus.ftd.Sb3ToArduinoC;
-import com.github.intrigus.ftd.SerialDevice;
-import com.github.intrigus.ftd.SerialDiscoveryDaemon;
+import com.github.intrigus.ftd.serial.SerialDevice;
+import com.github.intrigus.ftd.serial.SerialDiscovery;
 import com.github.intrigus.ftd.ui.MessageWrapper.Status;
 import com.github.intrigus.ftd.util.ThrowableUtil;
 
@@ -151,7 +151,7 @@ public class Server {
 				Status status = Status.FAILED;
 
 				try {
-					result = SerialDiscoveryDaemon.getConnectedFtduinos();
+					result = SerialDiscovery.getConnectedFtduinos();
 					status = Status.SUCCESS;
 				} catch (Exception e) {
 					e.printStackTrace();

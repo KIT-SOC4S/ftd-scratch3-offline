@@ -1,4 +1,4 @@
-package com.github.intrigus.ftd;
+package com.github.intrigus.ftd.serial;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,52 +8,37 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.intrigus.ftd.exception.BinaryNotFoundException;
 import com.github.intrigus.ftd.exception.CompilationFailedException;
+import com.github.intrigus.ftd.exception.ComputationFailedException;
+import com.github.intrigus.ftd.serial.SerialDisoveryMessage.ListMessage;
 import com.github.intrigus.ftd.util.OsUtil;
 
 /**
  * Gives access to the "serial-discovery" program that is included with
  * arduino-cli. "serial-discovery" (short: sd) supports a polling and an event
- * based mode. Currently only the polled mode is exposed via
+ * based mode. This class exposes a polled mode via
  * {@link #getConnectedFtduinos()}. A good description of what sd is capable of,
  * can be found
- * <a href="https://www.pjrc.com/arduino-pluggable-discovery/">here</a>.
+ * <a href="https://www.pjrc.com/arduino-pluggable-discovery/">here</a>. Also
+ * see {@link SerialDiscoveryDaemon}.
  *
  */
-public class SerialDiscoveryDaemon {
+public class SerialDiscovery {
 
-	private List<SerialDiscoveryListener> listeners;
+	private Process serialDiscoveryProcess;
 
-	private boolean started;
-	Process serialDiscoveryProcess;
-
-	private SerialDiscoveryDaemon() {
-		this.listeners = new ArrayList<>();
-		this.started = false;
+	private SerialDiscovery() {
+		startSerialDiscoveryProcess();
 	}
 
-	private synchronized SerialDiscoveryDaemon startDaemon() {
-		if (started) {
-			return this;
-		}
-		this.startInternal();
-		this.started = true;
-		return this;
-	}
-
-	private synchronized void startInternal() {
+	private void startSerialDiscoveryProcess() {
 		try {
 			serialDiscoveryProcess = new ProcessBuilder()
 					.command(getSerialDiscoveryBinary().toAbsolutePath().toString())
@@ -65,43 +50,14 @@ public class SerialDiscoveryDaemon {
 		}
 	}
 
-	// TODO Docs
-	public static interface SerialDiscoveryListener {
-		void added(SerialDevice device);
-
-		void removed(SerialDevice device);
-	}
-
-	// TODO Docs
-	public synchronized void addListener(SerialDiscoveryListener listener) {
-		listeners.add(listener);
-	}
-
-	// TODO Docs
-	public static synchronized SerialDiscoveryDaemon get() {
-		return Holder.INSTANCE;
-	}
-
-	/**
-	 * Use the holder idiom to do safe publication, see <a href=
-	 * "https://shipilev.net/blog/2014/safe-public-construction/#_safe_publication">here</a>
-	 * for more information.
-	 *
-	 */
-	private static class Holder {
-		public static final SerialDiscoveryDaemon INSTANCE = new SerialDiscoveryDaemon().startDaemon();
-	}
-
-	private synchronized String issueCommand(String command) {
+	private SerialDisoveryMessage issueCommand(String command) throws ComputationFailedException {
 		PrintStream stdIn = new PrintStream(serialDiscoveryProcess.getOutputStream());
 		stdIn.println(command);
 		stdIn.flush();
+		stdIn.close();
 		InputStream inputStream = serialDiscoveryProcess.getInputStream();
 		String result = "";
-		// intentionally not closed. Closing it would also close the InputStream of the
-		// process which we don't want
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-		try {
+		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream), 1)) {
 			String line;
 			boolean isResult = false;
 			while ((line = bufferedReader.readLine()) != null) {
@@ -116,11 +72,22 @@ public class SerialDiscoveryDaemon {
 					break;
 				}
 			}
+			if (!command.equals("QUIT")) {
+				stdIn.println("QUIT");
+				stdIn.flush();
+				stdIn.close();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new RuntimeException(e);
+			throw new ComputationFailedException("I/0 error while reading the output of serial-discovery.", e);
 		}
-		return result;
+		try {
+			return fromJson(result, SerialDisoveryMessage.class);
+		} catch (JsonParseException | JsonMappingException e) {
+			throw new ComputationFailedException("Failed to parse json output of serial-discovery.", e);
+		} catch (IOException e) {
+			throw new ComputationFailedException("Impossible exception.", e);
+		}
 	}
 
 	/**
@@ -131,42 +98,16 @@ public class SerialDiscoveryDaemon {
 	 * @throws CompilationFailedException when device enumeration failed for any
 	 *                                    reason
 	 */
-	public static List<SerialDevice> getConnectedFtduinos() throws CompilationFailedException {
-		String jsonResult = SerialDiscoveryDaemon.get().issueCommand("LIST");
-		try {
-			ListMessage message = fromJson(jsonResult, ListMessage.class);
-			List<SerialDevice> devices = message.ports;
+	public static List<SerialDevice> getConnectedFtduinos() throws ComputationFailedException {
+		SerialDisoveryMessage message = new SerialDiscovery().issueCommand("LIST");
+		if (message instanceof ListMessage) {
+			List<SerialDevice> devices = ((ListMessage) message).ports;
 			devices.removeIf((device) -> !device.isFtduino());
 			return devices;
-		} catch (JsonParseException | JsonMappingException e) {
-			throw new CompilationFailedException("Failed to parse json output of device enumeration.", e);
-		} catch (IOException e) {
-			throw new CompilationFailedException("Impossible exception.", e);
+		} else {
+			throw new ComputationFailedException(
+					"Failed to get connected ftduinos. List type isn't ListMessage, but " + message.getClass());
 		}
-
-	}
-
-	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "eventType")
-	@JsonSubTypes({ @Type(value = QuitMessage.class, name = "quit"), @Type(value = AddMessage.class, name = "add"),
-			@Type(value = ListMessage.class, name = "list"), @Type(value = RemoveMessage.class, name = "remove") })
-	private abstract static class SerialDisoveryMessage {
-	}
-
-	private static class AddMessage extends SerialDisoveryMessage {
-
-	}
-
-	private static class QuitMessage extends SerialDisoveryMessage {
-
-	}
-
-	private static class RemoveMessage extends SerialDisoveryMessage {
-
-	}
-
-	private static class ListMessage extends SerialDisoveryMessage {
-		@JsonProperty(value = "ports")
-		private List<SerialDevice> ports;
 	}
 
 	/**
@@ -223,11 +164,6 @@ public class SerialDiscoveryDaemon {
 							+ System.getProperty("os.arch") + ". Binary path: " + path.toString());
 		}
 		return path;
-	}
-
-	public static void main(String[] args) throws CompilationFailedException {
-		List<SerialDevice> ports = SerialDiscoveryDaemon.getConnectedFtduinos();
-		System.out.println(ports);
 	}
 
 	private static <T> T fromJson(String input, Class<T> javaType)
