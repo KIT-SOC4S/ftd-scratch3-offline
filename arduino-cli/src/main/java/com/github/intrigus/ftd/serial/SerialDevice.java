@@ -1,4 +1,4 @@
-package com.github.intrigus.ftd;
+package com.github.intrigus.ftd.serial;
 
 import java.util.List;
 
