@@ -36,8 +36,8 @@ public class operator_equals extends ScratchBlock {
 
 	@Override
 	protected void updateOtherRelations(Map<String, ScratchBlock> blocks) {
-		if (inputs.operand2 != null) {
-			inputs.operand2.updateRelations(blocks);
+		if (inputs.operand1 != null) {
+			inputs.operand1.updateRelations(blocks);
 		}
 		if (inputs.operand2 != null) {
 			inputs.operand2.updateRelations(blocks);
