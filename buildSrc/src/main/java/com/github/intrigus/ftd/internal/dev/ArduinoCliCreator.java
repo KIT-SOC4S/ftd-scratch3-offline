@@ -8,9 +8,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -204,13 +207,22 @@ public class ArduinoCliCreator extends DefaultTask {
 	}
 
 	@TaskAction
-	public void createArduinoCli() throws IOException, InterruptedException {
+	public void createArduinoCli() throws IOException, InterruptedException, ExecutionException {
 		selectTargetArchitectures();
 		fetchDependencies();
+		patchDepedencies();
+	}
 
+	private void patchDepedencies() throws InterruptedException {
+		// Execute the patch tasks in parallel, i.e., the LINUX_64 tasks will be run at
+		// the same time as the LINUX_32 tasks, but the LINUX_64 tasks itself will be
+		// run sequentially.
 		ExecutorService otherTaskExecutor = Executors.newWorkStealingPool();
+
+		// Create a list of all tasks
+		List<Callable<Object>> tasks = new ArrayList<>();
 		for (UrlsForOS target : targets) {
-			otherTaskExecutor.submit(() -> {
+			Runnable task = () -> {
 				try {
 					stripUnnecessaryStuff(target);
 					createFolderStructureForArduinoCli(target);
@@ -221,14 +233,31 @@ public class ArduinoCliCreator extends DefaultTask {
 					e.printStackTrace();
 					throw new RuntimeException(e);
 				}
-			});
+			};
+			tasks.add(Executors.callable(task));
 		}
+
+		// Invoke all tasks.
+		// Call `it.get` on each `Future`.
+		// This will ensure that we get any thrown exceptions.
+		otherTaskExecutor.invokeAll(tasks).forEach((it) -> {
+			try {
+				it.get();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				throw e;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		});
+
+		// shutdown the executor and wait for all tasks to finish
 		otherTaskExecutor.shutdown();
 		otherTaskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-
 	}
 
-	private void fetchDependencies() throws InterruptedException {
+	private void fetchDependencies() throws InterruptedException, ExecutionException {
 		// execute all fetch task in parallel
 		ExecutorService fetchTaskExecutor = Executors.newWorkStealingPool();
 
@@ -243,18 +272,38 @@ public class ArduinoCliCreator extends DefaultTask {
 		List<FetchTask<UrlsForOS>> fetchFunctions = List.of(fetchArduinoCli, fetchArduinoCores, fetchAvrGcc,
 				fetchAvrDude, fetchCTags, fetchSerialDiscovery, fetchFtduinoLibs, fetchArduinoCliConfigFiles);
 
+		// Create a list of all fetch tasks
+		List<Callable<Object>> tasks = new ArrayList<>();
 		for (UrlsForOS target : targets) {
 			for (FetchTask<UrlsForOS> fetchFunction : fetchFunctions) {
-				fetchTaskExecutor.submit(() -> {
+				Runnable task = () -> {
 					try {
 						fetchFunction.fetch(target);
 					} catch (IOException e) {
 						e.printStackTrace();
 						throw new RuntimeException(e);
 					}
-				});
+				};
+				tasks.add(Executors.callable(task));
 			}
 		}
+
+		// Invoke all tasks.
+		// Call `it.get` on each `Future`.
+		// This will ensure that we get any thrown exceptions.
+		fetchTaskExecutor.invokeAll(tasks).forEach((it) -> {
+			try {
+				it.get();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				throw e;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		});
+
+		// shutdown the executor and wait for all tasks to finish
 		fetchTaskExecutor.shutdown();
 		fetchTaskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 	}
@@ -492,6 +541,7 @@ public class ArduinoCliCreator extends DefaultTask {
 
 	private void stripUnnecessaryStuff(UrlsForOS urls) throws IOException {
 		Path targetDir = projectFolder.resolve("arduino_cli").resolve(urls.osName).resolve("avr-gcc");
+
 		stripFirstPart(urls, targetDir);
 		stripSecondPart(urls, targetDir);
 		stripGdbObjdump(urls, targetDir);
