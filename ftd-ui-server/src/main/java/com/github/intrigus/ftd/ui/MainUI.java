@@ -9,11 +9,11 @@ import java.net.URI;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-
-import net.freeutils.httpserver.HTTPServer;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
+
+import io.undertow.Undertow;
 
 public class MainUI {
 
@@ -96,7 +96,7 @@ public class MainUI {
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			HTTPServer server = Server.getNewConfiguredServerInstance(port);
+			Undertow server = Server.getNewConfiguredServerInstance(port);
 			server.start();
 			return null;
 		}

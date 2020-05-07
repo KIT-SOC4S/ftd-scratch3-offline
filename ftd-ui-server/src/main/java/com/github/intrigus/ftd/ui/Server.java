@@ -16,17 +16,20 @@ import com.github.intrigus.ftd.serial.SerialDiscovery;
 import com.github.intrigus.ftd.ui.MessageWrapper.Status;
 import com.github.intrigus.ftd.util.ThrowableUtil;
 
-import net.freeutils.httpserver.HTTPServer;
-import net.freeutils.httpserver.HTTPServer.ContextHandler;
-import net.freeutils.httpserver.HTTPServer.FileContextHandler;
-import net.freeutils.httpserver.HTTPServer.Request;
-import net.freeutils.httpserver.HTTPServer.Response;
-import net.freeutils.httpserver.HTTPServer.VirtualHost;
+import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.PathHandler;
+import io.undertow.server.handlers.resource.FileResourceManager;
+import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.server.handlers.resource.ResourceManager;
+import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
 
 public class Server {
 
 	public static void main(String[] args) throws IOException {
-		HTTPServer server = getNewConfiguredServerInstance(8888);
+		Undertow server = getNewConfiguredServerInstance(8888);
 		server.start();
 	}
 
@@ -39,35 +42,40 @@ public class Server {
 	 * @return a new server read for use
 	 * @throws IOException
 	 */
-	public static HTTPServer getNewConfiguredServerInstance(int port) throws IOException {
-		HTTPServer server = new HTTPServer(port);
-		VirtualHost host = server.getVirtualHost(null); // default virtual host
+	public static Undertow getNewConfiguredServerInstance(int port) throws IOException {
+		PathHandler handler = new PathHandler();
 
-		addConvertHandler(host);
-		addCompileHandler(host);
-		addUploadHandler(host);
-		addConnectedFtduinoHandler(host);
-		addScratchFilesHandler(host);
+		addConvertHandler(handler);
+		addCompileHandler(handler);
+		addUploadHandler(handler);
+		addConnectedFtduinoHandler(handler);
+		addScratchFilesHandler(handler);
 
+		Undertow server = Undertow.builder().addHttpListener(port, "localhost").setHandler(handler).build();
 		return server;
 	}
 
-	private static void addScratchFilesHandler(VirtualHost host) throws IOException {
-		host.addContext("/scratch/", new FileContextHandler(new File("scratch/")));
+	private static void addScratchFilesHandler(PathHandler handler) throws IOException {
+		ResourceManager fileResourceManager = new FileResourceManager(new File("scratch/"));
+		ResourceHandler resourceHandler = new ResourceHandler(fileResourceManager);
+		handler.addExactPath("/scratch/", resourceHandler);
 	}
 
-	private static void addConvertHandler(VirtualHost host) {
-		host.addContext("/convert", new ContextHandler() {
+	private static void addConvertHandler(PathHandler handler) {
+		handler.addExactPath("/convert", new HttpHandler() {
 			@Override
-			public int serve(Request req, Response resp) throws IOException {
-				System.out.println("/convert");
-				resp.getHeaders().add("Content-Type", "text/plain");
-				resp.getHeaders().add("Access-Control-Allow-Origin", "*");
+			public void handleRequest(HttpServerExchange exchange) throws Exception {
+				if (exchange.isInIoThread()) {
+					exchange.dispatch(this);
+					return;
+				}
+				exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+				exchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
 				String result = null;
 				String errorMessage = null;
 				Status status;
 				try {
-					result = Sb3ToArduinoC.convertJsonToArduinoC(req.getBody());
+					result = Sb3ToArduinoC.convertJsonToArduinoC(exchange.getInputStream());
 					status = Status.SUCCESS;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -75,23 +83,28 @@ public class Server {
 					status = Status.FAILED;
 				}
 
-				resp.send(200, toJson(new AnswerMessageWrapper(status, errorMessage, result)));
-				return 0;
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
+				exchange.setStatusCode(200);
+				exchange.endExchange();
 			}
-		}, "POST");
+		});
 	}
 
-	private static void addCompileHandler(VirtualHost host) {
-		host.addContext("/compile", new ContextHandler() {
+	private static void addCompileHandler(PathHandler handler) {
+		handler.addExactPath("/compile", new HttpHandler() {
 			@Override
-			public int serve(Request req, Response resp) throws IOException {
-				resp.getHeaders().add("Content-Type", "text/plain");
-				resp.getHeaders().add("Access-Control-Allow-Origin", "*");
+			public void handleRequest(HttpServerExchange exchange) throws Exception {
+				if (exchange.isInIoThread()) {
+					exchange.dispatch(this);
+					return;
+				}
+				exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+				exchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
 				String result = null;
 				String errorMessage = null;
 				Status status;
 				try {
-					result = ArduinoCLI.compileArduinoC(Sb3ToArduinoC.convertJsonToArduinoC(req.getBody()));
+					result = ArduinoCLI.compileArduinoC(Sb3ToArduinoC.convertJsonToArduinoC(exchange.getInputStream()));
 					status = Status.SUCCESS;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -99,18 +112,23 @@ public class Server {
 					status = Status.FAILED;
 				}
 
-				resp.send(200, toJson(new AnswerMessageWrapper(status, errorMessage, result)));
-				return 0;
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
+				exchange.setStatusCode(200);
+				exchange.endExchange();
 			}
-		}, "POST");
+		});
 	}
 
-	private static void addUploadHandler(VirtualHost host) {
-		host.addContext("/upload", new ContextHandler() {
+	private static void addUploadHandler(PathHandler handler) {
+		handler.addExactPath("/upload", new HttpHandler() {
 			@Override
-			public int serve(Request req, Response resp) throws IOException {
-				resp.getHeaders().add("Content-Type", "text/plain");
-				resp.getHeaders().add("Access-Control-Allow-Origin", "*");
+			public void handleRequest(HttpServerExchange exchange) throws Exception {
+				if (exchange.isInIoThread()) {
+					exchange.dispatch(this);
+					return;
+				}
+				exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+				exchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
 
 				String result = null;
 				String errorMessage = null;
@@ -118,7 +136,7 @@ public class Server {
 
 				CompileMessageWrapper compileMessage = null;
 				try {
-					compileMessage = fromJson(req.getBody(), CompileMessageWrapper.class);
+					compileMessage = fromJson(exchange.getInputStream(), CompileMessageWrapper.class);
 				} catch (IOException e) {
 					e.printStackTrace();
 					errorMessage = ThrowableUtil.throwableToString(e);
@@ -137,18 +155,23 @@ public class Server {
 					}
 				}
 
-				resp.send(200, toJson(new AnswerMessageWrapper(status, errorMessage, result)));
-				return 0;
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
+				exchange.setStatusCode(200);
+				exchange.endExchange();
 			}
-		}, "POST");
+		});
 	}
 
-	private static void addConnectedFtduinoHandler(VirtualHost host) {
-		host.addContext("/ftduinos", new ContextHandler() {
+	private static void addConnectedFtduinoHandler(PathHandler handler) {
+		handler.addExactPath("/ftduinos", new HttpHandler() {
 			@Override
-			public int serve(Request req, Response resp) throws IOException {
-				resp.getHeaders().add("Content-Type", "text/plain");
-				resp.getHeaders().add("Access-Control-Allow-Origin", "*");
+			public void handleRequest(HttpServerExchange exchange) throws Exception {
+				if (exchange.isInIoThread()) {
+					exchange.dispatch(this);
+					return;
+				}
+				exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+				exchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
 
 				List<SerialDevice> result = null;
 				String errorMessage = null;
@@ -164,10 +187,11 @@ public class Server {
 				}
 
 				String jsonResult = toJson(result);
-				resp.send(200, toJson(new AnswerMessageWrapper(status, errorMessage, jsonResult)));
-				return 0;
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, jsonResult)));
+				exchange.setStatusCode(200);
+				exchange.endExchange();
 			}
-		}, "POST");
+		});
 	}
 
 	/**
