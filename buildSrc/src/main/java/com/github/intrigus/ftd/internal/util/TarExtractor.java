@@ -49,7 +49,6 @@ public class TarExtractor {
 			for (TarArchiveEntry entry = debInputStream.getNextTarEntry(); entry != null; entry = debInputStream
 					.getNextTarEntry()) {
 				checkZipSlip(pathOutput.toFile(), entry);
-				System.out.println(entry.getName() + " : " + entry.getLinkName());
 				SymlinkableTarArchiveEntry workingEntry = new SymlinkableTarArchiveEntry(entry.getName(), entry,
 						debInputStream.readAllBytes(), entry.isLink() || entry.isSymbolicLink());
 				if (workingEntry.isLinked) {
@@ -94,6 +93,7 @@ public class TarExtractor {
 				} else {
 					tarEntry = entries.get(entry.getValue().entry.getLinkName());
 				}
+				System.out.println(entry.getKey() + " : " + entry.getValue() + " : " + tarEntry);
 				if (tarEntry != null && !tarEntry.isLinked) {
 					entry.getValue().data = tarEntry.data;
 					entry.getValue().isLinked = false;
