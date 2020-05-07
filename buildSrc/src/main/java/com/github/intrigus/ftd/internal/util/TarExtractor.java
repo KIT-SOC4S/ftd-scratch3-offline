@@ -49,6 +49,10 @@ public class TarExtractor {
 			for (TarArchiveEntry entry = debInputStream.getNextTarEntry(); entry != null; entry = debInputStream
 					.getNextTarEntry()) {
 				checkZipSlip(pathOutput.toFile(), entry);
+				boolean debug = entry.getName().contains("libcc1.so");
+				if (debug) {
+					System.out.println("P-:" + entry.getName() + ":" + entry.getLinkName());
+				}
 				SymlinkableTarArchiveEntry workingEntry = new SymlinkableTarArchiveEntry(entry.getName(), entry,
 						debInputStream.readAllBytes(), entry.isLink() || entry.isSymbolicLink());
 				if (workingEntry.isLinked) {
@@ -87,13 +91,19 @@ public class TarExtractor {
 			while (iter.hasNext()) {
 				entry = iter.next();
 				SymlinkableTarArchiveEntry tarEntry;
+				boolean debug = entry.getKey().contains("libcc1.so");
 				if (entry.getValue().entry.isSymbolicLink()) {
+					if (debug) {
+						System.out.println("P!:" + Paths.get(entry.getKey())
+								.resolveSibling(entry.getValue().entry.getLinkName()).toString());
+					}
 					tarEntry = entries.get(
 							Paths.get(entry.getKey()).resolveSibling(entry.getValue().entry.getLinkName()).toString());
 				} else {
 					tarEntry = entries.get(entry.getValue().entry.getLinkName());
 				}
-				System.out.println(entry.getKey() + " : " + entry.getValue() + " : " + tarEntry);
+				if (debug)
+					System.out.println("P§:" + entry.getKey() + " : " + entry.getValue() + " : " + tarEntry);
 				if (tarEntry != null && !tarEntry.isLinked) {
 					entry.getValue().data = tarEntry.data;
 					entry.getValue().isLinked = false;
