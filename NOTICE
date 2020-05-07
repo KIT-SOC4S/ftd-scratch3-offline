@@ -1,0 +1,2 @@
+- https://github.com/thrau/jarchivelib/ 
+FileModeWrapper from org.rauschig:jarchivelib has been incorporated as com.github.intrigus.ftd.internal.dev.MyFileModeWrapper
