@@ -29,6 +29,7 @@ public class MainUI {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					MainUI window = new MainUI();
@@ -59,6 +60,7 @@ public class MainUI {
 
 		JButton btnScratchImBrowser = new JButton("Scratch im Browser öffnen");
 		btnScratchImBrowser.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					java.awt.Desktop.getDesktop().browse(targetUrl);

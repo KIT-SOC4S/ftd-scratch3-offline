@@ -55,6 +55,7 @@ public class procedures_prototype extends ScratchBlock {
 		protected List<String> argumentnames;
 	}
 
+	@Override
 	public String gen() {
 		return StringUtil.convertToCIdentifier(mutation.proccode);
 	}

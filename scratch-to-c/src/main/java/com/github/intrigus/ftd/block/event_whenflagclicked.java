@@ -25,6 +25,7 @@ public class event_whenflagclicked extends ScratchBlock {
 		return super.afterGen() + onlyOnceTrigger + "}\n";
 	}
 
+	@Override
 	public String gen() {
 		return "";
 	}

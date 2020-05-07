@@ -77,6 +77,7 @@ public class procedures_call extends ScratchBlock {
 		}
 	}
 
+	@Override
 	public String gen() {
 		String code = StringUtil.convertToCIdentifier(mutation.proccode) + "(" + gatherFunctionArguments() + ");\n";
 		return code;

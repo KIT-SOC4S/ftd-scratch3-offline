@@ -28,6 +28,7 @@ public class operator_equals extends ScratchBlock {
 		public ScratchValue operand2;
 	}
 
+	@Override
 	public String gen() {
 		String operand1 = (inputs.operand1 != null ? inputs.operand1.generateCode() : ScratchConstants.SCRATCH_FALSE);
 		String operand2 = (inputs.operand2 != null ? inputs.operand2.generateCode() : ScratchConstants.SCRATCH_FALSE);

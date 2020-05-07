@@ -58,6 +58,7 @@ public class Server {
 
 	private static void addConvertHandler(VirtualHost host) {
 		host.addContext("/convert", new ContextHandler() {
+			@Override
 			public int serve(Request req, Response resp) throws IOException {
 				System.out.println("/convert");
 				resp.getHeaders().add("Content-Type", "text/plain");
@@ -82,6 +83,7 @@ public class Server {
 
 	private static void addCompileHandler(VirtualHost host) {
 		host.addContext("/compile", new ContextHandler() {
+			@Override
 			public int serve(Request req, Response resp) throws IOException {
 				resp.getHeaders().add("Content-Type", "text/plain");
 				resp.getHeaders().add("Access-Control-Allow-Origin", "*");
@@ -105,6 +107,7 @@ public class Server {
 
 	private static void addUploadHandler(VirtualHost host) {
 		host.addContext("/upload", new ContextHandler() {
+			@Override
 			public int serve(Request req, Response resp) throws IOException {
 				resp.getHeaders().add("Content-Type", "text/plain");
 				resp.getHeaders().add("Access-Control-Allow-Origin", "*");
@@ -142,6 +145,7 @@ public class Server {
 
 	private static void addConnectedFtduinoHandler(VirtualHost host) {
 		host.addContext("/ftduinos", new ContextHandler() {
+			@Override
 			public int serve(Request req, Response resp) throws IOException {
 				resp.getHeaders().add("Content-Type", "text/plain");
 				resp.getHeaders().add("Access-Control-Allow-Origin", "*");

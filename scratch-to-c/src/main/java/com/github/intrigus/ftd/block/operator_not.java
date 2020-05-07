@@ -23,6 +23,7 @@ public class operator_not extends ScratchBlock {
 		public ScratchValue operand;
 	}
 
+	@Override
 	public String gen() {
 		String operand = (inputs.operand != null ? inputs.operand.generateCode() : ScratchConstants.SCRATCH_FALSE);
 		return "s_not((" + operand + "))";

@@ -65,6 +65,7 @@ public class argument_reporter_base extends ScratchBlock {
 		return blockDef.getPrototypeBlock();
 	}
 
+	@Override
 	public String gen() {
 		procedures_prototype prototype = getPrototype();
 		/*

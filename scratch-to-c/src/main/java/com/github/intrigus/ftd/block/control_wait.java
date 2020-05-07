@@ -22,6 +22,7 @@ public class control_wait extends ScratchBlock {
 		public ScratchValue duration;
 	}
 
+	@Override
 	public String gen() {
 		String duration = (inputs.duration != null ? inputs.duration.generateCode() : ScratchConstants.SCRATCH_ZERO);
 		return "delay(1000 * toNumber(" + duration + "));\n";

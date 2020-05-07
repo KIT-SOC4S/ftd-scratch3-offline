@@ -37,6 +37,7 @@ public class ftduino_when_input extends ScratchBlock {
 		return ifBody + ifConditionEnd + loopCodeEnd;
 	}
 
+	@Override
 	public String gen() {
 		return "";
 	}

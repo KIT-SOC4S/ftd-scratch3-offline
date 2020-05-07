@@ -21,6 +21,7 @@ public class control_forever extends ScratchBlock {
 		public ScratchValue subStack;
 	}
 
+	@Override
 	public String gen() {
 		if (next != null) {
 			throw new IllegalStateException("nothing can be after forever block!");

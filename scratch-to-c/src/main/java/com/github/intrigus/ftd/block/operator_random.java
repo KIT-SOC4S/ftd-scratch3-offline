@@ -28,6 +28,7 @@ public class operator_random extends ScratchBlock {
 		public ScratchValue number2;
 	}
 
+	@Override
 	public String gen() {
 		String number1 = (inputs.number1 != null ? inputs.number1.generateCode() : ScratchConstants.SCRATCH_ZERO);
 		String number2 = (inputs.number2 != null ? inputs.number2.generateCode() : ScratchConstants.SCRATCH_ZERO);
