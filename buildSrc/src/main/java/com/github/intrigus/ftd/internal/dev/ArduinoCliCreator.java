@@ -3,6 +3,7 @@ package com.github.intrigus.ftd.internal.dev;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -493,7 +494,12 @@ public class ArduinoCliCreator extends DefaultTask {
 				throw new IOException("Unexpected code " + response);
 			Path targetDir = targetFile.getParent();
 			Files.createDirectories(targetDir);
-			Files.createFile(targetFile);
+			try {
+				Files.createFile(targetFile);
+			} catch (FileAlreadyExistsException ignored) {
+				// We don't care whether the file already exists, since we are going to
+				// overwrite it anyway!
+			}
 			BufferedSink sink = Okio.buffer(Okio.sink(targetFile));
 			sink.writeAll(response.body().source());
 			sink.close();
