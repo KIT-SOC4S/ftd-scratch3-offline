@@ -28,3 +28,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build check distribute
+    - name: Archive distributions
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.os }}-Distribution
+        path: ftd-ui-server/build/dist/
