@@ -95,7 +95,7 @@ public class SerialDiscovery {
 	 * to be a ftduino.
 	 * 
 	 * @return list of ftduino devices
-	 * @throws CompilationFailedException when device enumeration failed for any
+	 * @throws ComputationFailedException when device enumeration failed for any
 	 *                                    reason
 	 */
 	public static List<SerialDevice> getConnectedFtduinos() throws ComputationFailedException {
