@@ -44,22 +44,23 @@ public class TarExtractor {
 						? new BZip2CompressorInputStream(is, true)
 						: new GzipCompressorInputStream(is, true);
 				TarArchiveInputStream debInputStream = new TarArchiveInputStream(in);) {
-			Map<String, SymlinkableTarArchiveEntry> entries = new HashMap<>();
-			Map<String, SymlinkableTarArchiveEntry> unlinkedEntries = new HashMap<>();
+			Map<Path, SymlinkableTarArchiveEntry> entries = new HashMap<>();
+			Map<Path, SymlinkableTarArchiveEntry> unlinkedEntries = new HashMap<>();
 			for (TarArchiveEntry entry = debInputStream.getNextTarEntry(); entry != null; entry = debInputStream
 					.getNextTarEntry()) {
 				checkZipSlip(pathOutput.toFile(), entry);
-				SymlinkableTarArchiveEntry workingEntry = new SymlinkableTarArchiveEntry(entry.getName(), entry,
+				Path entryPath = Paths.get(entry.getName());
+				SymlinkableTarArchiveEntry workingEntry = new SymlinkableTarArchiveEntry(entryPath, entry,
 						debInputStream.readAllBytes(), entry.isLink() || entry.isSymbolicLink());
 				if (workingEntry.isLinked) {
-					unlinkedEntries.put(entry.getName(), workingEntry);
+					unlinkedEntries.put(entryPath, workingEntry);
 				}
-				entries.put(entry.getName(), workingEntry);
+				entries.put(entryPath, workingEntry);
 			}
 
 			deduplicateLinks(entries, unlinkedEntries);
 
-			for (Entry<String, SymlinkableTarArchiveEntry> entry : entries.entrySet()) {
+			for (Entry<Path, SymlinkableTarArchiveEntry> entry : entries.entrySet()) {
 				Path pathEntryOutput = pathOutput.resolve(entry.getKey());
 				if (entry.getValue().entry.isDirectory()) {
 					if (!Files.exists(pathEntryOutput))
@@ -77,21 +78,20 @@ public class TarExtractor {
 
 	}
 
-	private static void deduplicateLinks(Map<String, SymlinkableTarArchiveEntry> entries,
-			Map<String, SymlinkableTarArchiveEntry> unlinkedEntries) {
+	private static void deduplicateLinks(Map<Path, SymlinkableTarArchiveEntry> entries,
+			Map<Path, SymlinkableTarArchiveEntry> unlinkedEntries) {
 		while (true) {
-			Set<Entry<String, SymlinkableTarArchiveEntry>> unlinkedEntriesSet = unlinkedEntries.entrySet();
+			Set<Entry<Path, SymlinkableTarArchiveEntry>> unlinkedEntriesSet = unlinkedEntries.entrySet();
 			int unlinkedEntriesSetSize = unlinkedEntriesSet.size();
-			Iterator<Entry<String, SymlinkableTarArchiveEntry>> iter = unlinkedEntriesSet.iterator();
-			Entry<String, SymlinkableTarArchiveEntry> entry;
+			Iterator<Entry<Path, SymlinkableTarArchiveEntry>> iter = unlinkedEntriesSet.iterator();
+			Entry<Path, SymlinkableTarArchiveEntry> entry;
 			while (iter.hasNext()) {
 				entry = iter.next();
 				SymlinkableTarArchiveEntry tarEntry;
 				if (entry.getValue().entry.isSymbolicLink()) {
-					tarEntry = entries.get(
-							Paths.get(entry.getKey()).resolveSibling(entry.getValue().entry.getLinkName()).toString());
+					tarEntry = entries.get(entry.getKey().resolveSibling(entry.getValue().entry.getLinkName()));
 				} else {
-					tarEntry = entries.get(entry.getValue().entry.getLinkName());
+					tarEntry = entries.get(Paths.get(entry.getValue().entry.getLinkName()));
 				}
 				if (tarEntry != null && !tarEntry.isLinked) {
 					entry.getValue().data = tarEntry.data;
@@ -124,13 +124,13 @@ public class TarExtractor {
 	}
 
 	private static class SymlinkableTarArchiveEntry {
-		String fileName;
+		Path path;
 		TarArchiveEntry entry;
 		byte[] data;
 		boolean isLinked = false;
 
-		public SymlinkableTarArchiveEntry(String fileName, TarArchiveEntry entry, byte[] data, boolean isLinked) {
-			this.fileName = fileName;
+		public SymlinkableTarArchiveEntry(Path path, TarArchiveEntry entry, byte[] data, boolean isLinked) {
+			this.path = path;
 			this.entry = entry;
 			this.data = data;
 			this.isLinked = isLinked;
@@ -138,8 +138,8 @@ public class TarExtractor {
 
 		@Override
 		public String toString() {
-			return "SymlinkableTarArchiveEntry [fileName=" + fileName + ", linkName=" + entry.getLinkName()
-					+ ", isLinked=" + isLinked + "]";
+			return "SymlinkableTarArchiveEntry [path=" + path + ", linkName=" + entry.getLinkName() + ", isLinked="
+					+ isLinked + "]";
 		}
 
 	}
