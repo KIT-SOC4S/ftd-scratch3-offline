@@ -83,8 +83,8 @@ public class Server {
 					status = Status.FAILED;
 				}
 
-				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
 				exchange.setStatusCode(200);
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
 				exchange.endExchange();
 			}
 		});
@@ -112,8 +112,8 @@ public class Server {
 					status = Status.FAILED;
 				}
 
-				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
 				exchange.setStatusCode(200);
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
 				exchange.endExchange();
 			}
 		});
@@ -155,8 +155,8 @@ public class Server {
 					}
 				}
 
-				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
 				exchange.setStatusCode(200);
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, result)));
 				exchange.endExchange();
 			}
 		});
@@ -187,8 +187,8 @@ public class Server {
 				}
 
 				String jsonResult = toJson(result);
-				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, jsonResult)));
 				exchange.setStatusCode(200);
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, jsonResult)));
 				exchange.endExchange();
 			}
 		});
