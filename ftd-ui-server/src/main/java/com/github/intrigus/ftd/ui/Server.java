@@ -71,6 +71,7 @@ public class Server {
 				}
 				exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
 				exchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
+				exchange.startBlocking();
 				String result = null;
 				String errorMessage = null;
 				Status status;
@@ -100,6 +101,8 @@ public class Server {
 				}
 				exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
 				exchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
+				exchange.startBlocking();
+
 				String result = null;
 				String errorMessage = null;
 				Status status;
@@ -129,6 +132,7 @@ public class Server {
 				}
 				exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
 				exchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
+				exchange.startBlocking();
 
 				String result = null;
 				String errorMessage = null;
