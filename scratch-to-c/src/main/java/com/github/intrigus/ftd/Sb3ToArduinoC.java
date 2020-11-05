@@ -149,20 +149,20 @@ public class Sb3ToArduinoC {
 	 */
 	private static String convertJsonToArduinoC(byte[] projectJsonBytes) throws IOException, ScratchParseException {
 		ObjectMapper mapper = newDefaultMapper();
-		ScratchTarget scratchTargetToConvert;
+		ScratchSave scratchSave;
 		try {
-			scratchTargetToConvert = mapper.readValue(projectJsonBytes, ScratchTarget.class);
+			scratchSave = mapper.readValue(projectJsonBytes, ScratchSave.class);
 		} catch (JsonParseException | JsonMappingException e) {
 			throw new ScratchParseException(e);
 		}
 
-		if (scratchTargetToConvert == null) {
+		if (scratchSave == null) {
 			throw new RuntimeException("Parsing succeeded, but returned a null value.");
 		}
 
-		ScratchBlocks scratchBlocks = scratchTargetToConvert.getBlocks();
-		scratchBlocks.init();
-		String code = scratchBlocks.generateCCode();
+		ScratchBlocks scratchBigger = scratchSave.getBlocks();
+		scratchBigger.init();
+		String code = scratchBigger.generateCCode();
 		return code;
 	}
 
