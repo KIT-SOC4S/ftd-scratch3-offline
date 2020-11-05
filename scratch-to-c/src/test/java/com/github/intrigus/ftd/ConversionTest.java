@@ -47,4 +47,24 @@ public class ConversionTest {
 			throws ScratchParseException, IOException, CompilationFailedException {
 		ArduinoCLI.compileArduinoC(Sb3ToArduinoC.convertToArduinoC(testFile));
 	}
+
+	private static Stream<Arguments> provideScratchSingleTargetTestFiles() {
+		return Stream.of("single-target.json").map(
+				(name) -> Arguments.of(name, Thread.currentThread().getContextClassLoader().getResourceAsStream(name)));
+	}
+
+	@ParameterizedTest(name = "{index} {0}")
+	@MethodSource("provideScratchSingleTargetTestFiles")
+	public void testSingleTargetConversion(String testName, InputStream testFile)
+			throws ScratchParseException, IOException {
+		Sb3ToArduinoC.convertSingleTargetJsonToArduinoC(testFile);
+	}
+
+	@ParameterizedTest(name = "{index} {0}")
+	@MethodSource("provideScratchSingleTargetTestFiles")
+	public void testSingleTargetCompilation(String testName, InputStream testFile)
+			throws ScratchParseException, IOException, CompilationFailedException {
+		ArduinoCLI.compileArduinoC(Sb3ToArduinoC.convertSingleTargetJsonToArduinoC(testFile));
+	}
+
 }

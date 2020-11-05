@@ -117,13 +117,13 @@ public class Sb3ToArduinoC {
 	 * @throws IOException           if the inputs stream could not be read or some
 	 *                               other i/o error.
 	 */
-	public static String convertJsonToArduinoC(InputStream is) throws IOException, ScratchParseException {
+	public static String convertProjectJsonToArduinoC(InputStream is) throws IOException, ScratchParseException {
 		byte[] projectJsonBytes = is.readAllBytes();
 
 		if (projectJsonBytes == null) {
 			throw new RuntimeException("The given json input is empty.");
 		}
-		return convertJsonToArduinoC(projectJsonBytes);
+		return convertProjectJsonToArduinoC(projectJsonBytes);
 	}
 
 	/**
@@ -138,16 +138,17 @@ public class Sb3ToArduinoC {
 	}
 
 	/**
-	 * @see Sb3ToArduinoC#convertJsonToArduinoC(InputStream)
+	 * @see Sb3ToArduinoC#convertProjectJsonToArduinoC(InputStream)
 	 */
-	public static String convertJsonToArduinoC(String code) throws IOException, ScratchParseException {
-		return convertJsonToArduinoC(toInputStream(code));
+	public static String convertProjectJsonToArduinoC(String code) throws IOException, ScratchParseException {
+		return convertProjectJsonToArduinoC(toInputStream(code));
 	}
 
 	/**
-	 * @see Sb3ToArduinoC#convertJsonToArduinoC(InputStream)
+	 * @see Sb3ToArduinoC#convertProjectJsonToArduinoC(InputStream)
 	 */
-	private static String convertJsonToArduinoC(byte[] projectJsonBytes) throws IOException, ScratchParseException {
+	private static String convertProjectJsonToArduinoC(byte[] projectJsonBytes)
+			throws IOException, ScratchParseException {
 		ObjectMapper mapper = newDefaultMapper();
 		ScratchSave scratchSave;
 		try {
@@ -160,9 +161,58 @@ public class Sb3ToArduinoC {
 			throw new RuntimeException("Parsing succeeded, but returned a null value.");
 		}
 
-		ScratchBlocks scratchBigger = scratchSave.getBlocks();
-		scratchBigger.init();
-		String code = scratchBigger.generateCCode();
+		ScratchBlocks scratchBlocks = scratchSave.getBlocks();
+		scratchBlocks.init();
+		String code = scratchBlocks.generateCCode();
+		return code;
+	}
+
+	/**
+	 * Expects an input stream that represents a single {@link ScratchTarget}. This
+	 * program is then converted to an Arduino C++ program.
+	 * 
+	 * @param is the input stream that represents the single scratch target.
+	 * @return the single scratch target converted to an Arduino C++ program.
+	 * @throws ScratchParseException if the parsing failed.
+	 * @throws IOException           if the inputs stream could not be read or some
+	 *                               other i/o error.
+	 */
+	public static String convertSingleTargetJsonToArduinoC(InputStream is) throws IOException, ScratchParseException {
+		byte[] projectJsonBytes = is.readAllBytes();
+
+		if (projectJsonBytes == null) {
+			throw new RuntimeException("The given json input is empty.");
+		}
+		return convertSingleTargetJsonToArduinoC(projectJsonBytes);
+	}
+
+	/**
+	 * @see Sb3ToArduinoC#convertSingleTargetJsonToArduinoC(InputStream)
+	 */
+	public static String convertSingleTargetJsonToArduinoC(String code) throws IOException, ScratchParseException {
+		return convertSingleTargetJsonToArduinoC(toInputStream(code));
+	}
+
+	/**
+	 * @see Sb3ToArduinoC#convertSingleTargetJsonToArduinoC(InputStream)
+	 */
+	private static String convertSingleTargetJsonToArduinoC(byte[] projectJsonBytes)
+			throws IOException, ScratchParseException {
+		ObjectMapper mapper = newDefaultMapper();
+		ScratchTarget singleScratchTarget;
+		try {
+			singleScratchTarget = mapper.readValue(projectJsonBytes, ScratchTarget.class);
+		} catch (JsonParseException | JsonMappingException e) {
+			throw new ScratchParseException(e);
+		}
+
+		if (singleScratchTarget == null) {
+			throw new RuntimeException("Parsing succeeded, but returned a null value.");
+		}
+
+		ScratchBlocks scratchBlocks = singleScratchTarget.getBlocks();
+		scratchBlocks.init();
+		String code = scratchBlocks.generateCCode();
 		return code;
 	}
 
@@ -198,6 +248,6 @@ public class Sb3ToArduinoC {
 			throw new RuntimeException("project.json is missing from the .sb3 file.");
 		}
 
-		return convertJsonToArduinoC(projectJsonBytes);
+		return convertProjectJsonToArduinoC(projectJsonBytes);
 	}
 }

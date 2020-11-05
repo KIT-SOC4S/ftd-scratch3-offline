@@ -76,7 +76,7 @@ public class Server {
 				String errorMessage = null;
 				Status status;
 				try {
-					result = Sb3ToArduinoC.convertJsonToArduinoC(exchange.getInputStream());
+					result = Sb3ToArduinoC.convertProjectJsonToArduinoC(exchange.getInputStream());
 					status = Status.SUCCESS;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -107,7 +107,7 @@ public class Server {
 				String errorMessage = null;
 				Status status;
 				try {
-					result = ArduinoCLI.compileArduinoC(Sb3ToArduinoC.convertJsonToArduinoC(exchange.getInputStream()));
+					result = ArduinoCLI.compileArduinoC(Sb3ToArduinoC.convertSingleTargetJsonToArduinoC(exchange.getInputStream()));
 					status = Status.SUCCESS;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -149,7 +149,7 @@ public class Server {
 				if (compileMessage != null) {
 					try {
 						result = ArduinoCLI.uploadArduinoC(
-								Sb3ToArduinoC.convertJsonToArduinoC(compileMessage.getCode()),
+								Sb3ToArduinoC.convertSingleTargetJsonToArduinoC(compileMessage.getCode()),
 								compileMessage.getSerialPort());
 						status = Status.SUCCESS;
 					} catch (Exception e) {
