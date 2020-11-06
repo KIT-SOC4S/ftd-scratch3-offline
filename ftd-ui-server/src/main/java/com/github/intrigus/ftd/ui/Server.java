@@ -13,6 +13,7 @@ import com.github.intrigus.ftd.ArduinoCLI;
 import com.github.intrigus.ftd.Sb3ToArduinoC;
 import com.github.intrigus.ftd.serial.SerialDevice;
 import com.github.intrigus.ftd.serial.SerialDiscovery;
+import com.github.intrigus.ftd.serial.SerialDiscoveryDaemon;
 import com.github.intrigus.ftd.ui.MessageWrapper.Status;
 import com.github.intrigus.ftd.util.ThrowableUtil;
 
@@ -50,6 +51,7 @@ public class Server {
 		addUploadHandler(handler);
 		addConnectedFtduinoHandler(handler);
 		addScratchFilesHandler(handler);
+		addConnectedFtduinoAsyncHandler(handler);
 
 		Undertow server = Undertow.builder().addHttpListener(port, "localhost").setHandler(handler).build();
 		return server;
@@ -107,7 +109,8 @@ public class Server {
 				String errorMessage = null;
 				Status status;
 				try {
-					result = ArduinoCLI.compileArduinoC(Sb3ToArduinoC.convertSingleTargetJsonToArduinoC(exchange.getInputStream()));
+					result = ArduinoCLI.compileArduinoC(
+							Sb3ToArduinoC.convertSingleTargetJsonToArduinoC(exchange.getInputStream()));
 					status = Status.SUCCESS;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -183,6 +186,38 @@ public class Server {
 
 				try {
 					result = SerialDiscovery.getConnectedFtduinos();
+					status = Status.SUCCESS;
+				} catch (Exception e) {
+					e.printStackTrace();
+					errorMessage = ThrowableUtil.throwableToString(e);
+					status = Status.FAILED;
+				}
+
+				String jsonResult = toJson(result);
+				exchange.setStatusCode(200);
+				exchange.getResponseSender().send(toJson(new AnswerMessageWrapper(status, errorMessage, jsonResult)));
+				exchange.endExchange();
+			}
+		});
+	}
+
+	private static void addConnectedFtduinoAsyncHandler(PathHandler handler) {
+		handler.addExactPath("/ftduinosAsync", new HttpHandler() {
+			@Override
+			public void handleRequest(HttpServerExchange exchange) throws Exception {
+				if (exchange.isInIoThread()) {
+					exchange.dispatch(this);
+					return;
+				}
+				exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+				exchange.getResponseHeaders().put(new HttpString("Access-Control-Allow-Origin"), "*");
+
+				List<SerialDevice> result = null;
+				String errorMessage = null;
+				Status status = Status.FAILED;
+
+				try {
+					result = SerialDiscoveryDaemon.getConnectedFtduinos();
 					status = Status.SUCCESS;
 				} catch (Exception e) {
 					e.printStackTrace();
