@@ -24,7 +24,8 @@ import com.github.intrigus.ftd.serial.SerialDisoveryMessage.RemoveMessage;
 public abstract class SerialDisoveryMessage {
 
 	protected static class AddMessage extends SerialDisoveryMessage {
-
+		@JsonProperty(value = "port")
+		protected SerialDevice port;
 	}
 
 	protected static class QuitMessage extends SerialDisoveryMessage {
@@ -33,7 +34,8 @@ public abstract class SerialDisoveryMessage {
 	}
 
 	protected static class RemoveMessage extends SerialDisoveryMessage {
-
+		@JsonProperty(value = "port")
+		protected SerialDevice port;
 	}
 
 	protected static class ErrorMessage extends SerialDisoveryMessage {
