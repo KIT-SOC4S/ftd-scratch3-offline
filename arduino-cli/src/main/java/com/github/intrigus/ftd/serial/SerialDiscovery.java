@@ -15,7 +15,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.intrigus.ftd.exception.BinaryNotFoundException;
-import com.github.intrigus.ftd.exception.CompilationFailedException;
 import com.github.intrigus.ftd.exception.ComputationFailedException;
 import com.github.intrigus.ftd.serial.SerialDisoveryMessage.ListMessage;
 import com.github.intrigus.ftd.util.OsUtil;
