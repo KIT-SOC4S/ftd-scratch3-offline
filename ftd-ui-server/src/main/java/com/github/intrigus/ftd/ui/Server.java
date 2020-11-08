@@ -60,7 +60,7 @@ public class Server {
 	private static void addScratchFilesHandler(PathHandler handler) throws IOException {
 		ResourceManager fileResourceManager = new FileResourceManager(new File("scratch/"));
 		ResourceHandler resourceHandler = new ResourceHandler(fileResourceManager);
-		handler.addExactPath("/scratch/", resourceHandler);
+		handler.addPrefixPath("/scratch/", resourceHandler);
 	}
 
 	private static void addConvertHandler(PathHandler handler) {
