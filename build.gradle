@@ -244,10 +244,10 @@ project(":ftd-ui-server") {
         compression = Compression.GZIP
         destinationDir = file("$buildDir/dist")
         if (Os.isFamily(Os.FAMILY_MAC)) {
-            archiveName = "my_distribution_mac_x86_64.tar"
+            archiveName = "ftduino_offline_scratch_mac_x86_64.tar"
             from "${project.buildDir}/mac"
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
-            archiveName = "my_distribution_linux_x86_64.tar"
+            archiveName = "ftduino_offline_scratch_linux_x86_64.tar"
             destinationDir = file("$buildDir/dist")
             from "${project.buildDir}/linux"
         }
@@ -255,7 +255,7 @@ project(":ftd-ui-server") {
     
     task distributeWindows(type: Zip) {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            archiveName = "my_distribution_windows_x86_64.zip"
+            archiveName = "ftduino_offline_scratch_windows_x86_64.zip"
             destinationDir = file("$buildDir/dist")
             from "${project.buildDir}/windows"
         }
