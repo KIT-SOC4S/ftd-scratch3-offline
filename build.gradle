@@ -199,7 +199,7 @@ project(":ftd-ui-server") {
     }
 
     task fetchMatchingScratchRelease(type: Download) {
-        src "https://github.com/intrigus/scratch-gui/releases/download/0.2.0.rc2/scratch_dist.tar"
+        src "https://github.com/intrigus/scratch-gui/releases/download/1.0.0/scratch_dist.tar"
         new File("${buildDir}/scratch_tmp/").mkdirs()
         dest new File("${buildDir}/scratch_tmp/scratch_dist.tar")
     }
@@ -207,7 +207,7 @@ project(":ftd-ui-server") {
     task verifyMatchingScratchRelease(type: Verify, dependsOn: fetchMatchingScratchRelease) {
         src new File("${buildDir}/scratch_tmp/", "scratch_dist.tar")
         algorithm 'SHA-256'
-        checksum "cf9c02f1d6bf87c06151ac24f843df811acee88bdd18fe7709db8efbee805126"
+        checksum "be694e7328731d185154db6175520f74cb554193151d09a6f96d7618fe0d449e"
     }
 
     task unpackMatchingScratchRelease(type: Copy, dependsOn: verifyMatchingScratchRelease) {
