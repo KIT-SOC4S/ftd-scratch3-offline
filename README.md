@@ -11,6 +11,7 @@ cd ftd-scratch3-offline/
 The distribution can be found inside the `ftd-ui-server/build/dist/` folder in an archive.
 
 ## Building the scratch distribution
+If you want to **develop** the extension you should `clone` without `--depth 1`.
 ```shell
 mkdir scratch
 cd scratch
@@ -18,8 +19,8 @@ git clone https://github.com/LLK/scratch-blocks.git
 cd scratch-blocks
 git checkout 63679b2861cd318bc1cb2ef7b02b8a3d83355158
 cd ..
-git clone https://github.com/intrigus/scratch-vm.git
-git clone https://github.com/intrigus/scratch-gui.git
+git clone https://github.com/intrigus/scratch-vm.git --depth 1
+git clone https://github.com/intrigus/scratch-gui.git --depth 1
 ```
 Then run this command:
 ```shell
